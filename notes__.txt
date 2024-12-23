@@ -1,0 +1,32 @@
+
+inner getPortalLinks(guid) → {Object}
+code/portal_data.js, line 8
+
+    Search through the links data for all that link from and to a portal. Returns an object with separate lists of in and out links. May or may not be as accurate as the portal details, depending on how much data the API returns.
+    Parameters:
+    Name 	Type 	Description
+    guid 	string 	
+
+    The GUID of the portal to search for links.
+    Returns:
+    Object -
+
+    An object containing arrays of incoming ('in') and outgoing ('out') link GUIDs. 
+
+
+
+
+window.plugin.infoAlert.util.getPortalLinks=function( guid ) {
+		if ( guid===undefined ) { var guid=window.selectedPortal; }
+
+		var linkGuids=getPortalLinks( guid );
+		var linkGuids=linkGuids.in.concat( linkGuids.out );
+		return linkGuids;
+	}
+
+	window.plugin.infoAlert.util.getPortalFields=function( guid ) {
+		if ( guid===undefined ) { var guid=window.selectedPortal; }
+
+		var fieldGuids=getPortalFields( guid );
+		return fieldGuids;
+	}

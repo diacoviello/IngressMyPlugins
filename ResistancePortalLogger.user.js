@@ -1,4 +1,3 @@
-plugin_script = """
 // ==UserScript==
 // @id             iitc-plugin-resistance-action-logger
 // @name           Resistance Portal Interaction Logger

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @author         DiabloEnMusica
 // @name           Quick Draw Links MIN CROSS
-// @category       Diablo
+// @category       Layer
 // @version        0.0.9.20210724.002500
 // @updateURL      https://raw.githubusercontent.com/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
 // @downloadURL    https://raw.githubusercontent.com/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js

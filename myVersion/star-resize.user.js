@@ -1,101 +1,101 @@
 // ==UserScript==
-// @id           enlarge-bookmark-star@yourname
+// @id           star-resize@DiabloEnMusica
 // @author       DiabloEnMusica
 // @name         Enlarge IITC Bookmark Star (Mobile)
 // @category     Diablo
 // @version      0.1.0
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/star-resize.user.js
+// @downloadURL  https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/star-resize.user.js
 // @uploadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/star-resize.user.js
 // @match        https://intel.ingress.com/*
 // @grant        none
 // ==/UserScript==
 
-function wrapper(plugin_info) {
-  const cfgKey  = 'enlargeBookmarkStar_size';
-  const panename= 'enlargeBookmarkStarPane';
-  const title   = 'Star Size';
+( function() {
+	function wrapper( plugin_info ) {
+		plugin_info.pluginId='star-resize@DiabloEnMusica';
+		const KEY='iitc_star_size';
+		// load or default to 2.5em
+		window.plugin.starSizeAdjust={
+			size: parseFloat( localStorage[ KEY ]||2.5 )
+		};
 
-  window.plugin.enlargeBookmarkStar = {};
-  // load or default
-  window.plugin.enlargeBookmarkStar.size = parseFloat(localStorage[cfgKey]||2.5);
+		// inject or update the CSS
+		function applyCSS() {
+			const s=window.plugin.starSizeAdjust.size;
+			const pad=( s*0.2 ).toFixed( 2 );
+			const css=`
+        /* bottom-left bookmark star */
+        #updatestatus .bkmrksStar {
+          font-size: ${s}em !important;
+          padding: ${pad}em !important;
+          margin: 0 !important;
+        }
+      `;
+			let st=document.getElementById( 'star-size-adjust-style' );
+			if ( st ) st.remove();
+			st=document.createElement( 'style' );
+			st.id='star-size-adjust-style';
+			st.innerHTML=css;
+			document.head.appendChild( st );
+		}
 
-  function applyCSS() {
-    const sz  = window.plugin.enlargeBookmarkStar.size;
-    const pad = (sz*0.2).toFixed(2);
-    const mgn = (sz*0.2).toFixed(2);
-    const css = `
-      .bkmrksStar {
-        font-size: ${sz}em !important;
-        padding: ${pad}em !important;
-        margin: ${mgn}em !important;
-      }
-      #updatestatus {
-        bottom: 12px !important;
-        right: 12px !important;
-      }
-    `;
-    let style = document.getElementById('enlargeBookmarkStar-style');
-    if (style) style.remove();
-    style = document.createElement('style');
-    style.id = 'enlargeBookmarkStar-style';
-    style.innerHTML = css;
-    document.head.appendChild(style);
-  }
+		// show our pane
+		function showPane() {
+			window.show( 'starSizePane' );
+		}
+		window.plugin.starSizeAdjust.showPane=showPane;
 
-  function showPane() {
-    // this works on both mobile and desktop to open our custom pane
-    window.show(panename);
-  }
-  window.plugin.enlargeBookmarkStar.showPane = showPane;
+		// when the pane is opened, build its contents
+		function onPaneChanged( pane ) {
+			if ( pane!=='starSizePane' ) return;
+			const pd=document.getElementById( 'pane-starSizePane' );
+			if ( !pd||pd.dataset.init ) return;
+			pd.dataset.init='yes';
+			pd.innerHTML=`
+        <div style="padding:0.5em">
+          <h3 style="margin:0 0 0.5em">Bookmark Star Size</h3>
+          <input id="ssa-slider" type="range" min="1" max="5" step="0.1"
+                 value="${window.plugin.starSizeAdjust.size}">
+          <span id="ssa-val">${window.plugin.starSizeAdjust.size.toFixed( 1 )} em</span>
+        </div>`;
+			const slider=pd.querySelector( '#ssa-slider' );
+			const label=pd.querySelector( '#ssa-val' );
+			slider.oninput=() => {
+				const v=parseFloat( slider.value );
+				window.plugin.starSizeAdjust.size=v;
+				localStorage[ KEY ]=v;
+				applyCSS();
+				label.textContent=v.toFixed( 1 )+' em';
+			};
+		}
 
-  function onPaneChanged(pane) {
-    if (pane !== panename) return;
-    const paneDiv = document.getElementById('pane-'+panename);
-    if (!paneDiv || paneDiv.dataset.initialized) return;
-    paneDiv.dataset.initialized = 'yes';
-    paneDiv.innerHTML = `
-      <div style="padding:0.5em">
-        <h3 style="margin:0 0 0.5em">Bookmark Star Size</h3>
-        <input id="ebs-slider" type="range" min="1" max="5" step="0.1"
-               value="${window.plugin.enlargeBookmarkStar.size}">
-        <span id="ebs-val">${window.plugin.enlargeBookmarkStar.size.toFixed(1)}</span> em
-      </div>`;
-    const slider = paneDiv.querySelector('#ebs-slider');
-    const val    = paneDiv.querySelector('#ebs-val');
-    slider.oninput = () => {
-      const v = parseFloat(slider.value);
-      window.plugin.enlargeBookmarkStar.size = v;
-      localStorage[cfgKey] = v;
-      applyCSS();
-      val.textContent = v.toFixed(1);
-    };
-  }
+		function setup() {
+			applyCSS();
+			// only on mobile
+			if ( window.useAndroidPanes&&window.useAndroidPanes() ) {
+				android.addPane( 'starSizePane', 'Star Size', '⭐' );
+				window.addHook( 'paneChanged', onPaneChanged );
+			} else {
+				// if you ever want a desktop button:
+				const btn=document.createElement( 'a' );
+				btn.innerHTML='⭐';
+				btn.title='Star Size';
+				btn.onclick=showPane;
+				const tb=document.getElementById( 'toolbox' );
+				if ( tb ) tb.appendChild( btn );
+				// and you could addHook('paneChanged', onPaneChanged) after android.addPane if you also android.addPane on desktop
+			}
+		}
 
-  function setup() {
-    applyCSS();
+		if ( window.iitcLoaded ) {
+			setup();
+		} else {
+			document.addEventListener( 'iitcLoaded', setup, false );
+		}
+	}
 
-    if (window.useAndroidPanes && window.useAndroidPanes()) {
-      // mobile pane
-      android.addPane(panename, title, '⭐');
-      window.addHook('paneChanged', onPaneChanged);
-    }
-    // always add a toolbox/menu button
-    const ico = `<a id="enlargeBookmarkStar-toggle" title="${title}"
-                     onclick="window.plugin.enlargeBookmarkStar.showPane()">
-                   ⭐
-                 </a>`;
-    $('#toolbox').append(ico);
-  }
-
-  setup.info = plugin_info;
-  if (window.iitcLoaded) {
-    setup();
-  } else {
-    document.addEventListener('iitcLoaded', setup, false);
-  }
-}
-
-// inject
-const script = document.createElement('script');
-script.textContent = '('+wrapper+')( '+JSON.stringify({name:'enlargeBookmarkStar'})+' );';
-(document.body||document.documentElement).appendChild(script);
+	// inject into page
+	const s=document.createElement( 'script' );
+	s.textContent='('+wrapper+')('+JSON.stringify( {} )+');';
+	document.body.appendChild( s );
+} )();

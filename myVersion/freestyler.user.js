@@ -1,7 +1,7 @@
 // ==UserScript==
 // @author         DiabloEnMusica
 // @name           Free Styler
-// @category       Layer
+// @category       Diablo
 // @version        2.3.0.20250709
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/freestyler.meta.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/freestyler.user.js

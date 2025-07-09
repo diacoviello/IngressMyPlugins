@@ -95,6 +95,17 @@ version 1.0.0.20211103.230600
     $( '<style>' )
         .prop( 'type', 'text/css' )
         .html( '\
+        .bkmrksStar {                                                    \
+        /* makes the clickable area bigger */                          \
+        padding: 4px !important;                                       \
+        /* keeps it from touching the very edge */                     \
+        margin: 6px !important;                                        \
+        }                                                                 \
+        /* and for the mobile status‐bar specifically, tweak as needed */\
+        #updatestatus .bkmrksStar {                                      \
+        margin-left: 8px !important;                                   \
+        margin-top:   8px !important;                                  \
+        }                                                                 \
         .bkmrksStar span {                                       \
           background-image: url('+whiteStar+') !important;       \
           background-size: contain !important;                   \

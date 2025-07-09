@@ -75,15 +75,31 @@ version 1.0.0.20211103.230600
     self.starSize=parseInt( localStorage.getItem( self.starSizeKey )||16, 10 );
 
     // applyStarSize(): updates every star’s CSS and re-saves
-    self.applyStarSize=function( sz ) {
-        $( '.bkmrksStar span' ).css( {
-            width: sz+'px',
-            height: sz+'px',
-            // ensure the background sprite scales too
-            'background-size': sz+'px '+sz+'px'
-        } );
-        self.starSize=sz;
-        localStorage.setItem( self.starSizeKey, sz );
+    // self.applyStarSize=function( sz ) {
+    //     $( '.bkmrksStar span' ).css( {
+    //         width: sz+'px',
+    //         height: sz+'px',
+    //         // ensure the background sprite scales too
+    //         'background-size': sz+'px '+sz+'px'
+    //     } );
+    //     self.starSize=sz;
+    //     localStorage.setItem( self.starSizeKey, sz );
+    // };
+    self.applyStarSize = function(size) {
+      var frames = 3;  // the sprite has 3 icons in its top row: trigger, empty-star, filled-star
+      $('.bkmrksStar span').css({
+        width:          size  + 'px',
+        height:         size  + 'px',
+        'background-size': (size*frames) + 'px ' + size + 'px'
+      });
+      // if you also want to resize the little stars in the portal-list:
+      $('.portal-list-bookmark span').css({
+        width:          size  + 'px',
+        height:         size  + 'px',
+        'background-size': (size*frames) + 'px ' + size + 'px'
+      });
+      self.starSize = size;
+      localStorage.setItem(self.starSizeKey, size);
     };
 
     // at plugin init, immediately apply the saved size

@@ -26,6 +26,10 @@ function wrapper( plugin_info ) {
     self.changelog=`
 Changelog:
 
+version 4.0.0.20250709
+- added ability to store multiple routes for later recall / deletion
+- added Clear All button on initial menu
+
 version 3.0.0.20240307.220600
 - added support for Apple Maps, which supports waypoint since iOS 16+
 - added a row highlighter for the selected portal in the dialogs
@@ -495,6 +499,93 @@ version 1.0.0.20220407.231800
         }
     };
 
+    // pull in every GUID from every bookmarks‐folder
+    self.importAllBookmarks=function() {
+        const bm=window.plugin.bookmarks;
+        if ( !bm?.bkmrksObj?.portals ) {
+            return alert( 'Bookmarks data not found' );
+        }
+
+        // start with an empty GUID→waypoint map
+        this.waypoints={};
+
+        // each folder under portals:
+        Object.values( bm.bkmrksObj.portals ).forEach( folder => {
+            if ( !folder.bkmrk ) return;
+            // folder.bkmrk is an object: { id123: {guid,latlng,label}, … }
+            Object.values( folder.bkmrk ).forEach( item => {
+                // parse the stored "latlng" string into numbers
+                const [ lat, lng ]=item.latlng.split( ',' ).map( Number );
+                this.waypoints[ item.guid ]={
+                    latlng: { lat, lng },
+                    name: item.label   // optional, for menus/exports
+                };
+            } );
+        } );
+
+        console.log( '➡️ total unique GUIDs:', Object.keys( this.waypoints ).length );
+        // now persist & draw exactly in the shape drawRoute expects:
+        this.storeWaypoints();
+        this.drawRoute();
+    };
+
+
+    // a O(n²) nearest-neighbor TSP
+    self.optimizeNN=function( points ) {
+        if ( !points.length ) return [];
+        const tour=[ points.shift() ];
+        while ( points.length ) {
+            const last=tour[ tour.length-1 ];
+            // find the closest remaining
+            let idx=0, minD=last.distanceTo( points[ 0 ] );
+            points.forEach( ( pt, i ) => {
+                const d=last.distanceTo( pt );
+                if ( d<minD ) { minD=d; idx=i; }
+            } );
+            tour.push( points.splice( idx, 1 )[ 0 ] );
+        }
+        return tour;
+    };
+
+    self.importAndOptimizeNN=function() {
+        self.importAllBookmarks();
+        // clone the array so you’re not consuming the original
+        const pts=self.waypoints.slice();
+        self.waypoints=self.optimizeNN( pts );
+        self.storeWaypoints();
+        self.drawRoute();
+    };
+
+    self.optimizeViaGoogle=function() {
+        if ( !self.waypoints.length ) return;
+        // ensure the Google API is loaded and directionsService exists
+        const ds=new google.maps.DirectionsService();
+        const origin=self.waypoints[ 0 ],
+            destination=self.waypoints[ self.waypoints.length-1 ],
+            waypts=self.waypoints.slice( 1, -1 )
+                .map( ll => ( { location: ll, stopover: true } ) );
+
+        ds.route( {
+            origin,
+            destination,
+            waypoints: waypts,
+            travelMode: google.maps.TravelMode.DRIVING,
+            optimizeWaypoints: true
+        }, ( resp, status ) => {
+            if ( status!=='OK' ) return alert( 'Google route failed: '+status );
+            // resp.routes[0].waypoint_order is the optimal order of your middle stops
+            const order=resp.routes[ 0 ].waypoint_order;
+            const sorted=[
+                origin,
+                ...order.map( i => waypts[ i ].location ),
+                destination
+            ];
+            self.waypoints=sorted;
+            self.storeWaypoints();
+            self.drawRoute();
+        } );
+    };
+
     self.about=function() {
         let container=document.createElement( 'div' );
         container.innerHTML=`
@@ -724,6 +815,7 @@ version 1.0.0.20220407.231800
         Mark portals as waypoints to prepare a route (use max ${self.maxwaypoints} waypoints).<br>
         Waypoints:
         <div name="${self.id}-waypoints-div"></div>
+        <input type="button" name="route-all-bookmarks" value="Route all bookmarks"><br>
         <input type="button" name="zoom-button" value="Zoom to waypoints"> <input type="button" name="edit-button" value="Edit waypoints"><br>
         <input type="button" name="routes-button" value="Manage saved routes"> <input type="button" name="clear-button" value="Clear all waypoints"><br>
         <label><input type="checkbox" name="showgooglemapsbutton-checkbox">Show Google Maps control button</label><br>
@@ -749,6 +841,13 @@ version 1.0.0.20220407.231800
             self.settings.travelmode=this.value;
             self.storesettings();
         }, false );
+
+        container
+            .querySelector( 'input[name=route-all-bookmarks]' )
+            .addEventListener( 'click', () => {
+                console.log( '🛣️  Route all bookmarks clicked' );
+                self.importAllBookmarks();
+            } );
 
         container.querySelector( 'input[name=routes-button]' )
             .addEventListener( 'click', () => self.routesMenu() );

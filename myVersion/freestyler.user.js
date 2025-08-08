@@ -599,22 +599,16 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
             } );
         } );
 
+        // === Star size row ===
         var starRow=table.appendChild( document.createElement( 'tr' ) );
 
+        // Label cell
         var labelCell=starRow.appendChild( document.createElement( 'td' ) );
         labelCell.textContent='Bookmark-star size:';
 
+        // Number input cell
         var inputCell=starRow.appendChild( document.createElement( 'td' ) );
         inputCell.colSpan=4;
-
-        var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
-        sliderCell.colSpan=8;
-        sliderCell.classList.add( 'qdl-star-td' );
-
-        // wrapper to control layout
-        var starWrap=document.createElement( 'div' );
-        starWrap.className='qdl-star-size';
-        sliderCell.appendChild( starWrap );
 
         var sizeInput=inputCell.appendChild( document.createElement( 'input' ) );
         sizeInput.type='number';
@@ -622,15 +616,26 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         sizeInput.min=8;
         sizeInput.max=32;
         sizeInput.style.width='60px';
-        sizeInput.style.height='40px';
+        sizeInput.style.height='24px';
         sizeInput.id='numberInput';
 
+        // Slider cell (with class for scoped styling)
+        var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
+        sliderCell.colSpan=8;
+        sliderCell.classList.add( 'qdl-star-td' );
+
+        // Flex wrapper for buttons + slider
+        var starWrap=document.createElement( 'div' );
+        starWrap.className='qdl-star-size';
+        sliderCell.appendChild( starWrap );
+
+        // Minus button
         var minusBtn=document.createElement( 'button' );
         minusBtn.textContent='−';
         minusBtn.className='qdl-star-btn';
-        minusBtn.style.marginRight='5px';
-        minusBtn.style.width='30px';
+        starWrap.appendChild( minusBtn );
 
+        // Slider
         var starSlider=document.createElement( 'input' );
         starSlider.type='range';
         starSlider.min=sizeInput.min;
@@ -639,23 +644,39 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         starSlider.value=sizeInput.value;
         starSlider.id='mySlider';
         starSlider.className='qdl-star-slider';
+        starWrap.appendChild( starSlider );
 
+        // Plus button
         var plusBtn=document.createElement( 'button' );
         plusBtn.textContent='+';
         plusBtn.className='qdl-star-btn';
-        plusBtn.style.marginLeft='5px';
-        plusBtn.style.width='30px';
-
-        starWrap.appendChild( minusBtn );
-        starWrap.appendChild( starSlider );
         starWrap.appendChild( plusBtn );
 
+        // Update all three elements and save
+        function updateValue( newVal ) {
+            newVal=Math.max( sizeInput.min, Math.min( sizeInput.max, newVal ) );
+            sizeInput.value=newVal;
+            starSlider.value=newVal;
+            self.applyStarSize( parseInt( newVal, 10 ) );
+            self.settings.starSize=parseInt( newVal, 10 );
+            self.storesettings();
+        }
+
+        // Event bindings
+        sizeInput.addEventListener( 'input', () => updateValue( parseInt( sizeInput.value, 10 ) ) );
+        starSlider.addEventListener( 'input', () => updateValue( parseInt( starSlider.value, 10 ) ) );
+        minusBtn.addEventListener( 'click', () => updateValue( parseInt( sizeInput.value, 10 )-1 ) );
+        plusBtn.addEventListener( 'click', () => updateValue( parseInt( sizeInput.value, 10 )+1 ) );
+
+        // === Scoped CSS injection ===
         ( function addStarSizeStyles() {
             if ( document.getElementById( 'qdl-star-size-css' ) ) return;
             var css=`
-                /* Make the table behave inside the dialog */
-                .qdl-star-td { width: 100%; }
-                .qdl-star-size{
+                td.qdl-star-td {
+                width: 100%;
+                vertical-align: middle;
+                }
+                .qdl-star-size {
                 display: flex;
                 align-items: center;
                 gap: 6px;
@@ -664,14 +685,14 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
                 white-space: nowrap;
                 box-sizing: border-box;
                 }
-                .qdl-star-slider{
-                flex: 1 1 auto;   /* allow grow + shrink */
-                width: 100%;      /* fill remaining space */
-                min-width: 0;     /* IMPORTANT: let flex shrink on mobile */
-                max-width: none;  /* remove desktop cap */
+                .qdl-star-slider {
+                flex: 1 1 auto;
+                width: 100%;
+                min-width: 0;
+                max-width: none;
                 }
-                .qdl-star-btn{
-                flex: 0 0 28px;   /* fixed size buttons */
+                .qdl-star-btn {
+                flex: 0 0 28px;
                 width: 28px;
                 height: 24px;
                 padding: 0;
@@ -684,25 +705,27 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
                 cursor: pointer;
                 user-select: none;
                 }
-                #numberInput{
-                color:#ff0;
+                #numberInput {
+                color: #ff0;
                 background: rgba(0,0,0,.35);
                 border: 1px solid #ff0;
                 padding: 2px 6px;
                 box-sizing: border-box;
-                text-align:center;
+                text-align: center;
                 width: 60px;
                 height: 24px;
                 }
-                /* If your table is narrow, prevent weird wrapping */
-                table { table-layout: fixed; width: 100%; }
-                td { vertical-align: middle; }
+                @media (max-width: 480px){
+                .qdl-star-size { gap:4px; }
+                .qdl-star-btn { flex-basis:24px; width:24px; }
+                }
             `;
             var style=document.createElement( 'style' );
             style.id='qdl-star-size-css';
             style.appendChild( document.createTextNode( css ) );
             document.head.appendChild( style );
         } )();
+
 
 
         ////// OLD SCRIPT

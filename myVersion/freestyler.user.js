@@ -165,6 +165,7 @@ version 1.0.0.20211103.230600
         try {
             let settings=JSON.parse( localStorage[ self.localstoragesettings ] );
             parseSettings( settings, self.settings );
+            self.applyStarSize( self.settings.starSize||self.starSize );
         } catch ( e ) {
             return false;
         }
@@ -194,6 +195,8 @@ version 1.0.0.20211103.230600
                     if ( !( index in storedsettings[ key ] ) ) return true;
                     if ( storedsettings[ key ][ index ]!=self.settings[ key ][ index ] ) return true;
                 }
+            } else {
+                if ( storedsettings[ key ]!==self.settings[ key ] ) return true;
             }
         }
         return false;
@@ -386,6 +389,7 @@ version 1.0.0.20211103.230600
             self.settings.enabled=oldsettings_enabled;
             self.settings.selectedprofile=oldsettings_selectedprofile;
             self.storesettings();
+            self.applyStarSize( self.settings.starSize||self.starSize );
             self.updatePortals();
             self.updateFields();
             self.updateLinks();
@@ -414,6 +418,7 @@ version 1.0.0.20211103.230600
         self.settings.enabled=oldsettings_enabled;
         self.settings.selectedprofile=oldsettings_selectedprofile;
         self.storesettings();
+        self.applyStarSize( self.settings.starSize||self.starSize );
         self.updatePortals();
         self.updateFields();
         self.updateLinks();
@@ -427,6 +432,7 @@ version 1.0.0.20211103.230600
             self.settings.enabled=true;
             self.settings.selectedprofile=profile;
             self.storesettings();
+            self.applyStarSize( self.settings.starSize||self.starSize );
             self.updatePortals();
             self.updateFields();
             self.updateLinks();
@@ -650,6 +656,8 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
             sizeInput.value=newVal;
             starSlider.value=newVal;
             self.applyStarSize( parseInt( newVal, 10 ) );
+            self.settings.starSize=parseInt( newVal, 10 );
+            self.storesettings();
         }
 
         // number -> slider
@@ -3806,9 +3814,23 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
             portalopacity: [ defaultportaloptions.opacity, defaultportaloptions.opacity, defaultportaloptions.opacity, defaultportaloptions.opacity, defaultportaloptions.opacity ],
             portalfillopacity: [ defaultportaloptions.fillOpacity, defaultportaloptions.fillOpacity, defaultportaloptions.fillOpacity, defaultportaloptions.fillOpacity ],
             linkopacity: [ 0, defaultlinkopacity, defaultlinkopacity, defaultlinkopacity ],
-            selectedprofile: ''
+            selectedprofile: '',
+            starSize: 16
         };
-        self.settings=JSON.parse( JSON.stringify( self.defaultsettings ) ); // hard copy
+        self.settings=JSON.parse( JSON.stringify( self.defaultsettings ) );
+        self.defaultsettings={
+            // … existing defaults …
+            selectedprofile: '',
+            starSize: 16
+        };
+        self.settings=JSON.parse( JSON.stringify( self.defaultsettings ) );
+
+        // Load legacy saved size if present
+        const persisted=parseInt( localStorage.getItem( self.starSizeKey )||16, 10 );
+        self.defaultsettings.starSize=persisted;
+        self.settings.starSize=persisted;
+        self.applyStarSize( persisted );
+
         self.spectrumoptions={
             flat: false,
             showInput: true,
@@ -3862,8 +3884,10 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
                 if ( sz!==null ) {
                     sz=parseInt( sz, 10 );
                     if ( sz>0 ) self.applyStarSize( sz );
-                    else alert( 'Invalid size: '+sz );
+                    self.settings.starSize=sz;
+                    self.storesettings();
                 }
+                else alert( 'Invalid size: '+sz );
                 return false;
             } );
         } );

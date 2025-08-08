@@ -599,16 +599,21 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
             } );
         } );
 
-        // === Star size row ===
         var starRow=table.appendChild( document.createElement( 'tr' ) );
 
-        // Label cell
         var labelCell=starRow.appendChild( document.createElement( 'td' ) );
         labelCell.textContent='Bookmark-star size:';
 
-        // Number input cell
         var inputCell=starRow.appendChild( document.createElement( 'td' ) );
         inputCell.colSpan=4;
+
+        var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
+        sliderCell.colSpan=8;
+
+        // wrapper to control layout
+        var starWrap=document.createElement( 'div' );
+        starWrap.className='qdl-star-size';
+        sliderCell.appendChild( starWrap );
 
         var sizeInput=inputCell.appendChild( document.createElement( 'input' ) );
         sizeInput.type='number';
@@ -616,26 +621,15 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         sizeInput.min=8;
         sizeInput.max=32;
         sizeInput.style.width='60px';
-        sizeInput.style.height='24px';
+        sizeInput.style.height='40px';
         sizeInput.id='numberInput';
 
-        // Slider cell (with class for scoped styling)
-        var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
-        sliderCell.colSpan=8;
-        sliderCell.classList.add( 'qdl-star-td' );
-
-        // Flex wrapper for buttons + slider
-        var starWrap=document.createElement( 'div' );
-        starWrap.className='qdl-star-size';
-        sliderCell.appendChild( starWrap );
-
-        // Minus button
         var minusBtn=document.createElement( 'button' );
         minusBtn.textContent='−';
         minusBtn.className='qdl-star-btn';
-        starWrap.appendChild( minusBtn );
+        minusBtn.style.marginRight='5px';
+        minusBtn.style.width='30px';
 
-        // Slider
         var starSlider=document.createElement( 'input' );
         starSlider.type='range';
         starSlider.min=sizeInput.min;
@@ -644,89 +638,57 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         starSlider.value=sizeInput.value;
         starSlider.id='mySlider';
         starSlider.className='qdl-star-slider';
-        starWrap.appendChild( starSlider );
 
-        // Plus button
         var plusBtn=document.createElement( 'button' );
         plusBtn.textContent='+';
         plusBtn.className='qdl-star-btn';
+        plusBtn.style.marginLeft='5px';
+        plusBtn.style.width='30px';
+
+        starWrap.appendChild( minusBtn );
+        starWrap.appendChild( starSlider );
         starWrap.appendChild( plusBtn );
 
-        // Update all three elements and save
-        function updateValue( newVal ) {
-            newVal=Math.max( sizeInput.min, Math.min( sizeInput.max, newVal ) );
-            sizeInput.value=newVal;
-            starSlider.value=newVal;
-            self.applyStarSize( parseInt( newVal, 10 ) );
-            self.settings.starSize=parseInt( newVal, 10 );
-            self.storesettings();
-        }
-
-        // Event bindings
-        sizeInput.addEventListener( 'input', () => updateValue( parseInt( sizeInput.value, 10 ) ) );
-        starSlider.addEventListener( 'input', () => updateValue( parseInt( starSlider.value, 10 ) ) );
-        minusBtn.addEventListener( 'click', () => updateValue( parseInt( sizeInput.value, 10 )-1 ) );
-        plusBtn.addEventListener( 'click', () => updateValue( parseInt( sizeInput.value, 10 )+1 ) );
-
-        // === Scoped CSS injection ===
         ( function addStarSizeStyles() {
             if ( document.getElementById( 'qdl-star-size-css' ) ) return;
             var css=`
-                td.qdl-star-td {
-                width: 100%;
-                vertical-align: middle;
+                .qdl-star-size{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                min-width: 260px;
+                white-space:nowrap;
                 }
-                .qdl-star-size {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                width: 100%;
-                max-width: 100%;
-                white-space: nowrap;
-                box-sizing: border-box;
+                .qdl-star-slider{
+                flex: 1 1 220px;
+                max-width: 320px;
                 }
-                .qdl-star-slider {
-                flex: 1 1 auto;
-                width: 100%;
-                min-width: 0;
-                max-width: none;
-                }
-                .qdl-star-btn {
-                flex: 0 0 28px;
-                width: 28px;
-                height: 24px;
-                padding: 0;
-                line-height: 22px;
-                text-align: center;
-                border-radius: 4px;
+                .qdl-star-btn{
+                width:30px; height:24px; padding:0;
+                line-height:22px; text-align:center;
+                border-radius:4px;
                 background: rgba(0,0,0,.35);
                 border: 1px solid #ff0;
                 color: #ff0;
                 cursor: pointer;
                 user-select: none;
                 }
-                #numberInput {
-                color: #ff0;
+                #numberInput{
+                color:#ff0;
                 background: rgba(0,0,0,.35);
                 border: 1px solid #ff0;
                 padding: 2px 6px;
                 box-sizing: border-box;
-                text-align: center;
-                width: 60px;
-                height: 24px;
+                text-align:center;
                 }
-                @media (max-width: 480px){
-                .qdl-star-size { gap:4px; }
-                .qdl-star-btn { flex-basis:24px; width:24px; }
-                }
+                td { vertical-align: middle; }
             `;
             var style=document.createElement( 'style' );
             style.id='qdl-star-size-css';
+            style.type='text/css';
             style.appendChild( document.createTextNode( css ) );
             document.head.appendChild( style );
         } )();
-
-
 
         ////// OLD SCRIPT
         // sizeInput.addEventListener( 'change', function() {

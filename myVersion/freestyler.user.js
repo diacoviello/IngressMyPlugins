@@ -609,6 +609,7 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
 
         var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
         sliderCell.colSpan=8;
+        sliderCell.classList.add( 'qdl-star-td' );
 
         // wrapper to control layout
         var starWrap=document.createElement( 'div' );
@@ -652,21 +653,31 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         ( function addStarSizeStyles() {
             if ( document.getElementById( 'qdl-star-size-css' ) ) return;
             var css=`
+                /* Make the table behave inside the dialog */
+                .qdl-star-td { width: 100%; }
                 .qdl-star-size{
-                display:flex;
-                align-items:center;
-                gap:8px;
-                min-width: 260px;
-                white-space:nowrap;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                width: 100%;
+                max-width: 100%;
+                white-space: nowrap;
+                box-sizing: border-box;
                 }
                 .qdl-star-slider{
-                flex: 1 1 220px;
-                max-width: 320px;
+                flex: 1 1 auto;   /* allow grow + shrink */
+                width: 100%;      /* fill remaining space */
+                min-width: 0;     /* IMPORTANT: let flex shrink on mobile */
+                max-width: none;  /* remove desktop cap */
                 }
                 .qdl-star-btn{
-                width:30px; height:24px; padding:0;
-                line-height:22px; text-align:center;
-                border-radius:4px;
+                flex: 0 0 28px;   /* fixed size buttons */
+                width: 28px;
+                height: 24px;
+                padding: 0;
+                line-height: 22px;
+                text-align: center;
+                border-radius: 4px;
                 background: rgba(0,0,0,.35);
                 border: 1px solid #ff0;
                 color: #ff0;
@@ -680,15 +691,19 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
                 padding: 2px 6px;
                 box-sizing: border-box;
                 text-align:center;
+                width: 60px;
+                height: 24px;
                 }
+                /* If your table is narrow, prevent weird wrapping */
+                table { table-layout: fixed; width: 100%; }
                 td { vertical-align: middle; }
             `;
             var style=document.createElement( 'style' );
             style.id='qdl-star-size-css';
-            style.type='text/css';
             style.appendChild( document.createTextNode( css ) );
             document.head.appendChild( style );
         } )();
+
 
         ////// OLD SCRIPT
         // sizeInput.addEventListener( 'change', function() {

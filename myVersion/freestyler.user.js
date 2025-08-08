@@ -3818,18 +3818,18 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
             starSize: 16
         };
         self.settings=JSON.parse( JSON.stringify( self.defaultsettings ) );
-        self.defaultsettings={
-            // … existing defaults …
-            selectedprofile: '',
-            starSize: 16
-        };
-        self.settings=JSON.parse( JSON.stringify( self.defaultsettings ) );
 
         // Load legacy saved size if present
-        const persisted=parseInt( localStorage.getItem( self.starSizeKey )||16, 10 );
+        var persisted=parseInt( localStorage.getItem( self.starSizeKey )||16, 10 );
         self.defaultsettings.starSize=persisted;
         self.settings.starSize=persisted;
-        self.applyStarSize( persisted );
+
+        // Don't call applyStarSize yet — wait until IITC's jQuery is ready
+        if ( typeof window.$==='function' ) {
+            self.applyStarSize( persisted );
+        } else {
+            setTimeout( () => self.applyStarSize( persisted ), 500 );
+        }
 
         self.spectrumoptions={
             flat: false,

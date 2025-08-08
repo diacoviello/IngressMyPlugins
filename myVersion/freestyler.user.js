@@ -594,20 +594,82 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         } );
 
         var starRow=table.appendChild( document.createElement( 'tr' ) );
+
         var labelCell=starRow.appendChild( document.createElement( 'td' ) );
         labelCell.textContent='Bookmark-star size:';
+
         var inputCell=starRow.appendChild( document.createElement( 'td' ) );
         inputCell.colSpan=4;
+
+        var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
+        sliderCell.colSpan=8;
+
         var sizeInput=inputCell.appendChild( document.createElement( 'input' ) );
         sizeInput.type='number';
         sizeInput.value=self.starSize;
         sizeInput.min=8;
-        sizeInput.max=48;
+        sizeInput.max=32;
         sizeInput.style.width='60px';
-        sizeInput.addEventListener( 'change', function() {
-            var v=parseInt( this.value, 10 );
-            if ( v>0 ) self.applyStarSize( v );
-            else alert( 'Invalid size: '+this.value );
+        sizeInput.style.height='40px';
+        sizeInput.id='numberInput';
+
+        var minusBtn=document.createElement( 'button' );
+        minusBtn.textContent='−';
+        minusBtn.style.marginRight='5px';
+        sliderCell.appendChild( minusBtn );
+
+        var starSlider=document.createElement( 'input' );
+        starSlider.type='range';
+        starSlider.min=sizeInput.min;
+        starSlider.max=sizeInput.max;
+        starSlider.step='1';
+        starSlider.value=sizeInput.value;
+        starSlider.id='mySlider';
+        sliderCell.appendChild( starSlider );
+
+        var plusBtn=document.createElement( 'button' );
+        plusBtn.textContent='+';
+        plusBtn.style.marginLeft='5px';
+        sliderCell.appendChild( plusBtn );
+
+        ////// OLD SCRIPT
+        // sizeInput.addEventListener( 'change', function() {
+        //     var v=parseInt( this.value, 10 );
+        //     if ( v>0 ) self.applyStarSize( v );
+        //     else alert( 'Invalid size: '+this.value );
+        // } );
+
+        // starSlider.addEventListener( 'input', function() {
+        //     sizeInput.value=this.value;
+        //     self.applyStarSize( parseInt( this.value, 10 ) );
+        // } );
+
+        // function to sync all inputs
+        function updateValue( newVal ) {
+            newVal=Math.max( sizeInput.min, Math.min( sizeInput.max, newVal ) );
+            sizeInput.value=newVal;
+            starSlider.value=newVal;
+            self.applyStarSize( parseInt( newVal, 10 ) );
+        }
+
+        // number -> slider
+        sizeInput.addEventListener( 'input', function() {
+            updateValue( parseInt( this.value, 10 ) );
+        } );
+
+        // slider -> number
+        starSlider.addEventListener( 'input', function() {
+            updateValue( parseInt( this.value, 10 ) );
+        } );
+
+        // minus button click
+        minusBtn.addEventListener( 'click', function() {
+            updateValue( parseInt( sizeInput.value, 10 )-1 );
+        } );
+
+        // plus button click
+        plusBtn.addEventListener( 'click', function() {
+            updateValue( parseInt( sizeInput.value, 10 )+1 );
         } );
 
         let defaultsbutton=container.appendChild( document.createElement( 'button' ) );

@@ -610,6 +610,11 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         var sliderCell=starRow.appendChild( document.createElement( 'td' ) );
         sliderCell.colSpan=8;
 
+        // wrapper to control layout
+        var starWrap=document.createElement( 'div' );
+        starWrap.className='qdl-star-size';
+        sliderCell.appendChild( starWrap );
+
         var sizeInput=inputCell.appendChild( document.createElement( 'input' ) );
         sizeInput.type='number';
         sizeInput.value=self.starSize;
@@ -621,8 +626,8 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
 
         var minusBtn=document.createElement( 'button' );
         minusBtn.textContent='−';
+        minusBtn.className='qdl-star-btn';
         minusBtn.style.marginRight='5px';
-        sliderCell.appendChild( minusBtn );
 
         var starSlider=document.createElement( 'input' );
         starSlider.type='range';
@@ -631,12 +636,57 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         starSlider.step='1';
         starSlider.value=sizeInput.value;
         starSlider.id='mySlider';
-        sliderCell.appendChild( starSlider );
+        starSlider.className='qdl-star-slider';
 
         var plusBtn=document.createElement( 'button' );
         plusBtn.textContent='+';
+        plusBtn.className='qdl-star-btn';
         plusBtn.style.marginLeft='5px';
-        sliderCell.appendChild( plusBtn );
+
+        starWrap.appendChild( minusBtn );
+        starWrap.appendChild( starSlider );
+        starWrap.appendChild( plusBtn );
+
+        ( function addStarSizeStyles() {
+            if ( document.getElementById( 'qdl-star-size-css' ) ) return;
+            var css=`
+                .qdl-star-size{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                min-width: 260px;
+                white-space:nowrap;
+                }
+                .qdl-star-slider{
+                flex: 1 1 220px;
+                max-width: 320px;
+                }
+                .qdl-star-btn{
+                width:24px; height:24px; padding:0;
+                line-height:22px; text-align:center;
+                border-radius:4px;
+                background: rgba(0,0,0,.35);
+                border: 1px solid #ff0;
+                color: #ff0;
+                cursor: pointer;
+                user-select: none;
+                }
+                #numberInput{
+                color:#ff0;
+                background: rgba(0,0,0,.35);
+                border: 1px solid #ff0;
+                padding: 2px 6px;
+                box-sizing: border-box;
+                text-align:center;
+                }
+                td { vertical-align: middle; }
+            `;
+            var style=document.createElement( 'style' );
+            style.id='qdl-star-size-css';
+            style.type='text/css';
+            style.appendChild( document.createTextNode( css ) );
+            document.head.appendChild( style );
+        } )();
 
         ////// OLD SCRIPT
         // sizeInput.addEventListener( 'change', function() {

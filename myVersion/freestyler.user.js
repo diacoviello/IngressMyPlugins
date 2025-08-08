@@ -628,7 +628,7 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         minusBtn.textContent='−';
         minusBtn.className='qdl-star-btn';
         minusBtn.style.marginRight='5px';
-        minusBtn.style.width='9px';
+        minusBtn.style.width='30px';
 
         var starSlider=document.createElement( 'input' );
         starSlider.type='range';
@@ -643,7 +643,7 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         plusBtn.textContent='+';
         plusBtn.className='qdl-star-btn';
         plusBtn.style.marginLeft='5px';
-        minusBtn.style.width='9px';
+        plusBtn.style.width='30px';
 
         starWrap.appendChild( minusBtn );
         starWrap.appendChild( starSlider );

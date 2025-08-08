@@ -664,7 +664,7 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
                 max-width: 320px;
                 }
                 .qdl-star-btn{
-                width:24px; height:24px; padding:0;
+                width:30px; height:24px; padding:0;
                 line-height:22px; text-align:center;
                 border-radius:4px;
                 background: rgba(0,0,0,.35);

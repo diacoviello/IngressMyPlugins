@@ -3,10 +3,10 @@
 // @name           Multi-Maps Route Planner
 // @category       Diablo
 // @version        3.0.0.20240307.220600
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/multiple-maps-route-planner.user.js
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/multiple-maps-route-planner.user.js
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/multiple-maps-route-planner-woDesktop.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/multiple-maps-route-planner-woDesktop.user.js
 // @description    [DiabloEnMusica-4.0.0.20250709] Plan a route with multiple portals and open Google Maps (max 9 waypoints) or Apple Maps (iOS 16+ supports waypoints) to start your navigation.
-// @id             maps-route-planner@DiabloEnMusica
+// @id             maps-route-planner2@DiabloEnMusica
 // @match          https://intel.ingress.com/*
 // @grant          none
 // ==/UserScript==

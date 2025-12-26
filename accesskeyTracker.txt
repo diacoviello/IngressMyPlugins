@@ -1,0 +1,34 @@
+-- OG IITC:
+
+accesskey="0"
+accesskey="c"
+accesskey="i"
+accesskey="f"
+accesskey="{index}"
+accesskey="v"
+accesskey="b"
+accesskey="9"
+
+drawTools plugin::: this gets turned off when disabled so the accesskey can be used elsewhere
+var accessKeys = [
+    'l', // line
+    'p', // polygon
+    'o', // circle
+    'm', // marker
+    'a', // cancel (_abort)
+    'e', // edit
+    'd', // delete
+    's', // save
+    'a', // cancel
+  ];
+
+-- community plugins:
+
+loadmorecommshistory.user.js: accesskey="4"
+loadmorecommshistory.user.js: // accesskey="5"
+PNavCopy.user.js: accesskey="p">
+PNavCopy.user.js: accesskey="p"
+PNavCopy.user.js: accesskey="s"
+s2check.user.js: accesskey="p"
+s2check.user.js: accesskey="g"
+todo-list.user.js: accesskey="t"

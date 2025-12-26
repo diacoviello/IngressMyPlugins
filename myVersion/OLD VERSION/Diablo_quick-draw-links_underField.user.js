@@ -1,12 +1,13 @@
 // ==UserScript==
-// @author         DiabloEnMusica
-// @name           Quick Draw Links 2
+// @author         DanielOnDiordna
+// @name           Quick Draw Links Less CrossLinks & Under Field Check
 // @category       Diablo
-// @version        1.0.9.20250709
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quick-draw-links-crosslinks-dashSet.user
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quick-draw-links-crosslinks-dashSet.user
-// @description    [diabloenmusica-1.0.9.20250709] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
-// @id             quick-draw-links@DiabloEnMusica
+// @version        0.0.9.20210724.002500
+// @updateURL      https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.meta.js
+// @downloadURL    https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.user.js
+// @description    [danielondiordna-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
+// @id             quick-draw-links@DanielOnDiordna
+// @namespace      https://softspot.nl/ingress/
 // @match          https://intel.ingress.com/*
 // @grant          none
 // ==/UserScript==
@@ -20,7 +21,7 @@ function wrapper( plugin_info ) {
     window.plugin.quickdrawlinks=function() { };
     var self=window.plugin.quickdrawlinks;
     self.id='quickdrawlinks';
-    self.title='QuickDrawLinks-LessXLinks';
+    self.title='QuickDrawLinks-LessX-UnderField';
     self.version='0.0.9.20210724.002500';
     self.author='DiabloEnMusica';
     self.changelog=`
@@ -66,9 +67,6 @@ version 0.0.9.20210421.190200
 
 version 0.0.9.20210724.002500
 - prevent double plugin setup on hook iitcLoaded
-
-version 0.0.9.20250812.190200
-- most recent additions are setting the dash line ability while preventing the crosslink dash from affecting clicking links on map
 `;
     self.namespace='window.plugin.'+self.id+'.';
     self.pluginname='plugin-'+self.id;
@@ -105,44 +103,68 @@ version 0.0.9.20250812.190200
         '10,5,5,5,5,5,5,5,100%',
     ];
     self.crosslinklayerdisabled=false;
-
-    self.dashArray='8,15';
-
-    self.setDashPattern=function() {
-        const pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,3,1,3"):', self.dashArray );
-        if ( !pat ) return;
-        self.dashArray=pat;
-        self.highlightlinkoptions.dashArray=pat;
-        alert( 'Dash pattern set to: '+pat );
-        self.crosslinkLayer.clearLayers();
-        self.runHooks( 'mapDataRefreshEnd' );
+    /* self.highlightlinkoptions={
+        color: "#C33",
+        opacity: 1,
+        weight: 5,
+        fill: false,
+        dashArray: "1,6",
+        radius: 18,
     };
+    */
+
+    // default dash pattern (string form; e.g. "1,6" or "4,3,1,3")
+    self.dashArray="1,6";
 
     self.highlightlinkoptions={
         color: "#C33",
         opacity: 1,
         weight: 5,
         fill: false,
-        // dashArray: window.plugin.quickDrawLinks.dashArray,
         dashArray: self.dashArray,
-        radius: 18
+        radius: 18,
     };
 
-    // default dash‐pattern (px dash, px gap)
-    self.dashArray=self.highlightlinkoptions.dashArray;
-
-    // popup to let user redefine it at runtime
     self.setDashPattern=function() {
-        const pat=prompt( 'Enter dash pattern e.g. "1,6" or "5,3,1,3":', self.dashArray );
+        const pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,2,1,2"):', self.dashArray );
         if ( !pat ) return;
+        // save it
         self.dashArray=pat;
-        // keep highlightlinkoptions in sync:
         self.highlightlinkoptions.dashArray=pat;
         alert( 'Dash pattern set to: '+pat );
+
+        // clear out any old lines…
         self.crosslinkLayer.clearLayers();
+        // …and make IITC re-run your mapDataRefreshEnd hook immediately:
         window.runHooks( 'mapDataRefreshEnd' );
     };
 
+    /*
+    // expose a small setter that prompts the user and forces redraw
+    self.setDashPattern=function() {
+        // prompt for new pattern
+        var pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,3,1,3"):', self.dashArray );
+        if ( pat===null ) return; // user cancelled
+        // basic validation: must be comma-delimited numbers or number% entries
+        if ( !/^\s*[\d%]+(\s*,\s*[\d%]+)*\s*$/.test( pat ) ) {
+            alert( 'Invalid pattern. Use comma separated numbers, e.g. "1,6" or "5,3,1,3"' );
+            return;
+        }
+
+        self.dashArray=pat;
+        // keep highlight style in sync
+        self.highlightlinkoptions.dashArray=pat;
+
+        // clear old drawn crosslinks and ask IITC to redraw
+        if ( self.crosslinkLayer ) self.crosslinkLayer.clearLayers();
+        // re-run hook to draw crosslinks immediately
+        if ( typeof window.runHooks==='function' ) window.runHooks( 'mapDataRefreshEnd' );
+
+        // feedback
+        alert( 'Dash pattern set to: '+pat );
+    };
+
+    */
     // 120 x 60 - 4 buttons, 2 rows: link, move, star, copy
     self.menuicons="data:image/png;base64,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";
     // 350 x 50 - 7 buttons: trash, move, swap, zoom, list, confirm, cancel
@@ -392,7 +414,70 @@ version 0.0.9.20250812.190200
         link.options.guid=randomguid(); // create a fake guid for cross link support
 
         // we can just test the new layer in this case
-        self.testAllLinksAgainstLayer( link );
+			self.testAllLinksAgainstLayer( link );
+
+			// --- CHECK IF NEW DRAWN LINK IS UNDER A FIELD (>2km) --------------------
+			try {
+				var newLenKm=self.distanceBetween( latLngs[ 0 ], latLngs[ 1 ] );
+				if ( newLenKm>2 ) {
+
+					var underField=false;
+
+					// Convert drawn link to a pseudo-link for intersection tests
+					var newLinkObj={
+						getLatLngs: () => latLngs
+					};
+
+					// 1) Check drawn fields (each field is stored as 3 separate polylines)
+					self.fieldslayer.eachLayer( function( edge ) {
+						if ( self.testPolyLine( edge, newLinkObj, true ) ) {
+							underField=true;
+						}
+					} );
+
+					// 2) Check real IITC intel fields (window.fields)
+					if ( !underField ) {
+						for ( var id in window.fields ) {
+							var f=window.fields[ id ];
+							if ( !f||!f.getLatLngs ) continue;
+
+							// fields in IITC are also stored as 3 polylines (in their _rings)
+							var pts=f.getLatLngs()[ 0 ];  // triangle vertices A, B, C
+							if ( !pts||pts.length!==3 ) continue;
+
+							var edges=[
+								[ pts[ 0 ], pts[ 1 ] ],
+								[ pts[ 1 ], pts[ 2 ] ],
+								[ pts[ 2 ], pts[ 0 ] ],
+							];
+
+							for ( var i=0;i<edges.length;i++ ) {
+								if ( self.testPolyLine(
+									{ getLatLngs: () => edges[ i ] },
+									newLinkObj,
+									true
+								) ) {
+									underField=true;
+									break;
+								}
+							}
+							if ( underField ) break;
+						}
+					}
+
+					if ( underField ) {
+						console.log( "QuickDraw: drawn link is under field & >2km → marking crosslink" );
+
+						self.drawCrossLink( {
+							options: { guid: randomguid() },
+							getLatLngs: () => latLngs
+						} );
+					}
+				}
+			} catch ( e ) {
+				console.warn( "QuickDraw under-field check failed:", e );
+			}
+
         return link;
     };
 
@@ -1045,18 +1130,19 @@ version 0.0.9.20250812.190200
             color: '#d22',
             opacity: 0.7,
             weight: 5,
+            // Leaflet 1.x uses 'interactive: false' so pointer events pass through
             interactive: false,
-            dashArray: self.dashArray,
+            // use plugin config; GeoJSON/L.GeoJSON accepts either string "1,6" or numeric array
+            dashArray: self.dashArray, // ( typeof self.dashArray==='string'? self.dashArray.split( ',' ).map( function( s ) { return s.trim(); } ):self.dashArray ),
             guid: link.options.guid
-        }
+        };
 
         var distance=self.distanceBetween( latLngs[ 0 ], latLngs[ 1 ] );
 
         var gc=new self.arc.GreatCircle( startCoord, stopCoord );
         var geojson_feature=gc.Arc( Math.round( distance ) ).json();
         var crosslink=L.geoJson( geojson_feature, {
-            style: lineoptions,
-            interactive: false
+            style: lineoptions
         } );
 
         // additions to Arc, to make it compatible for Quick Draw:
@@ -1071,8 +1157,14 @@ version 0.0.9.20250812.190200
 
     self.onMapDataRefreshEnd=function() {
         if ( !self.crosslinklayerdisabled ) {
-            self.crosslinkLayer.bringToBack();
-            self.drawnItems.bringToFront();
+            // push crosslinks to the back of overlays (so portals and drawnItems stay clickable)
+            if ( self.crosslinkLayer&&typeof self.crosslinkLayer.bringToBack==='function' ) {
+                self.crosslinkLayer.bringToBack();
+            }
+            // ensure drawn items are above crosslinks
+            if ( self.drawnItems&&typeof self.drawnItems.bringToFront==='function' ) {
+                try { self.drawnItems.bringToFront(); } catch ( e ) { }
+            }
             self.testForDeletedLinks();
         }
 
@@ -3240,6 +3332,7 @@ version 0.0.9.20250812.190200
 
         $( 'head' ).append( '<style>.sp-container{position:absolute;top:0;left:0;display:inline-block;*display:inline;*zoom:1;z-index:9999994;overflow:hidden}.sp-container.sp-flat{position:relative}.sp-container,.sp-container *{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box}.sp-top{position:relative;width:100%;display:inline-block}.sp-top-inner{position:absolute;top:0;left:0;bottom:0;right:0}.sp-color{position:absolute;top:0;left:0;bottom:0;right:20%}.sp-hue{position:absolute;top:0;right:0;bottom:0;left:84%;height:100%}.sp-clear-enabled .sp-hue{top:33px;height:77.5%}.sp-fill{padding-top:80%}.sp-sat,.sp-val{position:absolute;top:0;left:0;right:0;bottom:0}.sp-alpha-enabled .sp-top{margin-bottom:18px}.sp-alpha-enabled .sp-alpha{display:block}.sp-alpha-handle{position:absolute;top:-4px;bottom:-4px;width:6px;left:50%;cursor:pointer;border:1px solid #000;background:#fff;opacity:.8}.sp-alpha{display:none;position:absolute;bottom:-14px;right:0;left:0;height:8px}.sp-alpha-inner{border:solid 1px #333}.sp-clear{display:none}.sp-clear.sp-clear-display{background-position:center}.sp-clear-enabled .sp-clear{display:block;position:absolute;top:0;right:0;bottom:0;left:84%;height:28px}.sp-container,.sp-replacer,.sp-preview,.sp-dragger,.sp-slider,.sp-alpha,.sp-clear,.sp-alpha-handle,.sp-container.sp-dragging .sp-input,.sp-container button{-webkit-user-select:none;-moz-user-select:-moz-none;-o-user-select:none;user-select:none}.sp-container.sp-input-disabled .sp-input-container{display:none}.sp-container.sp-buttons-disabled .sp-button-container{display:none}.sp-container.sp-palette-buttons-disabled .sp-palette-button-container{display:none}.sp-palette-only .sp-picker-container{display:none}.sp-palette-disabled .sp-palette-container{display:none}.sp-initial-disabled .sp-initial{display:none}.sp-sat{background-image:-webkit-gradient(linear,0 0,100% 0,from(#FFF),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(left,#FFF,rgba(204,154,129,0));background-image:-moz-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-o-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-ms-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:linear-gradient(to right,#fff,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(GradientType = 1, startColorstr=#FFFFFFFF, endColorstr=#00CC9A81)";filter:progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr=\'#FFFFFFFF\',endColorstr=\'#00CC9A81\')}.sp-val{background-image:-webkit-gradient(linear,0 100%,0 0,from(#000000),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(bottom,#000000,rgba(204,154,129,0));background-image:-moz-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-o-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-ms-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:linear-gradient(to top,#000,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr=#00CC9A81, endColorstr=#FF000000)";filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00CC9A81\',endColorstr=\'#FF000000\')}.sp-hue{background:-moz-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-ms-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-o-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-webkit-gradient(linear,left top,left bottom,from(#ff0000),color-stop(.17,#ffff00),color-stop(.33,#00ff00),color-stop(.5,#00ffff),color-stop(.67,#0000ff),color-stop(.83,#ff00ff),to(#ff0000));background:-webkit-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:linear-gradient(to bottom,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%)}.sp-1{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ff0000\',endColorstr=\'#ffff00\')}.sp-2{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ffff00\',endColorstr=\'#00ff00\')}.sp-3{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00ff00\',endColorstr=\'#00ffff\')}.sp-4{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00ffff\',endColorstr=\'#0000ff\')}.sp-5{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#0000ff\',endColorstr=\'#ff00ff\')}.sp-6{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ff00ff\',endColorstr=\'#ff0000\')}.sp-hidden{display:none!important}.sp-cf:before,.sp-cf:after{content:"";display:table}.sp-cf:after{clear:both}.sp-cf{*zoom:1}@media (max-device-width:480px){.sp-color{right:40%}.sp-hue{left:63%}.sp-fill{padding-top:60%}}.sp-dragger{border-radius:5px;height:5px;width:5px;border:1px solid #fff;background:#000;cursor:pointer;position:absolute;top:0;left:0}.sp-slider{position:absolute;top:0;cursor:pointer;height:3px;left:-1px;right:-1px;border:1px solid #000;background:#fff;opacity:.8}.sp-container{border-radius:0;background-color:#ECECEC;border:solid 1px #f0c49B;padding:0}.sp-container,.sp-container button,.sp-container input,.sp-color,.sp-hue,.sp-clear{font:normal 12px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box}.sp-top{margin-bottom:3px}.sp-color,.sp-hue,.sp-clear{border:solid 1px #666}.sp-input-container{float:right;width:100px;margin-bottom:4px}.sp-initial-disabled .sp-input-container{width:100%}.sp-input{font-size:12px!important;border:1px inset;padding:4px 5px;margin:0;width:100%;background:transparent;border-radius:3px;color:#222}.sp-input:focus{border:1px solid orange}.sp-input.sp-validation-error{border:1px solid red;background:#fdd}.sp-picker-container,.sp-palette-container{float:left;position:relative;padding:10px;padding-bottom:300px;margin-bottom:-290px}.sp-picker-container{width:172px;border-left:solid 1px #fff}.sp-palette-container{border-right:solid 1px #ccc}.sp-palette-only .sp-palette-container{border:0}.sp-palette .sp-thumb-el{display:block;position:relative;float:left;width:24px;height:15px;margin:3px;cursor:pointer;border:solid 2px transparent}.sp-palette .sp-thumb-el:hover,.sp-palette .sp-thumb-el.sp-thumb-active{border-color:orange}.sp-thumb-el{position:relative}.sp-initial{float:left;border:solid 1px #333}.sp-initial span{width:30px;height:25px;border:none;display:block;float:left;margin:0}.sp-initial .sp-clear-display{background-position:center}.sp-palette-button-container,.sp-button-container{float:right}.sp-replacer{margin:0;overflow:hidden;cursor:pointer;padding:4px;display:inline-block;*zoom:1;*display:inline;border:solid 1px #91765d;background:#eee;color:#333;vertical-align:middle}.sp-replacer:hover,.sp-replacer.sp-active{border-color:#F0C49B;color:#111}.sp-replacer.sp-disabled{cursor:default;border-color:silver;color:silver}.sp-dd{padding:2px 0;height:16px;line-height:16px;float:left;font-size:10px}.sp-preview{position:relative;width:25px;height:20px;border:solid 1px #222;margin-right:5px;float:left;z-index:0}.sp-palette{*width:220px;max-width:220px}.sp-palette .sp-thumb-el{width:16px;height:16px;margin:2px 1px;border:solid 1px #d0d0d0}.sp-container{padding-bottom:0}.sp-container button{background-color:#eee;background-image:-webkit-linear-gradient(top,#eeeeee,#cccccc);background-image:-moz-linear-gradient(top,#eeeeee,#cccccc);background-image:-ms-linear-gradient(top,#eeeeee,#cccccc);background-image:-o-linear-gradient(top,#eeeeee,#cccccc);background-image:linear-gradient(to bottom,#eeeeee,#cccccc);border:1px solid #ccc;border-bottom:1px solid #bbb;border-radius:3px;color:#333;font-size:14px;line-height:1;padding:5px 4px;text-align:center;text-shadow:0 1px 0 #eee;vertical-align:middle}.sp-container button:hover{background-color:#ddd;background-image:-webkit-linear-gradient(top,#dddddd,#bbbbbb);background-image:-moz-linear-gradient(top,#dddddd,#bbbbbb);background-image:-ms-linear-gradient(top,#dddddd,#bbbbbb);background-image:-o-linear-gradient(top,#dddddd,#bbbbbb);background-image:linear-gradient(to bottom,#dddddd,#bbbbbb);border:1px solid #bbb;border-bottom:1px solid #999;cursor:pointer;text-shadow:0 1px 0 #ddd}.sp-container button:active{border:1px solid #aaa;border-bottom:1px solid #888;-webkit-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-moz-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-ms-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-o-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee}.sp-cancel{font-size:11px;color:#d93f3f!important;margin:0;padding:2px;margin-right:5px;vertical-align:middle;text-decoration:none}.sp-cancel:hover{color:#d93f3f!important;text-decoration:underline}.sp-palette span:hover,.sp-palette span.sp-thumb-active{border-color:#000}.sp-preview,.sp-alpha,.sp-thumb-el{position:relative;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==)}.sp-preview-inner,.sp-alpha-inner,.sp-thumb-inner{display:block;position:absolute;top:0;left:0;bottom:0;right:0}.sp-palette .sp-thumb-inner{background-position:50% 50%;background-repeat:no-repeat}.sp-palette .sp-thumb-light.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUeNpiYBhsgJFMffxAXABlN5JruT4Q3wfi/0DsT64h8UD8HmpIPCWG/KemIfOJCUB+Aoacx6EGBZyHBqI+WsDCwuQ9mhxeg2A210Ntfo8klk9sOMijaURm7yc1UP2RNCMbKE9ODK1HM6iegYLkfx8pligC9lCD7KmRof0ZhjQACDAAceovrtpVBRkAAAAASUVORK5CYII=)}.sp-palette .sp-thumb-dark.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAMdJREFUOE+tkgsNwzAMRMugEAahEAahEAZhEAqlEAZhEAohEAYh81X2dIm8fKpEspLGvudPOsUYpxE2BIJCroJmEW9qJ+MKaBFhEMNabSy9oIcIPwrB+afvAUFoK4H0tMaQ3XtlrggDhOVVMuT4E5MMG0FBbCEYzjYT7OxLEvIHQLY2zWwQ3D+9luyOQTfKDiFD3iUIfPk8VqrKjgAiSfGFPecrg6HN6m/iBcwiDAo7WiBeawa+Kwh7tZoSCGLMqwlSAzVDhoK+6vH4G0P5wdkAAAAASUVORK5CYII=)}.sp-clear-display{background-repeat:no-repeat;background-position:center;background-image:url(data:image/gif;base64,R0lGODlhFAAUAPcAAAAAAJmZmZ2dnZ6enqKioqOjo6SkpKWlpaampqenp6ioqKmpqaqqqqurq/Hx8fLy8vT09PX19ff39/j4+Pn5+fr6+vv7+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAUABQAAAihAP9FoPCvoMGDBy08+EdhQAIJCCMybCDAAYUEARBAlFiQQoMABQhKUJBxY0SPICEYHBnggEmDKAuoPMjS5cGYMxHW3IiT478JJA8M/CjTZ0GgLRekNGpwAsYABHIypcAgQMsITDtWJYBR6NSqMico9cqR6tKfY7GeBCuVwlipDNmefAtTrkSzB1RaIAoXodsABiZAEFB06gIBWC1mLVgBa0AAOw==)}</style>' );
     }; // end setupColorpickerSpectrum
+    
 
     self.setup=function() {
         if ( 'pluginloaded' in self ) {
@@ -3324,7 +3417,7 @@ version 0.0.9.20250812.190200
 
         window.addHook( 'portalDetailLoaded', function( data ) { if ( self.requestid===data.guid ) { self.requestid=undefined; window.renderPortalDetails( data.guid ); } } );
 
-        // add options menu
+        //add options menu
         if ( window.useAndroidPanes() ) {
             android.addPane( self.panename, self.title, "ic_action_share" );
             addHook( "paneChanged", self.onPaneChanged );
@@ -3345,7 +3438,7 @@ version 0.0.9.20250812.190200
             tb.append(
                 '<a id="quickdrawlinks-dash" '+
                 'onclick="window.plugin.quickdrawlinks.setDashPattern()" '+
-                'title="Set dash pattern">-Set-Dash-</a>'
+                'title="Set dash pattern">quickdrawXlink-setDash</a>'
             );
         }
 

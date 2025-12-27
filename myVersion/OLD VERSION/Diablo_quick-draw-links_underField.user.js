@@ -88,10 +88,10 @@ version 0.0.9.20210724.002500
     self.isSmartphone=null;
     self.settings={};
     self.settings.hidebuttons=false;
-    self.settings.drawcolor='#E27000';
-    self.settings.greatcirclecolor='#FF0000';
-    self.settings.fieldcolor='#E27000';
-    self.settings.crosslinkbookmarkcolor='#FF0000';
+    self.settings.drawcolor='#b8b50bff';
+    self.settings.greatcirclecolor='#9c009c';
+    self.settings.fieldcolor='#fff069';
+    self.settings.crosslinkbookmarkcolor='#ec393f';
     self.settings.showcrosslinks=0; // 0 = Links, 1 = Drawn, 2 = Both
     self.settings.showlinkdirection=false;
     self.settings.fieldexistinglinks=false;
@@ -100,18 +100,17 @@ version 0.0.9.20210724.002500
     self.movelinksposition=undefined;
     self.copylinksposition=undefined;
     self.linkstyle=[
-        '10,5,5,5,5,5,5,5,100%',
+        '10,5,5,5,5,5,5,5,100%'
     ];
     self.crosslinklayerdisabled=false;
-    /* self.highlightlinkoptions={
-        color: "#C33",
+    self.highlightlinkoptions={
+        color: "#ae29b3ff",
         opacity: 1,
         weight: 5,
         fill: false,
         dashArray: "1,6",
         radius: 18,
     };
-    */
 
     // default dash pattern (string form; e.g. "1,6" or "4,3,1,3")
     self.dashArray="1,6";
@@ -377,7 +376,7 @@ version 0.0.9.20210724.002500
                     weight: 4,
                     opacity: 0.8,
                     fill: false,
-                    clickable: true
+                    interactive: true
                 };
         
                 var lineoptions = self.lineOptions;
@@ -758,7 +757,7 @@ version 0.0.9.20210724.002500
                 if ( !self.isSmartphone ) titledescription=' title="Click to copy all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'copylinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screencopyicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon" /></a>' );
             }
@@ -770,7 +769,7 @@ version 0.0.9.20210724.002500
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
             }
@@ -781,7 +780,7 @@ version 0.0.9.20210724.002500
                 if ( !self.isSmartphone ) titledescription=' title="Click to move all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'movelinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenmoveicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="/"><span class="screenbutton screenmoveicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlemoveicon" /></a>' );
             }
@@ -793,7 +792,7 @@ version 0.0.9.20210724.002500
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'addMarker(\''+guid+'\',{icon:\'link\'}); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='link'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="z"><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlelinkicon"'+styleactivebutton+' /></a>' );
             }
@@ -1040,6 +1039,10 @@ version 0.0.9.20210724.002500
 
         var a=link.getLatLngs();
         var b=polyline.getLatLngs();
+        // unwrap GeoJSON-style arrays
+        if ( b.length===1&&Array.isArray( b[ 0 ] ) ) {
+            b=b[ 0 ];
+        }
 
         for ( var i=0;i<b.length-1;++i ) {
             if ( self.greatCircleArcIntersect( a[ 0 ], a[ 1 ], b[ i ], b[ i+1 ] ) ) return true;
@@ -1111,10 +1114,10 @@ version 0.0.9.20210724.002500
 
         /*
         var crosslink = L.geodesicPolyline(link.getLatLngs(), {
-            color: '#d22',
+            color: '#393cec',
             opacity: 0.7,
             weight: 5,
-            clickable: false,
+            interactive: false,
             dashArray: [8,8],
 
             guid: link.options.guid
@@ -1127,7 +1130,7 @@ version 0.0.9.20210724.002500
         var stopCoord=new self.arc.Coord( latLngs[ 1 ].lng, latLngs[ 1 ].lat );
 
         var lineoptions={
-            color: '#d22',
+            color: '#ec393f',
             opacity: 0.7,
             weight: 5,
             // Leaflet 1.x uses 'interactive: false' so pointer events pass through
@@ -1135,7 +1138,7 @@ version 0.0.9.20210724.002500
             // use plugin config; GeoJSON/L.GeoJSON accepts either string "1,6" or numeric array
             dashArray: self.dashArray, // ( typeof self.dashArray==='string'? self.dashArray.split( ',' ).map( function( s ) { return s.trim(); } ):self.dashArray ),
             guid: link.options.guid
-        };
+        }
 
         var distance=self.distanceBetween( latLngs[ 0 ], latLngs[ 1 ] );
 
@@ -1489,7 +1492,7 @@ version 0.0.9.20210724.002500
         } );
 
         var html='<div class="quickdrawlinksdialog">'+
-            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="m">&lt Main menu</a>'+
             '</div><div>'+
             'Selected portal (<a href="#" onclick="'+self.namespace+'overviewConnected(); return false;">refresh</a>):<br />\n'+
             '<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a><br />\n'+
@@ -1509,7 +1512,8 @@ version 0.0.9.20210724.002500
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             title: self.title+' Overview',
-            width: 400
+            width: 400,
+            accesskey: ','
         } );
     };
 
@@ -1800,9 +1804,9 @@ version 0.0.9.20210724.002500
             var c=new L.LatLng( direct.lat, direct.lng );
             drawLink( b, c, {
                 color: self.settings.greatcirclecolor,
-                opacity: 0.9,
+                opacity: 0.6,
                 weight: 1,
-                clickable: false,
+                interactive: false,
                 smoothFactor: 1,
                 dashArray: null //[6, 4],
             }, layerGroup );
@@ -1905,7 +1909,7 @@ version 0.0.9.20210724.002500
             color: null,
             weight: 4,
             opacity: 0.5,
-            clickable: false,
+            interactive: false,
             fill: true,
             fillColor: self.settings.fieldcolor,
             fillOpacity: 0.2
@@ -2130,7 +2134,8 @@ version 0.0.9.20210724.002500
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             width: 350,
-            title: 'Edit Link ('+self.linklength()+')'
+            title: 'Edit Link ('+self.linklength()+')',
+            accesskey: '0'
         } );
 
         // need to initialise the 'spectrum' color picker
@@ -2649,7 +2654,8 @@ version 0.0.9.20210724.002500
             html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
-            title: 'Quick Draw Store/Restore Projects'
+            title: 'Quick Draw Store/Restore Projects',
+            accesskey: 'y'
         } );
     };
 
@@ -2706,7 +2712,8 @@ version 0.0.9.20210724.002500
                 html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
                 id: self.pluginname+'-dialog',
                 dialogClass: 'ui-dialog-quickdrawlinks',
-                title: self.title
+                title: self.title,
+                accesskey: 'y'
             } );
         }
 
@@ -3332,7 +3339,6 @@ version 0.0.9.20210724.002500
 
         $( 'head' ).append( '<style>.sp-container{position:absolute;top:0;left:0;display:inline-block;*display:inline;*zoom:1;z-index:9999994;overflow:hidden}.sp-container.sp-flat{position:relative}.sp-container,.sp-container *{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box}.sp-top{position:relative;width:100%;display:inline-block}.sp-top-inner{position:absolute;top:0;left:0;bottom:0;right:0}.sp-color{position:absolute;top:0;left:0;bottom:0;right:20%}.sp-hue{position:absolute;top:0;right:0;bottom:0;left:84%;height:100%}.sp-clear-enabled .sp-hue{top:33px;height:77.5%}.sp-fill{padding-top:80%}.sp-sat,.sp-val{position:absolute;top:0;left:0;right:0;bottom:0}.sp-alpha-enabled .sp-top{margin-bottom:18px}.sp-alpha-enabled .sp-alpha{display:block}.sp-alpha-handle{position:absolute;top:-4px;bottom:-4px;width:6px;left:50%;cursor:pointer;border:1px solid #000;background:#fff;opacity:.8}.sp-alpha{display:none;position:absolute;bottom:-14px;right:0;left:0;height:8px}.sp-alpha-inner{border:solid 1px #333}.sp-clear{display:none}.sp-clear.sp-clear-display{background-position:center}.sp-clear-enabled .sp-clear{display:block;position:absolute;top:0;right:0;bottom:0;left:84%;height:28px}.sp-container,.sp-replacer,.sp-preview,.sp-dragger,.sp-slider,.sp-alpha,.sp-clear,.sp-alpha-handle,.sp-container.sp-dragging .sp-input,.sp-container button{-webkit-user-select:none;-moz-user-select:-moz-none;-o-user-select:none;user-select:none}.sp-container.sp-input-disabled .sp-input-container{display:none}.sp-container.sp-buttons-disabled .sp-button-container{display:none}.sp-container.sp-palette-buttons-disabled .sp-palette-button-container{display:none}.sp-palette-only .sp-picker-container{display:none}.sp-palette-disabled .sp-palette-container{display:none}.sp-initial-disabled .sp-initial{display:none}.sp-sat{background-image:-webkit-gradient(linear,0 0,100% 0,from(#FFF),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(left,#FFF,rgba(204,154,129,0));background-image:-moz-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-o-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-ms-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:linear-gradient(to right,#fff,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(GradientType = 1, startColorstr=#FFFFFFFF, endColorstr=#00CC9A81)";filter:progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr=\'#FFFFFFFF\',endColorstr=\'#00CC9A81\')}.sp-val{background-image:-webkit-gradient(linear,0 100%,0 0,from(#000000),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(bottom,#000000,rgba(204,154,129,0));background-image:-moz-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-o-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-ms-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:linear-gradient(to top,#000,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr=#00CC9A81, endColorstr=#FF000000)";filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00CC9A81\',endColorstr=\'#FF000000\')}.sp-hue{background:-moz-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-ms-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-o-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:-webkit-gradient(linear,left top,left bottom,from(#ff0000),color-stop(.17,#ffff00),color-stop(.33,#00ff00),color-stop(.5,#00ffff),color-stop(.67,#0000ff),color-stop(.83,#ff00ff),to(#ff0000));background:-webkit-linear-gradient(top,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%);background:linear-gradient(to bottom,#ff0000 0%,#ffff00 17%,#00ff00 33%,#00ffff 50%,#0000ff 67%,#ff00ff 83%,#ff0000 100%)}.sp-1{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ff0000\',endColorstr=\'#ffff00\')}.sp-2{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ffff00\',endColorstr=\'#00ff00\')}.sp-3{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00ff00\',endColorstr=\'#00ffff\')}.sp-4{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#00ffff\',endColorstr=\'#0000ff\')}.sp-5{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#0000ff\',endColorstr=\'#ff00ff\')}.sp-6{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#ff00ff\',endColorstr=\'#ff0000\')}.sp-hidden{display:none!important}.sp-cf:before,.sp-cf:after{content:"";display:table}.sp-cf:after{clear:both}.sp-cf{*zoom:1}@media (max-device-width:480px){.sp-color{right:40%}.sp-hue{left:63%}.sp-fill{padding-top:60%}}.sp-dragger{border-radius:5px;height:5px;width:5px;border:1px solid #fff;background:#000;cursor:pointer;position:absolute;top:0;left:0}.sp-slider{position:absolute;top:0;cursor:pointer;height:3px;left:-1px;right:-1px;border:1px solid #000;background:#fff;opacity:.8}.sp-container{border-radius:0;background-color:#ECECEC;border:solid 1px #f0c49B;padding:0}.sp-container,.sp-container button,.sp-container input,.sp-color,.sp-hue,.sp-clear{font:normal 12px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box}.sp-top{margin-bottom:3px}.sp-color,.sp-hue,.sp-clear{border:solid 1px #666}.sp-input-container{float:right;width:100px;margin-bottom:4px}.sp-initial-disabled .sp-input-container{width:100%}.sp-input{font-size:12px!important;border:1px inset;padding:4px 5px;margin:0;width:100%;background:transparent;border-radius:3px;color:#222}.sp-input:focus{border:1px solid orange}.sp-input.sp-validation-error{border:1px solid red;background:#fdd}.sp-picker-container,.sp-palette-container{float:left;position:relative;padding:10px;padding-bottom:300px;margin-bottom:-290px}.sp-picker-container{width:172px;border-left:solid 1px #fff}.sp-palette-container{border-right:solid 1px #ccc}.sp-palette-only .sp-palette-container{border:0}.sp-palette .sp-thumb-el{display:block;position:relative;float:left;width:24px;height:15px;margin:3px;cursor:pointer;border:solid 2px transparent}.sp-palette .sp-thumb-el:hover,.sp-palette .sp-thumb-el.sp-thumb-active{border-color:orange}.sp-thumb-el{position:relative}.sp-initial{float:left;border:solid 1px #333}.sp-initial span{width:30px;height:25px;border:none;display:block;float:left;margin:0}.sp-initial .sp-clear-display{background-position:center}.sp-palette-button-container,.sp-button-container{float:right}.sp-replacer{margin:0;overflow:hidden;cursor:pointer;padding:4px;display:inline-block;*zoom:1;*display:inline;border:solid 1px #91765d;background:#eee;color:#333;vertical-align:middle}.sp-replacer:hover,.sp-replacer.sp-active{border-color:#F0C49B;color:#111}.sp-replacer.sp-disabled{cursor:default;border-color:silver;color:silver}.sp-dd{padding:2px 0;height:16px;line-height:16px;float:left;font-size:10px}.sp-preview{position:relative;width:25px;height:20px;border:solid 1px #222;margin-right:5px;float:left;z-index:0}.sp-palette{*width:220px;max-width:220px}.sp-palette .sp-thumb-el{width:16px;height:16px;margin:2px 1px;border:solid 1px #d0d0d0}.sp-container{padding-bottom:0}.sp-container button{background-color:#eee;background-image:-webkit-linear-gradient(top,#eeeeee,#cccccc);background-image:-moz-linear-gradient(top,#eeeeee,#cccccc);background-image:-ms-linear-gradient(top,#eeeeee,#cccccc);background-image:-o-linear-gradient(top,#eeeeee,#cccccc);background-image:linear-gradient(to bottom,#eeeeee,#cccccc);border:1px solid #ccc;border-bottom:1px solid #bbb;border-radius:3px;color:#333;font-size:14px;line-height:1;padding:5px 4px;text-align:center;text-shadow:0 1px 0 #eee;vertical-align:middle}.sp-container button:hover{background-color:#ddd;background-image:-webkit-linear-gradient(top,#dddddd,#bbbbbb);background-image:-moz-linear-gradient(top,#dddddd,#bbbbbb);background-image:-ms-linear-gradient(top,#dddddd,#bbbbbb);background-image:-o-linear-gradient(top,#dddddd,#bbbbbb);background-image:linear-gradient(to bottom,#dddddd,#bbbbbb);border:1px solid #bbb;border-bottom:1px solid #999;cursor:pointer;text-shadow:0 1px 0 #ddd}.sp-container button:active{border:1px solid #aaa;border-bottom:1px solid #888;-webkit-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-moz-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-ms-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;-o-box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee;box-shadow:inset 0 0 5px 2px #aaaaaa,0 1px 0 0 #eee}.sp-cancel{font-size:11px;color:#d93f3f!important;margin:0;padding:2px;margin-right:5px;vertical-align:middle;text-decoration:none}.sp-cancel:hover{color:#d93f3f!important;text-decoration:underline}.sp-palette span:hover,.sp-palette span.sp-thumb-active{border-color:#000}.sp-preview,.sp-alpha,.sp-thumb-el{position:relative;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==)}.sp-preview-inner,.sp-alpha-inner,.sp-thumb-inner{display:block;position:absolute;top:0;left:0;bottom:0;right:0}.sp-palette .sp-thumb-inner{background-position:50% 50%;background-repeat:no-repeat}.sp-palette .sp-thumb-light.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUeNpiYBhsgJFMffxAXABlN5JruT4Q3wfi/0DsT64h8UD8HmpIPCWG/KemIfOJCUB+Aoacx6EGBZyHBqI+WsDCwuQ9mhxeg2A210Ntfo8klk9sOMijaURm7yc1UP2RNCMbKE9ODK1HM6iegYLkfx8pligC9lCD7KmRof0ZhjQACDAAceovrtpVBRkAAAAASUVORK5CYII=)}.sp-palette .sp-thumb-dark.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAMdJREFUOE+tkgsNwzAMRMugEAahEAahEAZhEAqlEAZhEAohEAYh81X2dIm8fKpEspLGvudPOsUYpxE2BIJCroJmEW9qJ+MKaBFhEMNabSy9oIcIPwrB+afvAUFoK4H0tMaQ3XtlrggDhOVVMuT4E5MMG0FBbCEYzjYT7OxLEvIHQLY2zWwQ3D+9luyOQTfKDiFD3iUIfPk8VqrKjgAiSfGFPecrg6HN6m/iBcwiDAo7WiBeawa+Kwh7tZoSCGLMqwlSAzVDhoK+6vH4G0P5wdkAAAAASUVORK5CYII=)}.sp-clear-display{background-repeat:no-repeat;background-position:center;background-image:url(data:image/gif;base64,R0lGODlhFAAUAPcAAAAAAJmZmZ2dnZ6enqKioqOjo6SkpKWlpaampqenp6ioqKmpqaqqqqurq/Hx8fLy8vT09PX19ff39/j4+Pn5+fr6+vv7+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAUABQAAAihAP9FoPCvoMGDBy08+EdhQAIJCCMybCDAAYUEARBAlFiQQoMABQhKUJBxY0SPICEYHBnggEmDKAuoPMjS5cGYMxHW3IiT478JJA8M/CjTZ0GgLRekNGpwAsYABHIypcAgQMsITDtWJYBR6NSqMico9cqR6tKfY7GeBCuVwlipDNmefAtTrkSzB1RaIAoXodsABiZAEFB06gIBWC1mLVgBa0AAOw==)}</style>' );
     }; // end setupColorpickerSpectrum
-    
 
     self.setup=function() {
         if ( 'pluginloaded' in self ) {
@@ -3355,7 +3361,7 @@ version 0.0.9.20210724.002500
             weight: 4,
             opacity: 0.8,
             fill: false,
-            clickable: true
+            interactive: true
         };
 
         // START - Great Circles functionality
@@ -3422,24 +3428,25 @@ version 0.0.9.20210724.002500
             android.addPane( self.panename, self.title, "ic_action_share" );
             addHook( "paneChanged", self.onPaneChanged );
         } else {
-            const tb=$( '#toolbox' );
-            // — your “open menu” link —
-            tb.append(
-                '<a onclick="if(window.useAndroidPanes())window.show(\''+self.panename+'\');'+
-                'else '+self.namespace+'menu();return false;" href="#">'+self.title+'</a>'
-            );
-            // — your toggle‐links button —
-            tb.append(
-                '<a id="quickdrawlinks-toggle" '+
-                'onclick="window.plugin.quickdrawlinks.toggleLinks()" '+
-                'title="Toggle links">🔀</a>'
-            );
-            // — **the** dash‐pattern button —
-            tb.append(
-                '<a id="quickdrawlinks-dash" '+
-                'onclick="window.plugin.quickdrawlinks.setDashPattern()" '+
-                'title="Set dash pattern">quickdrawXlink-setDash</a>'
-            );
+            $( '#toolbox' ).append( '<a onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="," href="#">'+self.title+'</a>' );
+        //     const tb=$( '#toolbox' );
+        //     // — your “open menu” link —
+        //     tb.append(
+        //         '<a onclick="if(window.useAndroidPanes())window.show(\''+self.panename+'\');'+
+        //         'else '+self.namespace+'menu();return false;" href="#">'+self.title+'</a>'
+        //     );
+        //     // — your toggle‐links button —
+        //     tb.append(
+        //         '<a id="quickdrawlinks-toggle" '+
+        //         'onclick="window.plugin.quickdrawlinks.toggleLinks()" '+
+        //         'title="Toggle links">🔀</a>'
+        //     );
+        //     // — **the** dash‐pattern button —
+        //     tb.append(
+        //         '<a id="quickdrawlinks-dash" '+
+        //         'onclick="window.plugin.quickdrawlinks.setDashPattern()" '+
+        //         'title="Set dash pattern">quickdrawXlink-setDash</a>'
+        //     );
         }
 
         let titlebuttonwidth=23;

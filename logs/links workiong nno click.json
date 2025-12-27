@@ -1,0 +1,213 @@
+{
+  "title": "links workiong nno click",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1410,
+      "height": 662,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "https://intel.ingress.com/#close",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://intel.ingress.com/#close",
+          "title": "Ingress Intel Map"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 750.9960327148438,
+      "offsetX": 1515.9979858398438,
+      "duration": 522.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 602.9960327148438,
+      "offsetX": 1298.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[2]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 6.3853759765625,
+      "offsetX": 14.339599609375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 619.9960327148438,
+      "offsetX": 1510.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 624.9960327148438,
+      "offsetX": 1508.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 623.9960327148438,
+      "offsetX": 1503.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[3]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 13.3853759765625,
+      "offsetX": 15.339599609375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 625.9960327148438,
+      "offsetX": 1287.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[2]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 13.3853759765625,
+      "offsetX": 13.339599609375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 395.99603271484375,
+      "offsetX": 1543.9979858398438
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[3]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 14.3853759765625,
+      "offsetX": 9.339599609375
+    }
+  ]
+}

@@ -1041,6 +1041,7 @@ version 0.0.9.20210724.002500
     self.onMapDataRefreshEnd=function() {
         if ( !self.crosslinklayerdisabled ) {
             self.crosslinkLayer.bringToFront();
+            self.portal.bringToFront();
             self.testForDeletedLinks();
         }
 

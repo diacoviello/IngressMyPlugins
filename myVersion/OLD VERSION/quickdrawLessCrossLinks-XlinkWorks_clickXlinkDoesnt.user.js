@@ -1,12 +1,12 @@
 // ==UserScript==
-// @author         DanielOnDiordna
-// @name           Diablo_quick-draw-links-dash_min.user
-// @category       Diablo
+// @author         DiabloEnMusica
+// @name           QuickDrawLinksMINxKeys
+// @category       Layer
 // @version        0.0.9.20210724.002500
-// @updateURL      https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.meta.js
-// @downloadURL    https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.user.js
-// @description    [danielondiordna-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
-// @id             quick-draw-links@DanielOnDiordna
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
+// @description    [diabloenmusica-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
+// @id             quick-draw-links@DiabloEnMusica
 // @namespace      https://softspot.nl/ingress/
 // @match          https://intel.ingress.com/*
 // @grant          none
@@ -100,7 +100,7 @@ version 0.0.9.20210724.002500
     self.movelinksposition=undefined;
     self.copylinksposition=undefined;
     self.linkstyle=[
-        '10,5,5,5,5,5,5,5,100%'
+        '12,4,4,4,4,4,4,4,100%',
     ];
     self.crosslinklayerdisabled=false;
     self.highlightlinkoptions={
@@ -324,7 +324,7 @@ version 0.0.9.20210724.002500
                     weight: 4,
                     opacity: 0.8,
                     fill: false,
-                    clickable: true
+                    interactive: true
                 };
         
                 var lineoptions = self.lineOptions;
@@ -1002,7 +1002,7 @@ version 0.0.9.20210724.002500
             color: '#393cec',
             opacity: 0.7,
             weight: 5,
-            clickable: false,
+            interactive: false,
             dashArray: [8,8],
 
             guid: link.options.guid
@@ -1018,7 +1018,7 @@ version 0.0.9.20210724.002500
             color: '#ec393f',
             opacity: 0.7,
             weight: 5,
-            clickable: true,
+            interactive: true,
             dashArray: [ 8, 8 ],
 
             guid: link.options.guid
@@ -1683,7 +1683,7 @@ version 0.0.9.20210724.002500
                 color: self.settings.greatcirclecolor,
                 opacity: 0.6,
                 weight: 1,
-                clickable: false,
+                interactive: false,
                 smoothFactor: 1,
                 dashArray: null //[6, 4],
             }, layerGroup );
@@ -1786,7 +1786,7 @@ version 0.0.9.20210724.002500
             color: null,
             weight: 4,
             opacity: 0.5,
-            clickable: false,
+            interactive: false,
             fill: true,
             fillColor: self.settings.fieldcolor,
             fillOpacity: 0.2
@@ -3238,7 +3238,7 @@ version 0.0.9.20210724.002500
             weight: 4,
             opacity: 0.8,
             fill: false,
-            clickable: true
+            interactive: true
         };
 
         // START - Great Circles functionality

@@ -1,0 +1,379 @@
+{
+  "title": "links",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1410,
+      "height": 662,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "https://intel.ingress.com/#close",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://intel.ingress.com/#close",
+          "title": "Ingress Intel Map"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 830.0009155273438,
+      "offsetX": 1561.0009765625,
+      "duration": 135527.70000004768
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/< Main menu"
+        ],
+        [
+          "a.quickdrawlinksdialog"
+        ],
+        [
+          "xpath///*[@id=\"dialog-plugin-quickdrawlinks-dialog\"]/div[1]/a[1]"
+        ],
+        [
+          "pierce/a.quickdrawlinksdialog"
+        ],
+        [
+          "text/< Main menu"
+        ]
+      ],
+      "offsetY": 9.977081298828125,
+      "offsetX": 239.64227294921875,
+      "duration": 137141
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/OK"
+        ],
+        [
+          "div.ui-dialog-buttonpane button"
+        ],
+        [
+          "xpath//html/body/div[16]/div[3]/div/button"
+        ],
+        [
+          "pierce/div.ui-dialog-buttonpane button"
+        ],
+        [
+          "text/OK"
+        ]
+      ],
+      "offsetY": 8.47711181640625,
+      "offsetX": 13.504638671875,
+      "duration": 138618.29999995232
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 831.0009155273438,
+      "offsetX": 1573.0009765625,
+      "duration": 139588.40000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 835.0009155273438,
+      "offsetX": 1570.0009765625,
+      "duration": 140428
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "div:nth-of-type(3) > a > img"
+        ],
+        [
+          "xpath///*[@id=\"dialog-plugin-quickdrawlinks-dialog\"]/div[1]/div[1]/div/div[3]/a/img"
+        ],
+        [
+          "pierce/div:nth-of-type(3) > a > img"
+        ]
+      ],
+      "offsetY": 6.9266357421875,
+      "offsetX": 9.97027587890625,
+      "duration": 141453.09999990463
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "#confirmlinkdelete > a:nth-of-type(1) > img"
+        ],
+        [
+          "xpath///*[@id=\"confirmlinkdelete\"]/a[1]/img"
+        ],
+        [
+          "pierce/#confirmlinkdelete > a:nth-of-type(1) > img"
+        ]
+      ],
+      "offsetY": 11.9266357421875,
+      "offsetX": 20.67205810546875,
+      "duration": 141899.09999990463
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 828.0009155273438,
+      "offsetX": 1554.0009765625,
+      "duration": 143259
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 824.0009155273438,
+      "offsetX": 1554.0009765625,
+      "duration": 143824.90000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "div:nth-of-type(3) > a > img"
+        ],
+        [
+          "xpath///*[@id=\"dialog-plugin-quickdrawlinks-dialog\"]/div[1]/div[1]/div/div[3]/a/img"
+        ],
+        [
+          "pierce/div:nth-of-type(3) > a > img"
+        ]
+      ],
+      "offsetY": 13.9266357421875,
+      "offsetX": 3.97027587890625,
+      "duration": 144763.29999995232
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "#confirmlinkdelete > a:nth-of-type(1) > img"
+        ],
+        [
+          "xpath///*[@id=\"confirmlinkdelete\"]/a[1]/img"
+        ],
+        [
+          "pierce/#confirmlinkdelete > a:nth-of-type(1) > img"
+        ]
+      ],
+      "offsetY": 13.9266357421875,
+      "offsetX": 6.67205810546875,
+      "duration": 145533.79999995232
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 828.0009155273438,
+      "offsetX": 1484.0009765625,
+      "duration": 147442.40000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[2]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 9.3853759765625,
+      "offsetX": 10.339599609375,
+      "duration": 148914.70000004768
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 892.0009155273438,
+      "offsetX": 1663.0009765625,
+      "duration": 150806.40000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[3]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 8.3853759765625,
+      "offsetX": 3.339599609375,
+      "duration": 152034.90000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 878.0009155273438,
+      "offsetX": 1733.0009765625,
+      "duration": 153453.40000009537
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[2]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 13.3853759765625,
+      "offsetX": 12.339599609375,
+      "duration": 154728.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "canvas"
+        ],
+        [
+          "xpath///*[@id=\"map\"]/div[1]/div[2]/canvas"
+        ],
+        [
+          "pierce/canvas"
+        ]
+      ],
+      "offsetY": 861.0009155273438,
+      "offsetX": 1458.0009765625,
+      "duration": 156175.09999990463
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "a.screenbuttonstar > span"
+        ],
+        [
+          "xpath///*[@id=\"updatestatus\"]/a[3]/span"
+        ],
+        [
+          "pierce/a.screenbuttonstar > span"
+        ]
+      ],
+      "offsetY": 14.3853759765625,
+      "offsetX": 12.339599609375,
+      "duration": 157648.79999995232
+    }
+  ]
+}

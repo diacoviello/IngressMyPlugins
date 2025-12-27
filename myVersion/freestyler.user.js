@@ -72,7 +72,7 @@ version 1.0.0.20211103.230600
 
     // ─── STAR-SIZE STORAGE & APPLY ─────────────────────────────────────────────
     self.starSizeKey='plugin-bookmarks-starSize';
-    self.starSize=parseInt( localStorage.getItem( self.starSizeKey )||16, 10 );
+    self.starSize=parseInt( localStorage.getItem( self.starSizeKey )||23, 12 );
 
     // applyStarSize(): updates every star’s CSS and re-saves
     self.applyStarSize=function( sz ) {
@@ -618,8 +618,8 @@ You can also export (to clipboard), share and import (paste) your settings.</p>
         var sizeInput=inputCell.appendChild( document.createElement( 'input' ) );
         sizeInput.type='number';
         sizeInput.value=self.starSize;
-        sizeInput.min=8;
-        sizeInput.max=32;
+        sizeInput.min=12;
+        sizeInput.max=42;
         sizeInput.style.width='60px';
         sizeInput.style.height='40px';
         sizeInput.id='numberInput';

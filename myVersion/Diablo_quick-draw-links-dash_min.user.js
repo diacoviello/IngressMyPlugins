@@ -1,7 +1,7 @@
 // ==UserScript==
 // @author         DanielOnDiordna
 // @name           Diablo_quick-draw-links-dash_min.user
-// @category       Diablo
+// @category       TESTING
 // @version        0.0.9.20210724.002500
 // @updateURL      https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.meta.js
 // @downloadURL    https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.user.js
@@ -88,7 +88,7 @@ version 0.0.9.20210724.002500
     self.isSmartphone=null;
     self.settings={};
     self.settings.hidebuttons=false;
-    self.settings.drawcolor='#b8b50bff';
+    self.settings.drawcolor='#9c009c';
     self.settings.greatcirclecolor='#9c009c';
     self.settings.fieldcolor='#fff069';
     self.settings.crosslinkbookmarkcolor='#ec393f';
@@ -257,7 +257,7 @@ version 0.0.9.20210724.002500
                 }
             }
         } );
-        //console.log('link exists: ' + linkexists);
+        // console.log('link exists: ' + linkexists);
         return linkexists;
     };
 
@@ -351,6 +351,7 @@ version 0.0.9.20210724.002500
         link.getLatLngs=function() {
             return [ L.latLng( latLngs[ 0 ] ), L.latLng( latLngs[ 1 ] ) ];
         };
+        console.log( "getLatLngs: "+JSON.stringify( link.getLatLngs() ) );
         link.options=L.extend( {}, myStyle );
 
         link.on( 'click', function( e ) { self.linkmenu( link ); } );
@@ -689,6 +690,8 @@ version 0.0.9.20210724.002500
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var outcount=0;
+
+
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -702,7 +705,10 @@ version 0.0.9.20210724.002500
                     outcount++;
                 }
             }
+            console.log( "out drawlayer: "+( self.drawnItems ) );
+
         } );
+
         alert( 'Total Drawn Links connected to portal: '+( swapcount+outcount )+"\n"+'links changed to outgoing: '+swapcount );
     };
 
@@ -711,6 +717,10 @@ version 0.0.9.20210724.002500
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var incount=0;
+
+        console.log( " in drawlayer: "+JSON.stringify( drawlayer ) );
+
+        // console.log( "setallincoming() drawlayer: "+drawlayer );
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -726,6 +736,53 @@ version 0.0.9.20210724.002500
             }
         } );
         alert( 'Total Drawn Links connected to portal: '+( swapcount+incount )+"\n"+'links changed to incoming: '+swapcount );
+    };
+
+    self.setallcolors=function( position ) {
+        // position optional: if provided, only collect colors for links connected to that portal position
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return { list: [], counts: {}, unique: [] };
+
+        var list=[];
+        var counts={};
+
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            // only consider GeoJSON links with exactly 2 endpoints
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+            const latLngs=layer.getLatLngs();
+            if ( !Array.isArray( latLngs ) ) continue;
+            // Arc-based geojson may return nested arrays for multipart lines; handle common case of [LatLng, LatLng]
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+
+            // optional filter by portal position
+            if ( position ) {
+                const p=position;
+                if ( !( ( p.lat===endpoints[ 0 ].lat&&p.lng===endpoints[ 0 ].lng )||( p.lat===endpoints[ 1 ].lat&&p.lng===endpoints[ 1 ].lng ) ) ) {
+                    continue;
+                }
+                console.log( position );
+            }
+
+            // safest access to color
+            const color=( layer.options&&( layer.options.color||( layer.options.style&&layer.options.style.color ) ) )||null;
+
+            // plain serializable lat/lng objects
+            const a={ lat: endpoints[ 0 ].lat, lng: endpoints[ 0 ].lng };
+            const b={ lat: endpoints[ 1 ].lat, lng: endpoints[ 1 ].lng };
+
+            list.push( { id: id, latLngs: [ a, b ], color: color } );
+            if ( color ) counts[ color ]=( counts[ color ]||0 )+1;
+        }
+
+        const unique=Object.keys( counts );
+
+        console.log( 'setallcolors: collected', list.length, 'links; unique colors:', unique, counts );
+        return { list: list, counts: counts, unique: unique };
     };
 
     self.linkcount=function( position ) {
@@ -753,11 +810,14 @@ version 0.0.9.20210724.002500
                 item.latLngs=layer.getLatLngs();
                 item.color=layer.options.color;
                 data.push( item );
+                console.log( 'storelinks: item=', item );
             }
+            console.log( "self.drawnItems.eachLayer(item={item.color}): "+item.color );
         } );
 
+        console.log( "layer data: "+JSON.stringify( data ) );
         localStorage[ self.localstoragelayer ]=JSON.stringify( data );
-
+        console.log( "self.storetitles()= "+JSON.stringify( data ) );
         self.storetitles();
     };
 
@@ -1414,6 +1474,45 @@ version 0.0.9.20210724.002500
         self.storesettings();
     };
 
+    self.setAllDrawColors=function( color ) {
+        // keep settings in sync & persist
+        self.settings.options=self.settings.options||{};
+        self.settings.options.color=color;
+        self.settings.drawcolor=color;
+        self.storesettings();
+
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return;
+
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            // only consider GeoJSON links with exactly 2 endpoints
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+
+            // handle nested arc coordinates
+            const latLngs=layer.getLatLngs();
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+
+            // try to apply style safely
+            try {
+                if ( typeof layer.setStyle==='function' ) layer.setStyle( { color: color } );
+            } catch ( e ) { /* ignore layers that don't support setStyle */ }
+
+            // ensure options.color is set so storage/export works
+            layer.options=layer.options||{};
+            layer.options.color=color;
+        }
+
+        // persist and refresh derived layers
+        self.storelinks();
+        self.updategreatcircleslayer();
+        self.updatefieldslayer();
+    };
+
     self.closedialog=function() {
         $( ".ui-dialog-content" ).dialog( "close" );
     };
@@ -1430,6 +1529,35 @@ version 0.0.9.20210724.002500
         self.selectedlink.setStyle( { color: color } );
         self.selectedlink.options.color=color; // added for L.geoJson compatibility
         self.storelinks();
+    };
+
+    // change color for all drawn links
+    self.setAllLinksColor=function( color ) {
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return;
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+            // handle only simple two-point drawn links
+            const latLngs=layer.getLatLngs();
+            // unwrap nested arrays like arc lines
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+            try {
+                layer.setStyle( { color: color } );
+            } catch ( e ) {
+                // some layer types may not support setStyle; ignore
+            }
+            // ensure options.color used when storing/exporting
+            layer.options.color=color;
+        }
+        // persist and refresh derived layers
+        self.storelinks();
+        self.updategreatcircleslayer();
+        self.updatefieldslayer();
     };
 
     self.updateAllLinkStyle=function() {
@@ -2037,6 +2165,30 @@ version 0.0.9.20210724.002500
             change: function( color ) { self.setSelectedLinkColor( color.toHexString() ); },
             color: self.selectedlink.options.color,
         } );
+
+        // all-links color picker
+        $( '#quickdrawlinks_alllinks_color' ).spectrum( {
+            flat: false,
+            showInput: true,
+            showButtons: true,
+            showPalette: true,
+            showSelectionPalette: true,
+            allowEmpty: false,
+            palette: [
+                [ '#004000', '#008000', '#00C000' ],
+                [ '#00FF00', '#80FF80', '#C0FFC0' ],
+                [ '#000040', '#000080', '#0000C0' ],
+                [ '#4040FF', '#8080FF', '#C0C0FF' ],
+                [ '#6A3400', '#964A00', '#C05F00' ],
+                [ '#E27000', '#FF8309', '#FFC287' ],
+                [ '#a24ac3', '#514ac3', '#4aa8c3', '#51c34a' ],
+                [ '#c1c34a', '#c38a4a', '#c34a4a', '#c34a6f' ],
+                [ '#000000', '#666666', '#bbbbbb', '#ffffff' ]
+            ],
+            change: function( color ) { self.setAllLinksColor( color.toHexString() ); },
+            color: self.settings.drawcolor
+        } );
+
     };
 
     self.createURL=function() {
@@ -2558,7 +2710,7 @@ version 0.0.9.20210724.002500
 
     self.menu=function() {
         var html='<div class="quickdrawlinksdialog">'+
-            '<input type="text" id="quickdrawlinks_color"></input> Links <input type="text" id="greatcircle_color"></input> Great circles<br /><input type="text" id="field_color"></input> Fields <input type="checkbox" onclick="'+self.namespace+'settings.fieldexistinglinks = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'updatefieldslayer()" id="fieldexistinglinks"'+( self.settings.fieldexistinglinks? ' checked':'' )+'><label for="fieldexistinglinks">include existing links</label><br />'+
+            '<input type="text" id="quickdrawlinks_color"></input> Links <input type="text" id="greatcircle_color"></input> Great circles<br /><input type="text" id="field_color"></input> Fields <input type="text" id="quickdrawlinks_alllinks_color"></input> All Links Color <br /><input type="checkbox" onclick="'+self.namespace+'settings.fieldexistinglinks = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'updatefieldslayer()" id="fieldexistinglinks"'+( self.settings.fieldexistinglinks? ' checked':'' )+'><label for="fieldexistinglinks">include existing links</label><br />'+
             '<input type="checkbox" onclick="'+self.namespace+'settings.hidebuttons = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'onPortalSelected();" id="hidebuttons"'+( self.settings.hidebuttons? ' checked':'' )+'><label for="hidebuttons">Hide onscreen buttons</label><br />\n'+
             '<a href="#" onclick="'+self.namespace+'showAll(); return false;">Zoom to view all drawn links</a>'+
             '<a href="#" onclick="if ('+self.namespace+'linkcount() === 0) { alert(\'No drawn links\'); return false; } '+self.namespace+'linkmenu(); return false;">Show link menu...</a>'+
@@ -2625,6 +2777,10 @@ version 0.0.9.20210724.002500
         $( '#field_color' ).spectrum( $.extend( true, spectrumoptions, {
             change: function( color ) { self.settings.fieldcolor=color.toHexString(); self.storesettings(); self.updatefieldslayer(); },
             color: self.settings.fieldcolor,
+        } ) );
+        $( '#quickdrawlinks_alllinks_color' ).spectrum( $.extend( true, spectrumoptions, {
+            change: function( color ) { self.setAllDrawColors( color.toHexString() ); },
+            color: self.settings.drawcolor,
         } ) );
     };
 

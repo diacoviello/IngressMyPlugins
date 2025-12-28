@@ -329,7 +329,7 @@ version 1.0.0.20251228.002300
 								weight: 4,
 								opacity: 0.8,
 								fill: false,
-								clickable: true
+								interactable: true
 						};
 	  
 						var lineoptions = self.lineOptions;
@@ -1095,7 +1095,7 @@ version 1.0.0.20251228.002300
 				color: '#393cec',
 				opacity: 0.7,
 				weight: 5,
-				clickable: false,
+				interactable: false,
 				dashArray: [8,8],
 
 				guid: link.options.guid
@@ -1111,7 +1111,7 @@ version 1.0.0.20251228.002300
 			color: '#ec393f',
 			opacity: 0.7,
 			weight: 5,
-			clickable: true,
+			interactable: true,
 			dashArray: [ 8, 8 ],
 
 			guid: link.options.guid
@@ -1878,7 +1878,7 @@ version 1.0.0.20251228.002300
 				color: self.settings.greatcirclecolor,
 				opacity: 0.6,
 				weight: 1,
-				clickable: false,
+				interactable: false,
 				smoothFactor: 1,
 				dashArray: null //[6, 4],
 			}, layerGroup );
@@ -1981,7 +1981,7 @@ version 1.0.0.20251228.002300
 			color: null,
 			weight: 4,
 			opacity: 0.5,
-			clickable: false,
+			interactable: false,
 			fill: true,
 			fillColor: self.settings.fieldcolor,
 			fillOpacity: 0.2
@@ -3461,7 +3461,7 @@ version 1.0.0.20251228.002300
 			weight: 4,
 			opacity: 0.8,
 			fill: false,
-			clickable: true
+			interactable: true
 		};
 
 		// START - Great Circles functionality

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @author         DiabloEnMusica
-// @name           QuickDrawLinksMINxKeys
+// @name           QuickDrawLinx-mincross_changeAll
 // @category       Layer
 // @version        0.0.9.20210724.002500
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
@@ -67,6 +67,11 @@ version 0.0.9.20210421.190200
 
 version 0.0.9.20210724.002500
 - prevent double plugin setup on hook iitcLoaded
+
+version 1.0.0.20251228.002300
+- Fixed cross links not appearing
+- created ability to set all links to one color from anchor
+- checks for all cross links and bookmarks least portals needed to clear path
 `;
     self.namespace='window.plugin.'+self.id+'.';
     self.pluginname='plugin-'+self.id;
@@ -88,7 +93,7 @@ version 0.0.9.20210724.002500
     self.isSmartphone=null;
     self.settings={};
     self.settings.hidebuttons=false;
-    self.settings.drawcolor='#b8b50bff';
+	self.settings.drawcolor='#9c009c';
     self.settings.greatcirclecolor='#9c009c';
     self.settings.fieldcolor='#fff069';
     self.settings.crosslinkbookmarkcolor='#ec393f';
@@ -100,7 +105,7 @@ version 0.0.9.20210724.002500
     self.movelinksposition=undefined;
     self.copylinksposition=undefined;
     self.linkstyle=[
-        '12,4,4,4,4,4,4,4,100%',
+		'10,5,5,5,5,5,5,5,100%'
     ];
     self.crosslinklayerdisabled=false;
     self.highlightlinkoptions={
@@ -257,7 +262,7 @@ version 0.0.9.20210724.002500
                 }
             }
         } );
-        //console.log('link exists: ' + linkexists);
+		// console.log('link exists: ' + linkexists);
         return linkexists;
     };
 
@@ -351,6 +356,7 @@ version 0.0.9.20210724.002500
         link.getLatLngs=function() {
             return [ L.latLng( latLngs[ 0 ] ), L.latLng( latLngs[ 1 ] ) ];
         };
+		// console.log( "getLatLngs: "+JSON.stringify( link.getLatLngs() ) );
         link.options=L.extend( {}, myStyle );
 
         link.on( 'click', function( e ) { self.linkmenu( link ); } );
@@ -362,6 +368,8 @@ version 0.0.9.20210724.002500
 
         // we can just test the new layer in this case
         self.testAllLinksAgainstLayer( link );
+		self.testDrawnLinksAgainstLayer( link );
+
         return link;
     };
 
@@ -689,6 +697,7 @@ version 0.0.9.20210724.002500
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var outcount=0;
+
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -702,7 +711,10 @@ version 0.0.9.20210724.002500
                     outcount++;
                 }
             }
+			// console.log( "out drawlayer: "+( self.drawnItems ) );
+
         } );
+
         alert( 'Total Drawn Links connected to portal: '+( swapcount+outcount )+"\n"+'links changed to outgoing: '+swapcount );
     };
 
@@ -711,6 +723,10 @@ version 0.0.9.20210724.002500
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var incount=0;
+
+		// console.log( " in drawlayer: "+JSON.stringify( drawlayer ) );
+
+		// console.log( "setallincoming() drawlayer: "+drawlayer );
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -727,6 +743,53 @@ version 0.0.9.20210724.002500
         } );
         alert( 'Total Drawn Links connected to portal: '+( swapcount+incount )+"\n"+'links changed to incoming: '+swapcount );
     };
+
+	self.setallcolors=function( position ) {
+		// position optional: if provided, only collect colors for links connected to that portal position
+		var drawlayer=self.getDrawlayer();
+		if ( !drawlayer ) return { list: [], counts: {}, unique: [] };
+
+		var list=[];
+		var counts={};
+
+		// iterate internal _layers for speed and to keep original order/ids
+		for ( const id in drawlayer._layers ) {
+			const layer=drawlayer._layers[ id ];
+			if ( !layer ) continue;
+			// only consider GeoJSON links with exactly 2 endpoints
+			if ( !( layer instanceof L.GeoJSON ) ) continue;
+			const latLngs=layer.getLatLngs();
+			if ( !Array.isArray( latLngs ) ) continue;
+			// Arc-based geojson may return nested arrays for multipart lines; handle common case of [LatLng, LatLng]
+			let endpoints=latLngs;
+			if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+			if ( endpoints.length!==2 ) continue;
+
+			// optional filter by portal position
+			if ( position ) {
+				const p=position;
+				if ( !( ( p.lat===endpoints[ 0 ].lat&&p.lng===endpoints[ 0 ].lng )||( p.lat===endpoints[ 1 ].lat&&p.lng===endpoints[ 1 ].lng ) ) ) {
+					continue;
+				}
+				console.log( position );
+			}
+
+			// safest access to color
+			const color=( layer.options&&( layer.options.color||( layer.options.style&&layer.options.style.color ) ) )||null;
+
+			// plain serializable lat/lng objects
+			const a={ lat: endpoints[ 0 ].lat, lng: endpoints[ 0 ].lng };
+			const b={ lat: endpoints[ 1 ].lat, lng: endpoints[ 1 ].lng };
+
+			list.push( { id: id, latLngs: [ a, b ], color: color } );
+			if ( color ) counts[ color ]=( counts[ color ]||0 )+1;
+		}
+
+		const unique=Object.keys( counts );
+
+		console.log( 'setallcolors: collected', list.length, 'links; unique colors:', unique, counts );
+		return { list: list, counts: counts, unique: unique };
+	};
 
     self.linkcount=function( position ) {
         var drawlayer=self.getDrawlayer();
@@ -753,11 +816,14 @@ version 0.0.9.20210724.002500
                 item.latLngs=layer.getLatLngs();
                 item.color=layer.options.color;
                 data.push( item );
+				// console.log( 'storelinks: item=', item );
             }
+			// console.log( "self.drawnItems.eachLayer(item={item.color}): "+item.color );
         } );
 
+		// console.log( "layer data: "+JSON.stringify( data ) );
         localStorage[ self.localstoragelayer ]=JSON.stringify( data );
-
+		// console.log( "self.storetitles()= "+JSON.stringify( data ) );
         self.storetitles();
     };
 
@@ -955,6 +1021,31 @@ version 0.0.9.20210724.002500
         $.each( window.links, function( guid, link ) {
             self.testLinkAndDrawCrosslinks( link );
         } );
+
+    // also test drawn links against other drawn links (so drawn-drawn intersections are found)
+    var drawlayer=self.getDrawlayer();
+    if ( drawlayer ) {
+        for ( var id in drawlayer._layers ) {
+            if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
+            var layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            // only test line-like layers
+            if ( !( layer instanceof L.GeoJSON )&&!( layer instanceof L.GeodesicPolyline )&&!( layer instanceof L.GeodesicPolygon ) ) continue;
+
+            // ensure a guid exists so drawCrossLink can index results without collision
+            layer.options=layer.options||{};
+            if ( !layer.options.guid ) layer.options.guid='drawn-'+( Math.random().toString( 36 ).slice( 2 ) );
+
+            try {
+                console.log(self.id+': testing drawn layer', id, 'guid=', layer.options.guid, 'latLngs=', layer.getLatLngs && JSON.stringify(layer.getLatLngs()) );
+                self.testDrawnLinksAgainstLayer( layer );
+            } catch ( e ) {
+                console.warn( self.id+': error testing drawn vs drawn for layer', id, e );
+            }
+        }
+    }
+
+    console.log(self.id+': checkAllLinksForCrosslinks done: crosslinks=', Object.keys(self.crosslinkLayerGuids||{}).length );
     };
 
     self.testLinkAndDrawCrosslinks=function( link ) {
@@ -1018,7 +1109,7 @@ version 0.0.9.20210724.002500
             color: '#ec393f',
             opacity: 0.7,
             weight: 5,
-            interactive: true,
+			clickable: true,
             dashArray: [ 8, 8 ],
 
             guid: link.options.guid
@@ -1108,6 +1199,40 @@ version 0.0.9.20210724.002500
         if ( crosslinkfound ) {
             if ( self.settings.showcrosslinks===1||self.settings.showcrosslinks===2 ) { // 0 = Links, 1 = Drawn, 2 = Both
                 self.drawCrossLink( layer );
+			}
+		}
+	};
+
+	// new: test the newly added drawn link against other drawn links and draw crosslinks when they intersect
+	self.testDrawnLinksAgainstLayer=function( layer ) {
+				if ( self.crosslinklayerdisabled ) return;
+				if ( !layer ) return;
+				var drawlayer=self.getDrawlayer();
+				if ( !drawlayer ) return;
+
+					for ( var id in drawlayer._layers ) {
+								if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
+								var other=drawlayer._layers[ id ];
+								if ( !other||other===layer ) continue;
+								// only consider line-like drawn items
+									if ( !( other instanceof L.GeoJSON ) ) continue;
+		
+									// test both directions using existing testPolyLine helper
+									var crosses=false;
+								try {
+											if ( self.testPolyLine( other, layer ) ) crosses=true;
+											else if ( self.testPolyLine( layer, other ) ) crosses=true;
+									} catch ( e ) { /* ignore any unexpected geometry */ }
+		
+									if ( crosses ) {
+												// settings.showcrosslinks: 0 = Links, 1 = Drawn, 2 = Both
+													if ( self.settings.showcrosslinks===0 ) {
+																// don't show crosslinks for drawn-drawn intersections
+																	continue;
+														}
+												// draw crosslink markers for both drawn layers (drawCrossLink guards duplicates)
+													try { self.drawCrossLink( other ); } catch ( e ) { }
+												try { self.drawCrossLink( layer ); } catch ( e ) { }
             }
         }
     };
@@ -1414,6 +1539,45 @@ version 0.0.9.20210724.002500
         self.storesettings();
     };
 
+	self.setAllDrawColors=function( color ) {
+		// keep settings in sync & persist
+		self.settings.options=self.settings.options||{};
+		self.settings.options.color=color;
+		self.settings.drawcolor=color;
+		self.storesettings();
+
+		var drawlayer=self.getDrawlayer();
+		if ( !drawlayer ) return;
+
+		// iterate internal _layers for speed and to keep original order/ids
+		for ( const id in drawlayer._layers ) {
+			const layer=drawlayer._layers[ id ];
+			if ( !layer ) continue;
+			// only consider GeoJSON links with exactly 2 endpoints
+			if ( !( layer instanceof L.GeoJSON ) ) continue;
+
+			// handle nested arc coordinates
+			const latLngs=layer.getLatLngs();
+			let endpoints=latLngs;
+			if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+			if ( endpoints.length!==2 ) continue;
+
+			// try to apply style safely
+			try {
+				if ( typeof layer.setStyle==='function' ) layer.setStyle( { color: color } );
+			} catch ( e ) { /* ignore layers that don't support setStyle */ }
+
+			// ensure options.color is set so storage/export works
+			layer.options=layer.options||{};
+			layer.options.color=color;
+		}
+
+		// persist and refresh derived layers
+		self.storelinks();
+		self.updategreatcircleslayer();
+		self.updatefieldslayer();
+	};
+
     self.closedialog=function() {
         $( ".ui-dialog-content" ).dialog( "close" );
     };
@@ -1431,6 +1595,35 @@ version 0.0.9.20210724.002500
         self.selectedlink.options.color=color; // added for L.geoJson compatibility
         self.storelinks();
     };
+
+	// change color for all drawn links
+	self.setAllLinksColor=function( color ) {
+		var drawlayer=self.getDrawlayer();
+		if ( !drawlayer ) return;
+		// iterate internal _layers for speed and to keep original order/ids
+		for ( const id in drawlayer._layers ) {
+			const layer=drawlayer._layers[ id ];
+			if ( !layer ) continue;
+			if ( !( layer instanceof L.GeoJSON ) ) continue;
+			// handle only simple two-point drawn links
+			const latLngs=layer.getLatLngs();
+			// unwrap nested arrays like arc lines
+			let endpoints=latLngs;
+			if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+			if ( endpoints.length!==2 ) continue;
+			try {
+				layer.setStyle( { color: color } );
+			} catch ( e ) {
+				// some layer types may not support setStyle; ignore
+			}
+			// ensure options.color used when storing/exporting
+			layer.options.color=color;
+		}
+		// persist and refresh derived layers
+		self.storelinks();
+		self.updategreatcircleslayer();
+		self.updatefieldslayer();
+	};
 
     self.updateAllLinkStyle=function() {
         var drawlayer=self.getDrawlayer();
@@ -1683,7 +1876,7 @@ version 0.0.9.20210724.002500
                 color: self.settings.greatcirclecolor,
                 opacity: 0.6,
                 weight: 1,
-                interactive: false,
+				clickable: false,
                 smoothFactor: 1,
                 dashArray: null //[6, 4],
             }, layerGroup );
@@ -1786,7 +1979,7 @@ version 0.0.9.20210724.002500
             color: null,
             weight: 4,
             opacity: 0.5,
-            interactive: false,
+			clickable: false,
             fill: true,
             fillColor: self.settings.fieldcolor,
             fillOpacity: 0.2
@@ -2037,6 +2230,30 @@ version 0.0.9.20210724.002500
             change: function( color ) { self.setSelectedLinkColor( color.toHexString() ); },
             color: self.selectedlink.options.color,
         } );
+
+		// all-links color picker
+		$( '#quickdrawlinks_alllinks_color' ).spectrum( {
+			flat: false,
+			showInput: true,
+			showButtons: true,
+			showPalette: true,
+			showSelectionPalette: true,
+			allowEmpty: false,
+			palette: [
+				[ '#004000', '#008000', '#00C000' ],
+				[ '#00FF00', '#80FF80', '#C0FFC0' ],
+				[ '#000040', '#000080', '#0000C0' ],
+				[ '#4040FF', '#8080FF', '#C0C0FF' ],
+				[ '#6A3400', '#964A00', '#C05F00' ],
+				[ '#E27000', '#FF8309', '#FFC287' ],
+				[ '#a24ac3', '#514ac3', '#4aa8c3', '#51c34a' ],
+				[ '#c1c34a', '#c38a4a', '#c34a4a', '#c34a6f' ],
+				[ '#000000', '#666666', '#bbbbbb', '#ffffff' ]
+			],
+			change: function( color ) { self.setAllLinksColor( color.toHexString() ); },
+			color: self.settings.drawcolor
+		} );
+
     };
 
     self.createURL=function() {
@@ -2626,6 +2843,10 @@ version 0.0.9.20210724.002500
             change: function( color ) { self.settings.fieldcolor=color.toHexString(); self.storesettings(); self.updatefieldslayer(); },
             color: self.settings.fieldcolor,
         } ) );
+		$( '#quickdrawlinks_alllinks_color' ).spectrum( $.extend( true, spectrumoptions, {
+			change: function( color ) { self.setAllDrawColors( color.toHexString() ); },
+			color: self.settings.drawcolor,
+		} ) );
     };
 
     self.onPaneChanged=function( pane ) {

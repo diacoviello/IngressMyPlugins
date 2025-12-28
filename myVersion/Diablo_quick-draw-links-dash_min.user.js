@@ -1,12 +1,13 @@
 // ==UserScript==
-// @author         DiabloEnMusica
-// @name           Quick Draw Links 2
-// @category       Diablo
-// @version        1.0.9.20250709
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quick-draw-links-crosslinks-dashSet.user
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quick-draw-links-crosslinks-dashSet.user
-// @description    [diabloenmusica-1.0.9.20250709] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
-// @id             quick-draw-links@DiabloEnMusica
+// @author         DanielOnDiordna
+// @name           Diablo_quick-draw-links-dash_min.user
+// @category       TESTING
+// @version        0.0.9.20210724.002500
+// @updateURL      https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.meta.js
+// @downloadURL    https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.user.js
+// @description    [danielondiordna-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
+// @id             quick-draw-links@DanielOnDiordna
+// @namespace      https://softspot.nl/ingress/
 // @match          https://intel.ingress.com/*
 // @grant          none
 // ==/UserScript==
@@ -66,9 +67,6 @@ version 0.0.9.20210421.190200
 
 version 0.0.9.20210724.002500
 - prevent double plugin setup on hook iitcLoaded
-
-version 0.0.9.20250812.190200
-- most recent additions are setting the dash line ability while preventing the crosslink dash from affecting clicking links on map
 `;
     self.namespace='window.plugin.'+self.id+'.';
     self.pluginname='plugin-'+self.id;
@@ -90,10 +88,10 @@ version 0.0.9.20250812.190200
     self.isSmartphone=null;
     self.settings={};
     self.settings.hidebuttons=false;
-    self.settings.drawcolor='#E27000';
-    self.settings.greatcirclecolor='#FF0000';
-    self.settings.fieldcolor='#E27000';
-    self.settings.crosslinkbookmarkcolor='#FF0000';
+    self.settings.drawcolor='#9c009c';
+    self.settings.greatcirclecolor='#9c009c';
+    self.settings.fieldcolor='#fff069';
+    self.settings.crosslinkbookmarkcolor='#ec393f';
     self.settings.showcrosslinks=0; // 0 = Links, 1 = Drawn, 2 = Both
     self.settings.showlinkdirection=false;
     self.settings.fieldexistinglinks=false;
@@ -102,45 +100,16 @@ version 0.0.9.20250812.190200
     self.movelinksposition=undefined;
     self.copylinksposition=undefined;
     self.linkstyle=[
-        '10,5,5,5,5,5,5,5,100%',
+        '10,5,5,5,5,5,5,5,100%'
     ];
     self.crosslinklayerdisabled=false;
-
-    self.dashArray='8,15';
-
-    self.setDashPattern=function() {
-        const pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,3,1,3"):', self.dashArray );
-        if ( !pat ) return;
-        self.dashArray=pat;
-        self.highlightlinkoptions.dashArray=pat;
-        alert( 'Dash pattern set to: '+pat );
-        self.crosslinkLayer.clearLayers();
-        self.runHooks( 'mapDataRefreshEnd' );
-    };
-
     self.highlightlinkoptions={
-        color: "#C33",
+        color: "#ae29b3ff",
         opacity: 1,
         weight: 5,
         fill: false,
-        // dashArray: window.plugin.quickDrawLinks.dashArray,
-        dashArray: self.dashArray,
-        radius: 18
-    };
-
-    // default dash‐pattern (px dash, px gap)
-    self.dashArray=self.highlightlinkoptions.dashArray;
-
-    // popup to let user redefine it at runtime
-    self.setDashPattern=function() {
-        const pat=prompt( 'Enter dash pattern e.g. "1,6" or "5,3,1,3":', self.dashArray );
-        if ( !pat ) return;
-        self.dashArray=pat;
-        // keep highlightlinkoptions in sync:
-        self.highlightlinkoptions.dashArray=pat;
-        alert( 'Dash pattern set to: '+pat );
-        self.crosslinkLayer.clearLayers();
-        window.runHooks( 'mapDataRefreshEnd' );
+        dashArray: "1,6",
+        radius: 18,
     };
 
     // 120 x 60 - 4 buttons, 2 rows: link, move, star, copy
@@ -288,7 +257,7 @@ version 0.0.9.20250812.190200
                 }
             }
         } );
-        //console.log('link exists: ' + linkexists);
+        // console.log('link exists: ' + linkexists);
         return linkexists;
     };
 
@@ -382,6 +351,7 @@ version 0.0.9.20250812.190200
         link.getLatLngs=function() {
             return [ L.latLng( latLngs[ 0 ] ), L.latLng( latLngs[ 1 ] ) ];
         };
+        console.log( "getLatLngs: "+JSON.stringify( link.getLatLngs() ) );
         link.options=L.extend( {}, myStyle );
 
         link.on( 'click', function( e ) { self.linkmenu( link ); } );
@@ -673,7 +643,7 @@ version 0.0.9.20250812.190200
                 if ( !self.isSmartphone ) titledescription=' title="Click to copy all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'copylinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screencopyicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon" /></a>' );
             }
@@ -685,7 +655,7 @@ version 0.0.9.20250812.190200
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
             }
@@ -696,7 +666,7 @@ version 0.0.9.20250812.190200
                 if ( !self.isSmartphone ) titledescription=' title="Click to move all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'movelinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenmoveicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="/"><span class="screenbutton screenmoveicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlemoveicon" /></a>' );
             }
@@ -708,7 +678,7 @@ version 0.0.9.20250812.190200
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'addMarker(\''+guid+'\',{icon:\'link\'}); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='link'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="z"><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlelinkicon"'+styleactivebutton+' /></a>' );
             }
@@ -720,6 +690,8 @@ version 0.0.9.20250812.190200
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var outcount=0;
+
+
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -733,7 +705,10 @@ version 0.0.9.20250812.190200
                     outcount++;
                 }
             }
+            console.log( "out drawlayer: "+( self.drawnItems ) );
+
         } );
+
         alert( 'Total Drawn Links connected to portal: '+( swapcount+outcount )+"\n"+'links changed to outgoing: '+swapcount );
     };
 
@@ -742,6 +717,10 @@ version 0.0.9.20250812.190200
         var drawlayer=self.getDrawlayer();
         var swapcount=0;
         var incount=0;
+
+        console.log( " in drawlayer: "+JSON.stringify( drawlayer ) );
+
+        // console.log( "setallincoming() drawlayer: "+drawlayer );
         drawlayer.eachLayer( function( layer ) {
             //if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
             if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
@@ -757,6 +736,53 @@ version 0.0.9.20250812.190200
             }
         } );
         alert( 'Total Drawn Links connected to portal: '+( swapcount+incount )+"\n"+'links changed to incoming: '+swapcount );
+    };
+
+    self.setallcolors=function( position ) {
+        // position optional: if provided, only collect colors for links connected to that portal position
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return { list: [], counts: {}, unique: [] };
+
+        var list=[];
+        var counts={};
+
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            // only consider GeoJSON links with exactly 2 endpoints
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+            const latLngs=layer.getLatLngs();
+            if ( !Array.isArray( latLngs ) ) continue;
+            // Arc-based geojson may return nested arrays for multipart lines; handle common case of [LatLng, LatLng]
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+
+            // optional filter by portal position
+            if ( position ) {
+                const p=position;
+                if ( !( ( p.lat===endpoints[ 0 ].lat&&p.lng===endpoints[ 0 ].lng )||( p.lat===endpoints[ 1 ].lat&&p.lng===endpoints[ 1 ].lng ) ) ) {
+                    continue;
+                }
+                console.log( position );
+            }
+
+            // safest access to color
+            const color=( layer.options&&( layer.options.color||( layer.options.style&&layer.options.style.color ) ) )||null;
+
+            // plain serializable lat/lng objects
+            const a={ lat: endpoints[ 0 ].lat, lng: endpoints[ 0 ].lng };
+            const b={ lat: endpoints[ 1 ].lat, lng: endpoints[ 1 ].lng };
+
+            list.push( { id: id, latLngs: [ a, b ], color: color } );
+            if ( color ) counts[ color ]=( counts[ color ]||0 )+1;
+        }
+
+        const unique=Object.keys( counts );
+
+        console.log( 'setallcolors: collected', list.length, 'links; unique colors:', unique, counts );
+        return { list: list, counts: counts, unique: unique };
     };
 
     self.linkcount=function( position ) {
@@ -784,11 +810,14 @@ version 0.0.9.20250812.190200
                 item.latLngs=layer.getLatLngs();
                 item.color=layer.options.color;
                 data.push( item );
+                console.log( 'storelinks: item=', item );
             }
+            console.log( "self.drawnItems.eachLayer(item={item.color}): "+item.color );
         } );
 
+        console.log( "layer data: "+JSON.stringify( data ) );
         localStorage[ self.localstoragelayer ]=JSON.stringify( data );
-
+        console.log( "self.storetitles()= "+JSON.stringify( data ) );
         self.storetitles();
     };
 
@@ -955,6 +984,10 @@ version 0.0.9.20250812.190200
 
         var a=link.getLatLngs();
         var b=polyline.getLatLngs();
+        // unwrap GeoJSON-style arrays
+        if ( b.length===1&&Array.isArray( b[ 0 ] ) ) {
+            b=b[ 0 ];
+        }
 
         for ( var i=0;i<b.length-1;++i ) {
             if ( self.greatCircleArcIntersect( a[ 0 ], a[ 1 ], b[ i ], b[ i+1 ] ) ) return true;
@@ -1026,7 +1059,7 @@ version 0.0.9.20250812.190200
 
         /*
         var crosslink = L.geodesicPolyline(link.getLatLngs(), {
-            color: '#d22',
+            color: '#393cec',
             opacity: 0.7,
             weight: 5,
             clickable: false,
@@ -1042,11 +1075,12 @@ version 0.0.9.20250812.190200
         var stopCoord=new self.arc.Coord( latLngs[ 1 ].lng, latLngs[ 1 ].lat );
 
         var lineoptions={
-            color: '#d22',
+            color: '#ec393f',
             opacity: 0.7,
             weight: 5,
-            interactive: false,
-            dashArray: self.dashArray,
+            clickable: true,
+            dashArray: [ 8, 8 ],
+
             guid: link.options.guid
         }
 
@@ -1055,8 +1089,7 @@ version 0.0.9.20250812.190200
         var gc=new self.arc.GreatCircle( startCoord, stopCoord );
         var geojson_feature=gc.Arc( Math.round( distance ) ).json();
         var crosslink=L.geoJson( geojson_feature, {
-            style: lineoptions,
-            interactive: false
+            style: lineoptions
         } );
 
         // additions to Arc, to make it compatible for Quick Draw:
@@ -1071,8 +1104,7 @@ version 0.0.9.20250812.190200
 
     self.onMapDataRefreshEnd=function() {
         if ( !self.crosslinklayerdisabled ) {
-            self.crosslinkLayer.bringToBack();
-            self.drawnItems.bringToFront();
+            self.crosslinkLayer.bringToFront();
             self.testForDeletedLinks();
         }
 
@@ -1397,7 +1429,7 @@ version 0.0.9.20250812.190200
         } );
 
         var html='<div class="quickdrawlinksdialog">'+
-            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="m">&lt Main menu</a>'+
             '</div><div>'+
             'Selected portal (<a href="#" onclick="'+self.namespace+'overviewConnected(); return false;">refresh</a>):<br />\n'+
             '<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a><br />\n'+
@@ -1417,7 +1449,8 @@ version 0.0.9.20250812.190200
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             title: self.title+' Overview',
-            width: 400
+            width: 400,
+            accesskey: ','
         } );
     };
 
@@ -1441,6 +1474,45 @@ version 0.0.9.20250812.190200
         self.storesettings();
     };
 
+    self.setAllDrawColors=function( color ) {
+        // keep settings in sync & persist
+        self.settings.options=self.settings.options||{};
+        self.settings.options.color=color;
+        self.settings.drawcolor=color;
+        self.storesettings();
+
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return;
+
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            // only consider GeoJSON links with exactly 2 endpoints
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+
+            // handle nested arc coordinates
+            const latLngs=layer.getLatLngs();
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+
+            // try to apply style safely
+            try {
+                if ( typeof layer.setStyle==='function' ) layer.setStyle( { color: color } );
+            } catch ( e ) { /* ignore layers that don't support setStyle */ }
+
+            // ensure options.color is set so storage/export works
+            layer.options=layer.options||{};
+            layer.options.color=color;
+        }
+
+        // persist and refresh derived layers
+        self.storelinks();
+        self.updategreatcircleslayer();
+        self.updatefieldslayer();
+    };
+
     self.closedialog=function() {
         $( ".ui-dialog-content" ).dialog( "close" );
     };
@@ -1457,6 +1529,35 @@ version 0.0.9.20250812.190200
         self.selectedlink.setStyle( { color: color } );
         self.selectedlink.options.color=color; // added for L.geoJson compatibility
         self.storelinks();
+    };
+
+    // change color for all drawn links
+    self.setAllLinksColor=function( color ) {
+        var drawlayer=self.getDrawlayer();
+        if ( !drawlayer ) return;
+        // iterate internal _layers for speed and to keep original order/ids
+        for ( const id in drawlayer._layers ) {
+            const layer=drawlayer._layers[ id ];
+            if ( !layer ) continue;
+            if ( !( layer instanceof L.GeoJSON ) ) continue;
+            // handle only simple two-point drawn links
+            const latLngs=layer.getLatLngs();
+            // unwrap nested arrays like arc lines
+            let endpoints=latLngs;
+            if ( endpoints.length===1&&Array.isArray( endpoints[ 0 ] ) ) endpoints=endpoints[ 0 ];
+            if ( endpoints.length!==2 ) continue;
+            try {
+                layer.setStyle( { color: color } );
+            } catch ( e ) {
+                // some layer types may not support setStyle; ignore
+            }
+            // ensure options.color used when storing/exporting
+            layer.options.color=color;
+        }
+        // persist and refresh derived layers
+        self.storelinks();
+        self.updategreatcircleslayer();
+        self.updatefieldslayer();
     };
 
     self.updateAllLinkStyle=function() {
@@ -1708,7 +1809,7 @@ version 0.0.9.20250812.190200
             var c=new L.LatLng( direct.lat, direct.lng );
             drawLink( b, c, {
                 color: self.settings.greatcirclecolor,
-                opacity: 0.9,
+                opacity: 0.6,
                 weight: 1,
                 clickable: false,
                 smoothFactor: 1,
@@ -2038,7 +2139,8 @@ version 0.0.9.20250812.190200
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             width: 350,
-            title: 'Edit Link ('+self.linklength()+')'
+            title: 'Edit Link ('+self.linklength()+')',
+            accesskey: '0'
         } );
 
         // need to initialise the 'spectrum' color picker
@@ -2063,6 +2165,30 @@ version 0.0.9.20250812.190200
             change: function( color ) { self.setSelectedLinkColor( color.toHexString() ); },
             color: self.selectedlink.options.color,
         } );
+
+        // all-links color picker
+        $( '#quickdrawlinks_alllinks_color' ).spectrum( {
+            flat: false,
+            showInput: true,
+            showButtons: true,
+            showPalette: true,
+            showSelectionPalette: true,
+            allowEmpty: false,
+            palette: [
+                [ '#004000', '#008000', '#00C000' ],
+                [ '#00FF00', '#80FF80', '#C0FFC0' ],
+                [ '#000040', '#000080', '#0000C0' ],
+                [ '#4040FF', '#8080FF', '#C0C0FF' ],
+                [ '#6A3400', '#964A00', '#C05F00' ],
+                [ '#E27000', '#FF8309', '#FFC287' ],
+                [ '#a24ac3', '#514ac3', '#4aa8c3', '#51c34a' ],
+                [ '#c1c34a', '#c38a4a', '#c34a4a', '#c34a6f' ],
+                [ '#000000', '#666666', '#bbbbbb', '#ffffff' ]
+            ],
+            change: function( color ) { self.setAllLinksColor( color.toHexString() ); },
+            color: self.settings.drawcolor
+        } );
+
     };
 
     self.createURL=function() {
@@ -2557,7 +2683,8 @@ version 0.0.9.20250812.190200
             html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
-            title: 'Quick Draw Store/Restore Projects'
+            title: 'Quick Draw Store/Restore Projects',
+            accesskey: 'y'
         } );
     };
 
@@ -2583,7 +2710,7 @@ version 0.0.9.20250812.190200
 
     self.menu=function() {
         var html='<div class="quickdrawlinksdialog">'+
-            '<input type="text" id="quickdrawlinks_color"></input> Links <input type="text" id="greatcircle_color"></input> Great circles<br /><input type="text" id="field_color"></input> Fields <input type="checkbox" onclick="'+self.namespace+'settings.fieldexistinglinks = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'updatefieldslayer()" id="fieldexistinglinks"'+( self.settings.fieldexistinglinks? ' checked':'' )+'><label for="fieldexistinglinks">include existing links</label><br />'+
+            '<input type="text" id="quickdrawlinks_color"></input> Links <input type="text" id="greatcircle_color"></input> Great circles<br /><input type="text" id="field_color"></input> Fields <input type="text" id="quickdrawlinks_alllinks_color"></input> All Links Color <br /><input type="checkbox" onclick="'+self.namespace+'settings.fieldexistinglinks = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'updatefieldslayer()" id="fieldexistinglinks"'+( self.settings.fieldexistinglinks? ' checked':'' )+'><label for="fieldexistinglinks">include existing links</label><br />'+
             '<input type="checkbox" onclick="'+self.namespace+'settings.hidebuttons = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'onPortalSelected();" id="hidebuttons"'+( self.settings.hidebuttons? ' checked':'' )+'><label for="hidebuttons">Hide onscreen buttons</label><br />\n'+
             '<a href="#" onclick="'+self.namespace+'showAll(); return false;">Zoom to view all drawn links</a>'+
             '<a href="#" onclick="if ('+self.namespace+'linkcount() === 0) { alert(\'No drawn links\'); return false; } '+self.namespace+'linkmenu(); return false;">Show link menu...</a>'+
@@ -2614,7 +2741,8 @@ version 0.0.9.20250812.190200
                 html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
                 id: self.pluginname+'-dialog',
                 dialogClass: 'ui-dialog-quickdrawlinks',
-                title: self.title
+                title: self.title,
+                accesskey: 'y'
             } );
         }
 
@@ -2649,6 +2777,10 @@ version 0.0.9.20250812.190200
         $( '#field_color' ).spectrum( $.extend( true, spectrumoptions, {
             change: function( color ) { self.settings.fieldcolor=color.toHexString(); self.storesettings(); self.updatefieldslayer(); },
             color: self.settings.fieldcolor,
+        } ) );
+        $( '#quickdrawlinks_alllinks_color' ).spectrum( $.extend( true, spectrumoptions, {
+            change: function( color ) { self.setAllDrawColors( color.toHexString() ); },
+            color: self.settings.drawcolor,
         } ) );
     };
 
@@ -3324,29 +3456,12 @@ version 0.0.9.20250812.190200
 
         window.addHook( 'portalDetailLoaded', function( data ) { if ( self.requestid===data.guid ) { self.requestid=undefined; window.renderPortalDetails( data.guid ); } } );
 
-        // add options menu
+        //add options menu
         if ( window.useAndroidPanes() ) {
             android.addPane( self.panename, self.title, "ic_action_share" );
             addHook( "paneChanged", self.onPaneChanged );
         } else {
-            const tb=$( '#toolbox' );
-            // — your “open menu” link —
-            tb.append(
-                '<a onclick="if(window.useAndroidPanes())window.show(\''+self.panename+'\');'+
-                'else '+self.namespace+'menu();return false;" href="#">'+self.title+'</a>'
-            );
-            // — your toggle‐links button —
-            tb.append(
-                '<a id="quickdrawlinks-toggle" '+
-                'onclick="window.plugin.quickdrawlinks.toggleLinks()" '+
-                'title="Toggle links">🔀</a>'
-            );
-            // — **the** dash‐pattern button —
-            tb.append(
-                '<a id="quickdrawlinks-dash" '+
-                'onclick="window.plugin.quickdrawlinks.setDashPattern()" '+
-                'title="Set dash pattern">-Set-Dash-</a>'
-            );
+            $( '#toolbox' ).append( '<a onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="," href="#">'+self.title+'</a>' );
         }
 
         let titlebuttonwidth=23;

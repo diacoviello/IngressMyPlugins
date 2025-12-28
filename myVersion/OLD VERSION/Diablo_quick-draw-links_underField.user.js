@@ -1,12 +1,12 @@
 // ==UserScript==
-// @author         DiabloEnMusica
-// @name           Quick Draw Links MIN CROSS
-// @category       Layer
+// @author         DanielOnDiordna
+// @name           Quick Draw Links Less CrossLinks & Under Field Check
+// @category       Diablo
 // @version        0.0.9.20210724.002500
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/quickdrawLessCrossLinks.user.js
-// @description    [diabloenmusica-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
-// @id             quick-draw-links@DiabloEnMusica
+// @updateURL      https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.meta.js
+// @downloadURL    https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/quick-draw-links.user.js
+// @description    [danielondiordna-0.0.9.20210724.002500] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
+// @id             quick-draw-links@DanielOnDiordna
 // @namespace      https://softspot.nl/ingress/
 // @match          https://intel.ingress.com/*
 // @grant          none
@@ -21,7 +21,7 @@ function wrapper( plugin_info ) {
     window.plugin.quickdrawlinks=function() { };
     var self=window.plugin.quickdrawlinks;
     self.id='quickdrawlinks';
-    self.title='QuickDrawLinks-LessXLinks';
+    self.title='QuickDrawLinks-LessX-UnderField';
     self.version='0.0.9.20210724.002500';
     self.author='DiabloEnMusica';
     self.changelog=`
@@ -88,10 +88,10 @@ version 0.0.9.20210724.002500
     self.isSmartphone=null;
     self.settings={};
     self.settings.hidebuttons=false;
-    self.settings.drawcolor='#E27000';
-    self.settings.greatcirclecolor='#FF0000';
-    self.settings.fieldcolor='#E27000';
-    self.settings.crosslinkbookmarkcolor='#FF0000';
+    self.settings.drawcolor='#b8b50bff';
+    self.settings.greatcirclecolor='#9c009c';
+    self.settings.fieldcolor='#fff069';
+    self.settings.crosslinkbookmarkcolor='#ec393f';
     self.settings.showcrosslinks=0; // 0 = Links, 1 = Drawn, 2 = Both
     self.settings.showlinkdirection=false;
     self.settings.fieldexistinglinks=false;
@@ -100,11 +100,11 @@ version 0.0.9.20210724.002500
     self.movelinksposition=undefined;
     self.copylinksposition=undefined;
     self.linkstyle=[
-        '10,5,5,5,5,5,5,5,100%',
+        '10,5,5,5,5,5,5,5,100%'
     ];
     self.crosslinklayerdisabled=false;
     self.highlightlinkoptions={
-        color: "#C33",
+        color: "#ae29b3ff",
         opacity: 1,
         weight: 5,
         fill: false,
@@ -112,6 +112,58 @@ version 0.0.9.20210724.002500
         radius: 18,
     };
 
+    // default dash pattern (string form; e.g. "1,6" or "4,3,1,3")
+    self.dashArray="1,6";
+
+    self.highlightlinkoptions={
+        color: "#C33",
+        opacity: 1,
+        weight: 5,
+        fill: false,
+        dashArray: self.dashArray,
+        radius: 18,
+    };
+
+    self.setDashPattern=function() {
+        const pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,2,1,2"):', self.dashArray );
+        if ( !pat ) return;
+        // save it
+        self.dashArray=pat;
+        self.highlightlinkoptions.dashArray=pat;
+        alert( 'Dash pattern set to: '+pat );
+
+        // clear out any old lines…
+        self.crosslinkLayer.clearLayers();
+        // …and make IITC re-run your mapDataRefreshEnd hook immediately:
+        window.runHooks( 'mapDataRefreshEnd' );
+    };
+
+    /*
+    // expose a small setter that prompts the user and forces redraw
+    self.setDashPattern=function() {
+        // prompt for new pattern
+        var pat=prompt( 'Enter dash pattern (e.g. "1,6" or "5,3,1,3"):', self.dashArray );
+        if ( pat===null ) return; // user cancelled
+        // basic validation: must be comma-delimited numbers or number% entries
+        if ( !/^\s*[\d%]+(\s*,\s*[\d%]+)*\s*$/.test( pat ) ) {
+            alert( 'Invalid pattern. Use comma separated numbers, e.g. "1,6" or "5,3,1,3"' );
+            return;
+        }
+
+        self.dashArray=pat;
+        // keep highlight style in sync
+        self.highlightlinkoptions.dashArray=pat;
+
+        // clear old drawn crosslinks and ask IITC to redraw
+        if ( self.crosslinkLayer ) self.crosslinkLayer.clearLayers();
+        // re-run hook to draw crosslinks immediately
+        if ( typeof window.runHooks==='function' ) window.runHooks( 'mapDataRefreshEnd' );
+
+        // feedback
+        alert( 'Dash pattern set to: '+pat );
+    };
+
+    */
     // 120 x 60 - 4 buttons, 2 rows: link, move, star, copy
     self.menuicons="data:image/png;base64,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";
     // 350 x 50 - 7 buttons: trash, move, swap, zoom, list, confirm, cancel
@@ -324,7 +376,7 @@ version 0.0.9.20210724.002500
                     weight: 4,
                     opacity: 0.8,
                     fill: false,
-                    clickable: true
+                    interactive: true
                 };
         
                 var lineoptions = self.lineOptions;
@@ -361,7 +413,70 @@ version 0.0.9.20210724.002500
         link.options.guid=randomguid(); // create a fake guid for cross link support
 
         // we can just test the new layer in this case
-        self.testAllLinksAgainstLayer( link );
+			self.testAllLinksAgainstLayer( link );
+
+			// --- CHECK IF NEW DRAWN LINK IS UNDER A FIELD (>2km) --------------------
+			try {
+				var newLenKm=self.distanceBetween( latLngs[ 0 ], latLngs[ 1 ] );
+				if ( newLenKm>2 ) {
+
+					var underField=false;
+
+					// Convert drawn link to a pseudo-link for intersection tests
+					var newLinkObj={
+						getLatLngs: () => latLngs
+					};
+
+					// 1) Check drawn fields (each field is stored as 3 separate polylines)
+					self.fieldslayer.eachLayer( function( edge ) {
+						if ( self.testPolyLine( edge, newLinkObj, true ) ) {
+							underField=true;
+						}
+					} );
+
+					// 2) Check real IITC intel fields (window.fields)
+					if ( !underField ) {
+						for ( var id in window.fields ) {
+							var f=window.fields[ id ];
+							if ( !f||!f.getLatLngs ) continue;
+
+							// fields in IITC are also stored as 3 polylines (in their _rings)
+							var pts=f.getLatLngs()[ 0 ];  // triangle vertices A, B, C
+							if ( !pts||pts.length!==3 ) continue;
+
+							var edges=[
+								[ pts[ 0 ], pts[ 1 ] ],
+								[ pts[ 1 ], pts[ 2 ] ],
+								[ pts[ 2 ], pts[ 0 ] ],
+							];
+
+							for ( var i=0;i<edges.length;i++ ) {
+								if ( self.testPolyLine(
+									{ getLatLngs: () => edges[ i ] },
+									newLinkObj,
+									true
+								) ) {
+									underField=true;
+									break;
+								}
+							}
+							if ( underField ) break;
+						}
+					}
+
+					if ( underField ) {
+						console.log( "QuickDraw: drawn link is under field & >2km → marking crosslink" );
+
+						self.drawCrossLink( {
+							options: { guid: randomguid() },
+							getLatLngs: () => latLngs
+						} );
+					}
+				}
+			} catch ( e ) {
+				console.warn( "QuickDraw under-field check failed:", e );
+			}
+
         return link;
     };
 
@@ -642,7 +757,7 @@ version 0.0.9.20210724.002500
                 if ( !self.isSmartphone ) titledescription=' title="Click to copy all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'copylinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screencopyicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon" /></a>' );
             }
@@ -654,7 +769,7 @@ version 0.0.9.20210724.002500
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
             }
@@ -665,7 +780,7 @@ version 0.0.9.20210724.002500
                 if ( !self.isSmartphone ) titledescription=' title="Click to move all links from this portal to another portal"';
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'movelinks(); return false;'
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenmoveicon" /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="/"><span class="screenbutton screenmoveicon" /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlemoveicon" /></a>' );
             }
@@ -677,7 +792,7 @@ version 0.0.9.20210724.002500
                 let onclickaction=self.namespace+'clearall(); '+self.namespace+'addMarker(\''+guid+'\',{icon:\'link\'}); return false;'
                 let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='link'? ' style="background-position-y: bottom;"':'' );
                 if ( !self.settings.hidebuttons ) {
-                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
+                    $( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonlink" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="z"><span class="screenbutton screenlinkicon"'+styleactivebutton+' /></a>' );
                 }
                 $( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlelinkicon"'+styleactivebutton+' /></a>' );
             }
@@ -924,6 +1039,10 @@ version 0.0.9.20210724.002500
 
         var a=link.getLatLngs();
         var b=polyline.getLatLngs();
+        // unwrap GeoJSON-style arrays
+        if ( b.length===1&&Array.isArray( b[ 0 ] ) ) {
+            b=b[ 0 ];
+        }
 
         for ( var i=0;i<b.length-1;++i ) {
             if ( self.greatCircleArcIntersect( a[ 0 ], a[ 1 ], b[ i ], b[ i+1 ] ) ) return true;
@@ -995,10 +1114,10 @@ version 0.0.9.20210724.002500
 
         /*
         var crosslink = L.geodesicPolyline(link.getLatLngs(), {
-            color: '#d22',
+            color: '#393cec',
             opacity: 0.7,
             weight: 5,
-            clickable: false,
+            interactive: false,
             dashArray: [8,8],
 
             guid: link.options.guid
@@ -1011,12 +1130,13 @@ version 0.0.9.20210724.002500
         var stopCoord=new self.arc.Coord( latLngs[ 1 ].lng, latLngs[ 1 ].lat );
 
         var lineoptions={
-            color: '#d22',
+            color: '#ec393f',
             opacity: 0.7,
             weight: 5,
-            clickable: false,
-            dashArray: [ 8, 8 ],
-
+            // Leaflet 1.x uses 'interactive: false' so pointer events pass through
+            interactive: false,
+            // use plugin config; GeoJSON/L.GeoJSON accepts either string "1,6" or numeric array
+            dashArray: self.dashArray, // ( typeof self.dashArray==='string'? self.dashArray.split( ',' ).map( function( s ) { return s.trim(); } ):self.dashArray ),
             guid: link.options.guid
         }
 
@@ -1040,7 +1160,14 @@ version 0.0.9.20210724.002500
 
     self.onMapDataRefreshEnd=function() {
         if ( !self.crosslinklayerdisabled ) {
-            self.crosslinkLayer.bringToFront();
+            // push crosslinks to the back of overlays (so portals and drawnItems stay clickable)
+            if ( self.crosslinkLayer&&typeof self.crosslinkLayer.bringToBack==='function' ) {
+                self.crosslinkLayer.bringToBack();
+            }
+            // ensure drawn items are above crosslinks
+            if ( self.drawnItems&&typeof self.drawnItems.bringToFront==='function' ) {
+                try { self.drawnItems.bringToFront(); } catch ( e ) { }
+            }
             self.testForDeletedLinks();
         }
 
@@ -1365,7 +1492,7 @@ version 0.0.9.20210724.002500
         } );
 
         var html='<div class="quickdrawlinksdialog">'+
-            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+            '<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="m">&lt Main menu</a>'+
             '</div><div>'+
             'Selected portal (<a href="#" onclick="'+self.namespace+'overviewConnected(); return false;">refresh</a>):<br />\n'+
             '<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a><br />\n'+
@@ -1385,7 +1512,8 @@ version 0.0.9.20210724.002500
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             title: self.title+' Overview',
-            width: 400
+            width: 400,
+            accesskey: ','
         } );
     };
 
@@ -1676,9 +1804,9 @@ version 0.0.9.20210724.002500
             var c=new L.LatLng( direct.lat, direct.lng );
             drawLink( b, c, {
                 color: self.settings.greatcirclecolor,
-                opacity: 0.9,
+                opacity: 0.6,
                 weight: 1,
-                clickable: false,
+                interactive: false,
                 smoothFactor: 1,
                 dashArray: null //[6, 4],
             }, layerGroup );
@@ -1781,7 +1909,7 @@ version 0.0.9.20210724.002500
             color: null,
             weight: 4,
             opacity: 0.5,
-            clickable: false,
+            interactive: false,
             fill: true,
             fillColor: self.settings.fieldcolor,
             fillOpacity: 0.2
@@ -2006,7 +2134,8 @@ version 0.0.9.20210724.002500
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
             width: 350,
-            title: 'Edit Link ('+self.linklength()+')'
+            title: 'Edit Link ('+self.linklength()+')',
+            accesskey: '0'
         } );
 
         // need to initialise the 'spectrum' color picker
@@ -2525,7 +2654,8 @@ version 0.0.9.20210724.002500
             html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-quickdrawlinks',
-            title: 'Quick Draw Store/Restore Projects'
+            title: 'Quick Draw Store/Restore Projects',
+            accesskey: 'y'
         } );
     };
 
@@ -2582,7 +2712,8 @@ version 0.0.9.20210724.002500
                 html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
                 id: self.pluginname+'-dialog',
                 dialogClass: 'ui-dialog-quickdrawlinks',
-                title: self.title
+                title: self.title,
+                accesskey: 'y'
             } );
         }
 
@@ -3230,7 +3361,7 @@ version 0.0.9.20210724.002500
             weight: 4,
             opacity: 0.8,
             fill: false,
-            clickable: true
+            interactive: true
         };
 
         // START - Great Circles functionality
@@ -3297,7 +3428,25 @@ version 0.0.9.20210724.002500
             android.addPane( self.panename, self.title, "ic_action_share" );
             addHook( "paneChanged", self.onPaneChanged );
         } else {
-            $( '#toolbox' ).append( '<a onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" href="#">'+self.title+'</a>' );
+            $( '#toolbox' ).append( '<a onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="," href="#">'+self.title+'</a>' );
+        //     const tb=$( '#toolbox' );
+        //     // — your “open menu” link —
+        //     tb.append(
+        //         '<a onclick="if(window.useAndroidPanes())window.show(\''+self.panename+'\');'+
+        //         'else '+self.namespace+'menu();return false;" href="#">'+self.title+'</a>'
+        //     );
+        //     // — your toggle‐links button —
+        //     tb.append(
+        //         '<a id="quickdrawlinks-toggle" '+
+        //         'onclick="window.plugin.quickdrawlinks.toggleLinks()" '+
+        //         'title="Toggle links">🔀</a>'
+        //     );
+        //     // — **the** dash‐pattern button —
+        //     tb.append(
+        //         '<a id="quickdrawlinks-dash" '+
+        //         'onclick="window.plugin.quickdrawlinks.setDashPattern()" '+
+        //         'title="Set dash pattern">quickdrawXlink-setDash</a>'
+        //     );
         }
 
         let titlebuttonwidth=23;

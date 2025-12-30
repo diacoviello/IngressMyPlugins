@@ -329,7 +329,7 @@ version 1.0.0.20251228.002300
 								weight: 4,
 								opacity: 0.8,
 								fill: false,
-								interactable: true
+								clickable: true
 						};
 	  
 						var lineoptions = self.lineOptions;
@@ -1095,7 +1095,7 @@ version 1.0.0.20251228.002300
 				color: '#393cec',
 				opacity: 0.7,
 				weight: 5,
-				interactable: false,
+				clickable: false,
 				dashArray: [8,8],
 
 				guid: link.options.guid
@@ -1111,7 +1111,7 @@ version 1.0.0.20251228.002300
 			color: '#ec393f',
 			opacity: 0.7,
 			weight: 5,
-			interactable: true,
+			clickable: false,
 			dashArray: [ 8, 8 ],
 
 			guid: link.options.guid
@@ -1130,6 +1130,12 @@ version 1.0.0.20251228.002300
 			return [ L.latLng( latLngs[ 0 ] ), L.latLng( latLngs[ 1 ] ) ];
 		};
 		crosslink.options=L.extend( {}, lineoptions );
+
+		// Pass clicks through to the underlying link
+		crosslink.on( 'click', function( e ) {
+			L.DomEvent.stop( e );
+			self.linkmenu( link );
+		} );
 
 		crosslink.addTo( self.crosslinkLayer );
 		self.crosslinkLayerGuids[ link.options.guid ]=crosslink;
@@ -1878,7 +1884,7 @@ version 1.0.0.20251228.002300
 				color: self.settings.greatcirclecolor,
 				opacity: 0.6,
 				weight: 1,
-				interactable: false,
+				clickable: false,
 				smoothFactor: 1,
 				dashArray: null //[6, 4],
 			}, layerGroup );
@@ -1981,7 +1987,7 @@ version 1.0.0.20251228.002300
 			color: null,
 			weight: 4,
 			opacity: 0.5,
-			interactable: false,
+			clickable: false,
 			fill: true,
 			fillColor: self.settings.fieldcolor,
 			fillOpacity: 0.2
@@ -3461,7 +3467,7 @@ version 1.0.0.20251228.002300
 			weight: 4,
 			opacity: 0.8,
 			fill: false,
-			interactable: true
+			clickable: true
 		};
 
 		// START - Great Circles functionality

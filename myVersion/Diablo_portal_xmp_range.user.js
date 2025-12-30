@@ -21,40 +21,26 @@ function wrapper( plugin_info ) {
 	plugin_info.dateTimeVersion='2025-12-30';
 	plugin_info.pluginId='portal-xmp-ranges';
 	//END PLUGIN AUTHORS NOTE
-	
-		// PLUGIN START ////////////////////////////////////////////////////////
-		// History
-		// 0.0.7 Headers changed. Ready for IITC-CE
-		// 0.0.6 Original script
-		// use own namespace for plugin
-		window.plugin.hackrange=function() { };
-		window.plugin.hackrange.hackLayers={};
-		window.plugin.hackrange.MIN_MAP_ZOOM=17;
-		window.plugin.hackrange.removeCircle=function( guid ) {
-			var previousLayer=window.plugin.hackrange.hackLayers[ guid ];
-			if ( previousLayer ) {
-				window.plugin.hackrange.hackCircleHolderGroup.removeLayer( previousLayer );
-				delete window.plugin.hackrange.hackLayers[ guid ];
-			}
-		}
-		window.plugin.hackrange.addCircle=function( guid ) {
-			var d=window.portals[ guid ];
-			var coo=d._latlng;
-			var latlng=new L.LatLng( coo.lat, coo.lng );
-			var optCircle={ color: window.ACCESS_INDICATOR_COLOR, opacity: 1, fillColor: window.ACCESS_INDICATOR_COLOR, fillOpacity: 0.2, weight: 1, clickable: false, dashArray: [ 10, 10 ] };
-			var range=window.HACK_RANGE;
-			var circle=new L.Circle( latlng, range, optCircle );
-			circle.addTo( window.plugin.hackrange.hackCircleHolderGroup );
-			window.plugin.hackrange.hackLayers[ guid ]=circle;
-		}
-		window.plugin.hackrange.portalAdded=function( data ) {
-			data.portal.on( 'add', function() {
-				window.plugin.hackrange.addCircle( this.options.guid );
-			} );
-			data.portal.on( 'remove', function() {
-				window.plugin.hackrange.removeCircle( this.options.guid );
-			} );
-		}
+
+	// PLUGIN START ////////////////////////////////////////////////////////
+	// History
+	// 0.0.7 Headers changed. Ready for IITC-CE
+	// 0.0.6 Original script
+	// use own namespace for plugin
+	window.plugin.playerRanges=function() { };
+	window.plugin.playerRanges.storage={};
+	window.plugin.playerRanges.obj={};
+	window.plugin.playerRanges.data={};
+	window.plugin.playerRanges.ui={};
+	window.plugin.playerRanges.getHtml={};
+	window.plugin.playerRanges.layer={};
+	window.plugin.playerRanges.action={};
+	window.plugin.playerRanges.control={};
+	window.plugin.playerRanges.mpe={};
+	window.plugin.playerRanges.override={};
+	window.plugin.playerRanges.userLocation={};
+	window.plugin.playerRanges.dialog={};
+	window.plugin.playerRanges.hook={};
 		// *****************************************************************
 		var setup=function() {
 			// this layer is added to the layer chooser, to be toggled on/off

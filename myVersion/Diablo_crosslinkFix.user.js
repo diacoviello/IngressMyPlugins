@@ -1147,6 +1147,12 @@ version 1.0.0.20251228.002300
 		};
 		crosslink.options=L.extend( {}, lineoptions );
 
+		// Pass clicks through to the underlying link
+		crosslink.on( 'click', function( e ) {
+			L.DomEvent.stop( e );
+			self.linkmenu( link );
+		} );
+
 		crosslink.addTo( self.crosslinkLayer );
 		self.crosslinkLayerGuids[ link.options.guid ]=crosslink;
 	};

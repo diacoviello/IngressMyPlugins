@@ -5,7 +5,7 @@
 // @version        0.3.1.20210103.154230
 // @description    Add one or more player markers and his ranges (hack/deploy range and xmp ranges) on the map.
 // @id             player-ranges@Diablo
-// @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
+// @namespace      https://github.com/diacoviello/IngressMyPlugins/
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_portal_xmp_range.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_portal_xmp_range.user.js
 // @match          https://intel.ingress.com/*

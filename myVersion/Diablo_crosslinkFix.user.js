@@ -1056,7 +1056,7 @@ version 1.0.0.20251228.002300
             if ( !layer.options.guid ) layer.options.guid='drawn-'+( Math.random().toString( 36 ).slice( 2 ) );
 
             try {
-                console.log(self.id+': testing drawn layer', id, 'guid=', layer.options.guid, 'latLngs=', layer.getLatLngs && JSON.stringify(layer.getLatLngs()) );
+                // console.log(self.id+': testing drawn layer', id, 'guid=', layer.options.guid, 'latLngs=', layer.getLatLngs && JSON.stringify(layer.getLatLngs()) );
                 self.testDrawnLinksAgainstLayer( layer );
             } catch ( e ) {
                 console.warn( self.id+': error testing drawn vs drawn for layer', id, e );
@@ -1538,8 +1538,7 @@ version 1.0.0.20251228.002300
 			id: self.pluginname+'-dialog',
 			dialogClass: 'ui-dialog-quickdrawlinks',
 			title: self.title+' Overview',
-			width: 400,
-			accesskey: ','
+			width: 400
 		} );
 	};
 

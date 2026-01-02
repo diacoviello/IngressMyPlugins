@@ -5,9 +5,9 @@
 // @version        0.0.8.20200216.174029
 // @description    Simulate the destruction of portal links: hide its links and fields.
 // @id             destroyed-links-simulator@Zaso
-// @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_destroyedLinksSim+tally-links.user
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_destroyedLinksSim+tally-links.user
+// @namespace      https://github.com/diacoviello/IngressMyPlugins
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_destroyedLinksSim+tally-links.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_destroyedLinksSim+tally-links.user.js
 // @match          https://intel.ingress.com/*
 // @grant          none
 // ==/UserScript==

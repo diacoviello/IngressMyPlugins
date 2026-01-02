@@ -2797,6 +2797,7 @@ version 1.0.0.20251228.002300
 	};
 
 	self.menu=function() {
+		
 		var html='<div class="quickdrawlinksdialog">'+
 			'<input type="text" id="quickdrawlinks_color"></input> Links <input type="text" id="greatcircle_color"></input> Great circles<br /><input type="text" id="field_color"></input> Fields <input type="text" id="quickdrawlinks_alllinks_color"></input> All Links Color <br /><input type="checkbox" onclick="'+self.namespace+'settings.fieldexistinglinks = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'updatefieldslayer()" id="fieldexistinglinks"'+( self.settings.fieldexistinglinks? ' checked':'' )+'><label for="fieldexistinglinks">include existing links</label><br />'+
 			'<input type="checkbox" onclick="'+self.namespace+'settings.hidebuttons = this.checked; '+self.namespace+'storesettings(); '+self.namespace+'onPortalSelected();" id="hidebuttons"'+( self.settings.hidebuttons? ' checked':'' )+'><label for="hidebuttons">Hide onscreen buttons</label><br />\n'+

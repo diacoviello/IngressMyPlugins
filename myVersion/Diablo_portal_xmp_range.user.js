@@ -166,32 +166,32 @@ function wrapper( plugin_info ) {
 		var currRangeStatus=window.plugin.playerRanges.data.getRangeStatusByName( rangeName );
 		return !currRangeStatus;
 	}
-	window.plugin.playerRanges.data.setPlayerCoord=function( idPlayer, latlng ) {
-		try {
-			var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
-			player.ll=latlng;
-			return true;
-		} catch ( e ) {
-			return false;
-		}
-	}
-	window.plugin.playerRanges.data.getPlayerCoord=function( idPlayer ) {
-		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
-		return player.ll;
-	}
-	window.plugin.playerRanges.data.addPlayer=function( idPlayer, latlng, label='', jolly=undefined ) {
-		var obj={
-			ll: latlng,
-			label: ( label===undefined )? '':label
-		};
-		if ( jolly!==undefined&&$.isNumeric( jolly )&&jolly>-1 ) {
-			obj.jolly=Number( jolly );
-		}
-		window.plugin.playerRanges.obj.main.markers[ idPlayer ]=obj;
-	}
-	window.plugin.playerRanges.data.deletePlayer=function( idPlayer ) {
-		delete window.plugin.playerRanges.obj.main.markers[ idPlayer ];
-	}
+	// window.plugin.playerRanges.data.setPlayerCoord=function( idPlayer, latlng ) {
+	// 	try {
+	// 		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+	// 		player.ll=latlng;
+	// 		return true;
+	// 	} catch ( e ) {
+	// 		return false;
+	// 	}
+	// }
+	// window.plugin.playerRanges.data.getPlayerCoord=function( idPlayer ) {
+	// 	var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+	// 	return player.ll;
+	// }
+	// window.plugin.playerRanges.data.addPlayer=function( idPlayer, latlng, label='', jolly=undefined ) {
+	// 	var obj={
+	// 		ll: latlng,
+	// 		label: ( label===undefined )? '':label
+	// 	};
+	// 	if ( jolly!==undefined&&$.isNumeric( jolly )&&jolly>-1 ) {
+	// 		obj.jolly=Number( jolly );
+	// 	}
+	// 	window.plugin.playerRanges.obj.main.markers[ idPlayer ]=obj;
+	// }
+	// window.plugin.playerRanges.data.deletePlayer=function( idPlayer ) {
+	// 	delete window.plugin.playerRanges.obj.main.markers[ idPlayer ];
+	// }
 	//======================================================================
 	// LAYERS
 	//======================================================================
@@ -264,84 +264,84 @@ function wrapper( plugin_info ) {
 		var playerLayers=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
 		$( playerLayers.mark._icon ).find( 'span' ).text( newLabel );
 	}
-	window.plugin.playerRanges.layer.setPlayerJolly=function( idPlayer, newJolly ) {
-		var lays=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
-		lays.jolly.setRadius( newJolly );
-	}
-	window.plugin.playerRanges.layer.drawAllPlayers=function() {
-		var players=window.plugin.playerRanges.data.getPlayers();
-		for ( idPlayer in players ) {
-			window.plugin.playerRanges.layer.drawPlayer( idPlayer );
-		}
-	}
-	window.plugin.playerRanges.layer.cleanAllPlayers=function() {
-		var players=window.plugin.playerRanges.data.getPlayers();
-		for ( idPlayer in players ) {
-			window.plugin.playerRanges.layer.removePlayerLayers( idPlayer );
-		}
-	}
-	window.plugin.playerRanges.layer.drawMarkerPlayer=function( idPlayer ) {
-		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
-		var latlng=player.ll;
-		var label=player.label;
-		var factionClass=window.plugin.playerRanges.data.getMyFaction();
-		// Arrow Marker ---------- start
-		var icc=new L.divIcon( {
-			iconSize: new L.Point( 19, 25 ),
-			className: 'playerRanges playerIcon '+factionClass,
-			html: '<span>'+label+'</span>'
-		} );
-		var mark=new L.Marker( latlng, { icon: icc, draggable: true } );
-		// Arrow Marker ---------- end
-		window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'mark', mark );
-		window.plugin.playerRanges.layer.setEventsOnMarkerPlayer( idPlayer, mark );
-	}
-	window.plugin.playerRanges.layer.drawAllRangesPlayer=function( idPlayer ) {
-		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
-		var latlng=player.ll;
-		var playerRangesLayers=new Array();
-		var optWeight=window.plugin.playerRanges.obj.settings.weight;
-		var optOpacity=window.plugin.playerRanges.obj.settings.opacity;
-		// Hack Range
-		playerRangesLayers[ 0 ]=new L.geodesicCircle(
-			latlng,
-			window.plugin.playerRanges.data.getRangeValByIndex( 0 ),
-			{
-				weight: optWeight,
-				opacity: optOpacity,
-				clickable: false,
-				fill: false,
-				color: window.ACCESS_INDICATOR_COLOR,
-			}
-		);
-		// XMP Range
-		for ( var i=1;i<=8;i++ ) {
-			playerRangesLayers[ i ]=new L.geodesicCircle(
-				latlng,
-				window.plugin.playerRanges.data.getRangeValByIndex( i ),
-				{
-					weight: optWeight,
-					opacity: optOpacity,
-					clickable: false,
-					fill: false,
-					color: window.COLORS_LVL[ i ],
-					dashArray: window.plugin.playerRanges.obj.settings.dashArr
-				}
-			);
-		}
+	// window.plugin.playerRanges.layer.setPlayerJolly=function( idPlayer, newJolly ) {
+	// 	var lays=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
+	// 	lays.jolly.setRadius( newJolly );
+	// }
+	// window.plugin.playerRanges.layer.drawAllPlayers=function() {
+	// 	var players=window.plugin.playerRanges.data.getPlayers();
+	// 	for ( idPlayer in players ) {
+	// 		window.plugin.playerRanges.layer.drawPlayer( idPlayer );
+	// 	}
+	// }
+	// window.plugin.playerRanges.layer.cleanAllPlayers=function() {
+	// 	var players=window.plugin.playerRanges.data.getPlayers();
+	// 	for ( idPlayer in players ) {
+	// 		window.plugin.playerRanges.layer.removePlayerLayers( idPlayer );
+	// 	}
+	// }
+	// window.plugin.playerRanges.layer.drawMarkerPlayer=function( idPlayer ) {
+	// 	var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+	// 	var latlng=player.ll;
+	// 	var label=player.label;
+	// 	var factionClass=window.plugin.playerRanges.data.getMyFaction();
+	// 	// Arrow Marker ---------- start
+	// 	var icc=new L.divIcon( {
+	// 		iconSize: new L.Point( 19, 25 ),
+	// 		className: 'playerRanges playerIcon '+factionClass,
+	// 		html: '<span>'+label+'</span>'
+	// 	} );
+	// 	var mark=new L.Marker( latlng, { icon: icc, draggable: true } );
+	// 	// Arrow Marker ---------- end
+	// 	window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'mark', mark );
+	// 	window.plugin.playerRanges.layer.setEventsOnMarkerPlayer( idPlayer, mark );
+	// }
+	// window.plugin.playerRanges.layer.drawAllRangesPlayer=function( idPlayer ) {
+	// 	var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+	// 	var latlng=player.ll;
+	// 	var playerRangesLayers=new Array();
+	// 	var optWeight=window.plugin.playerRanges.obj.settings.weight;
+	// 	var optOpacity=window.plugin.playerRanges.obj.settings.opacity;
+	// 	// Hack Range
+	// 	playerRangesLayers[ 0 ]=new L.geodesicCircle(
+	// 		latlng,
+	// 		window.plugin.playerRanges.data.getRangeValByIndex( 0 ),
+	// 		{
+	// 			weight: optWeight,
+	// 			opacity: optOpacity,
+	// 			clickable: false,
+	// 			fill: false,
+	// 			color: window.ACCESS_INDICATOR_COLOR,
+	// 		}
+	// 	);
+	// 	// XMP Range
+	// 	for ( var i=1;i<=8;i++ ) {
+	// 		playerRangesLayers[ i ]=new L.geodesicCircle(
+	// 			latlng,
+	// 			window.plugin.playerRanges.data.getRangeValByIndex( i ),
+	// 			{
+	// 				weight: optWeight,
+	// 				opacity: optOpacity,
+	// 				clickable: false,
+	// 				fill: false,
+	// 				color: window.COLORS_LVL[ i ],
+	// 				dashArray: window.plugin.playerRanges.obj.settings.dashArr
+	// 			}
+	// 		);
+	// 	}
 		// Jolly Range
-		playerRangesLayers[ 9 ]=new L.geodesicCircle(
-			latlng,
-			( ( player.jolly===undefined||player.jolly<0 )? 0:player.jolly ),
-			{
-				weight: optWeight,
-				opacity: optOpacity,
-				dashArray: [ 8, 6, 2, 6, 2, 6 ],
-				clickable: false,
-				fill: false,
-				color: 'red',
-			}
-		);
+		// playerRangesLayers[ 9 ]=new L.geodesicCircle(
+		// 	latlng,
+		// 	( ( player.jolly===undefined||player.jolly<0 )? 0:player.jolly ),
+		// 	{
+		// 		weight: optWeight,
+		// 		opacity: optOpacity,
+		// 		dashArray: [ 8, 6, 2, 6, 2, 6 ],
+		// 		clickable: false,
+		// 		fill: false,
+		// 		color: 'red',
+		// 	}
+		// );
 		// Add elements to the layers
 		for ( var i=1;i<=8;i++ ) {
 			var rangeName=window.plugin.playerRanges.data.getRangeNameByIndex( i );
@@ -432,12 +432,12 @@ function wrapper( plugin_info ) {
 			}
 		}
 		console.log( 'Found '+portalsInRange.length+' portals within '+radius+' meters of '+latlng.toString() );
-		console.log( "The portal GUIDs found are: ",portalsInRange );
+		console.log( "The portal GUIDs found are: ", portalsInRange );
 		return portalsInRange;
 	};
 
 	window.plugin.playerRanges.layer.getLinksFromAdjacentPortals=function() {
-		console.log(getPortalsInRadius(portalLayer).getPortalLinks());
+		console.log( getPortalsInRadius( portalLayer ).getPortalLinks() );
 	};
 
 	window.plugin.playerRanges.layer.setEventsOnMarkerPlayer=function( idPlayer, mark ) {
@@ -509,40 +509,40 @@ function wrapper( plugin_info ) {
 	//======================================================================
 	// CSS AND CONTROL FUNCTIONS
 	//======================================================================
-	// window.plugin.playerRanges.ui.setupCSS=function() {
-	// 	$( "<style>" ).prop( "type", "text/css" ).html( ''
-	// 		+'.playerIcon,.playerRangesButton,.setRangesButton{'
-	// 		+'background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAtCAMAAAD1JOlfAAAApVBMVEV0dHRNTU3i4uITExMBAQH9/f2oqKgVa5cKCgr+/v4NDQ3///+3t7cWcqITZI4VcJ8DeQAvLy8MTwt3d3cDfQDu7u4NDQ0BAQH///9oaGgCcAADewAUaZQCdgATZpEVbZsCcgABXwAWdKQ+Pj4oYEwxMTFylp8BAQEAAAADkAAZhbwDiQADgwD///8DpwAXfK8EtAADmgAdl9YbjsofoeQhrvYEvQA8FIAAAAAAKXRSTlOknJaVa4SLhdRW8Guy4CTFxbYdbPghvEE55lnkZ6NEo3019ekP/QX+AIHvNbUAAAJHSURBVHgBZNLNroMgEIZhd66sxriq4F8IKYAganv/l3Y+jkqFsmqaJ/MmzmSv8/HnK32chJ+BjdUP68pfRvWYst4+UsZaNaTNyeYpe2rRpk0ri5RR5dJqLzfbxYw1wikaKTbJTfYRQ9MZ0fI7I3Zb5cQjVglnnI4+XSnXHdU7qxthlrj6mMBWVG9sUM58jGhY1NzfqLIbqzDsE1fRfL9RJV82agybFyeqb9MPmzGu/DI0l3meUa0vloPhL1+9GG99c/bVa2G88M05VLOribeYUO180z9UL0bR9MyPq8OiDoZxj4MxNDFqWT74dEeVT2jC/LP8YH5RizHOGFTb0NzXdVt3VIuDoWmcUEoAnmfS+0Vt0srtWBiYPw6nNB1awGNhDE2gnhSAvgqGptAVhrChUeL/TIgFKjGE55OVsuBgldDtuSQPfbWUtujOvwBRzeoGKLyaaorjKMjtVHrbv7LnwKKjHSkjJLrPv+bopkViEAbAcOoXqr3YorbHwWry/3/hpjMsSFvYPc57DA+JIMMO9K++n72UKsdfTGUbY/ayP4Ep5/XNpDfauSBiLg+q1mpOpqxIxHUH+c5q2/XGrKPhY+XctEX1wGpaY4FSEytEXIiMvaq1tuZbyyAnoiMzk0QJj5vi6m4gMlN4xhf9clVs9lknmCSf/LR0PK5qn0NwRLBavoW+ecSjtH5T23sEqZYudHBBi27hrn5/Afzrs6PLuA1sVMwSoDqfVHJ0NLQPihltc0RrvYVBceJUA6PktDFC83AshWHwA4y5+fTEG+/4AAAAAElFTkSuQmCC);'
-	// 		+'background-repeat:no-repeat;'
-	// 		+'outline:none !important;'
-	// 		+'}'
-	// 		+'.playerIcon.ENLIGHTENED{background-position:left top;}'
-	// 		+'.playerIcon.RESISTANCE{background-position:right top;}'
-	// 		+'.playerIcon span{display:block;position:relative;color:#fff;line-height:13px;text-align:center;width:77px;min-width:80px;top:29px;left:50%;transform:translateX(-50%);text-shadow:0px 0px 3px #000,0px 0px 3px #000,0px 0px 5px #000,0px 0px 7px #000,0px 0px 9px #000,0px 0px 11px #000;pointer-events:none;}'
-	// 		+'body.hideLabelPlayersRanges .playerIcon span{display:none;}'
-	// 		+'.playerRangesButton{background-position:6px -25px !important;}'
-	// 		+'.setRangesButton{background-position:-18px -25px !important;border-radius:0 0 4px 4px;}'
-	// 		+'.rangesList{display:none;position:absolute;background:#fff;padding:7px;left:35px;top:27px;z-index:1000;}'
-	// 		+'.rangesList{width:160px !important;-webkit-column-count:2;-moz-column-count:2;column-count:2;-webkit-column-rule:1px outset #ddd;-moz-column-rule:1px outset #ddd;column-rule:1px outset #ddd;}'
-	// 		+'.rangesList.open{display:block;}'
-	// 		+'.rangesList label{width:100%;display:inline-block !important;color:#000;font-size:12px;cursor:pointer;}'
-	// 		+'.rangesList input{height:auto;margin-left:0;cursor:pointer;}'
-	// 		+'.rangesList a, .rangesList a:hover{background:#000;color:#fff;margin:4px 0 0;padding:1px;border:0;border-radius:0 !important;width:100%;height:auto;display:inline-block;line-height:normal;text-align:center;cursor:pointer;}'
-	// 		+'.playerInList{margin:8px 0 0;}'
-	// 		+'.playerInList a{display:inline-block;border:1px solid #ffce00;background:rgba(0,0,0,.3);padding:4px 2px 5px;cursor:pointer;}'
-	// 		+'.playerInList a:hover{text-decoration:none;}'
-	// 		+'.playerInList .removeBtn{width:10%;text-align:center;margin-right:3%;}'
-	// 		+'.playerInList .editBtn{width:10%;text-align:center;margin-left:3%;}'
-	// 		+'.playerInList .gotoBtn{width:66%;text-indent:6px;}'
-	// 		+'.prPlayerDetails select{ background-color:rgba(0,0,0,.3); color:#ffce00; border:none; }'
-	// 		+'.prPlayerDetails select option{ background-color:rgb(21,44,65); }'
-	// 		+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button{ margin-left:7px; }'
-	// 		+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button:first{ margin-left:0; }'
-	// 		+'.ui-dialog-prList .ui-dialog-buttonset button{ margin-left:7px; }'
-	// 		+'.ui-dialog-prList .ui-dialog-buttonset button:first{ margin-left:0; }'
-	// 		+'.playerRanges-export textarea{ min-height:100px; resize:vertical; }'
-	// 	).appendTo( "head" );
-	// }
+	window.plugin.playerRanges.ui.setupCSS=function() {
+		$( "<style>" ).prop( "type", "text/css" ).html( ''
+			+'.playerIcon,.playerRangesButton,.setRangesButton{'
+			+'background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAtCAMAAAD1JOlfAAAApVBMVEV0dHRNTU3i4uITExMBAQH9/f2oqKgVa5cKCgr+/v4NDQ3///+3t7cWcqITZI4VcJ8DeQAvLy8MTwt3d3cDfQDu7u4NDQ0BAQH///9oaGgCcAADewAUaZQCdgATZpEVbZsCcgABXwAWdKQ+Pj4oYEwxMTFylp8BAQEAAAADkAAZhbwDiQADgwD///8DpwAXfK8EtAADmgAdl9YbjsofoeQhrvYEvQA8FIAAAAAAKXRSTlOknJaVa4SLhdRW8Guy4CTFxbYdbPghvEE55lnkZ6NEo3019ekP/QX+AIHvNbUAAAJHSURBVHgBZNLNroMgEIZhd66sxriq4F8IKYAganv/l3Y+jkqFsmqaJ/MmzmSv8/HnK32chJ+BjdUP68pfRvWYst4+UsZaNaTNyeYpe2rRpk0ri5RR5dJqLzfbxYw1wikaKTbJTfYRQ9MZ0fI7I3Zb5cQjVglnnI4+XSnXHdU7qxthlrj6mMBWVG9sUM58jGhY1NzfqLIbqzDsE1fRfL9RJV82agybFyeqb9MPmzGu/DI0l3meUa0vloPhL1+9GG99c/bVa2G88M05VLOribeYUO180z9UL0bR9MyPq8OiDoZxj4MxNDFqWT74dEeVT2jC/LP8YH5RizHOGFTb0NzXdVt3VIuDoWmcUEoAnmfS+0Vt0srtWBiYPw6nNB1awGNhDE2gnhSAvgqGptAVhrChUeL/TIgFKjGE55OVsuBgldDtuSQPfbWUtujOvwBRzeoGKLyaaorjKMjtVHrbv7LnwKKjHSkjJLrPv+bopkViEAbAcOoXqr3YorbHwWry/3/hpjMsSFvYPc57DA+JIMMO9K++n72UKsdfTGUbY/ayP4Ep5/XNpDfauSBiLg+q1mpOpqxIxHUH+c5q2/XGrKPhY+XctEX1wGpaY4FSEytEXIiMvaq1tuZbyyAnoiMzk0QJj5vi6m4gMlN4xhf9clVs9lknmCSf/LR0PK5qn0NwRLBavoW+ecSjtH5T23sEqZYudHBBi27hrn5/Afzrs6PLuA1sVMwSoDqfVHJ0NLQPihltc0RrvYVBceJUA6PktDFC83AshWHwA4y5+fTEG+/4AAAAAElFTkSuQmCC);'
+			+'background-repeat:no-repeat;'
+			+'outline:none !important;'
+			+'}'
+			+'.playerIcon.ENLIGHTENED{background-position:left top;}'
+			+'.playerIcon.RESISTANCE{background-position:right top;}'
+			+'.playerIcon span{display:block;position:relative;color:#fff;line-height:13px;text-align:center;width:77px;min-width:80px;top:29px;left:50%;transform:translateX(-50%);text-shadow:0px 0px 3px #000,0px 0px 3px #000,0px 0px 5px #000,0px 0px 7px #000,0px 0px 9px #000,0px 0px 11px #000;pointer-events:none;}'
+			+'body.hideLabelPlayersRanges .playerIcon span{display:none;}'
+			+'.playerRangesButton{background-position:6px -25px !important;}'
+			+'.setRangesButton{background-position:-18px -25px !important;border-radius:0 0 4px 4px;}'
+			+'.rangesList{display:none;position:absolute;background:#fff;padding:7px;left:35px;top:27px;z-index:1000;}'
+			+'.rangesList{width:160px !important;-webkit-column-count:2;-moz-column-count:2;column-count:2;-webkit-column-rule:1px outset #ddd;-moz-column-rule:1px outset #ddd;column-rule:1px outset #ddd;}'
+			+'.rangesList.open{display:block;}'
+			+'.rangesList label{width:100%;display:inline-block !important;color:#000;font-size:12px;cursor:pointer;}'
+			+'.rangesList input{height:auto;margin-left:0;cursor:pointer;}'
+			+'.rangesList a, .rangesList a:hover{background:#000;color:#fff;margin:4px 0 0;padding:1px;border:0;border-radius:0 !important;width:100%;height:auto;display:inline-block;line-height:normal;text-align:center;cursor:pointer;}'
+			+'.playerInList{margin:8px 0 0;}'
+			+'.playerInList a{display:inline-block;border:1px solid #ffce00;background:rgba(0,0,0,.3);padding:4px 2px 5px;cursor:pointer;}'
+			+'.playerInList a:hover{text-decoration:none;}'
+			+'.playerInList .removeBtn{width:10%;text-align:center;margin-right:3%;}'
+			+'.playerInList .editBtn{width:10%;text-align:center;margin-left:3%;}'
+			+'.playerInList .gotoBtn{width:66%;text-indent:6px;}'
+			+'.prPlayerDetails select{ background-color:rgba(0,0,0,.3); color:#ffce00; border:none; }'
+			+'.prPlayerDetails select option{ background-color:rgb(21,44,65); }'
+			+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button{ margin-left:7px; }'
+			+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button:first{ margin-left:0; }'
+			+'.ui-dialog-prList .ui-dialog-buttonset button{ margin-left:7px; }'
+			+'.ui-dialog-prList .ui-dialog-buttonset button:first{ margin-left:0; }'
+			+'.playerRanges-export textarea{ min-height:100px; resize:vertical; }'
+		).appendTo( "head" );
+	}
 	//************
 	window.plugin.playerRanges.dialog.chooseName=function() {
 		var promptAction=prompt( 'Choose a label for the player marker.\nNB: you can use only a-z, A-Z, 0-9, "() []" and " "', '' );
@@ -736,85 +736,85 @@ function wrapper( plugin_info ) {
 		$( 'div.playerRanges.playerInList' ).remove();
 	}
 	//************
-	window.plugin.playerRanges.control.addControl=function() {
-		L.Control.PlayerRangeControl=L.Control.extend( {
-			options: { position: 'topleft' },
-			onAdd: function( map ) {
-				var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
-				var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
-				// Single toggle button for Portal XMP Ranges overlay
-				var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
-				toggleBtn.title='Toggle Portal XMP Ranges overlay';
-				L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
-					.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
-				L.DomEvent.addListener( toggleBtn, 'click', function() {
-					window.plugin.playerRanges.action.togglePortalRanges();
-				} );
-				return controlDiv;
-			}
-		} );
-		L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
-		map.addControl( new L.control.playerRangesControl() );
-	}
-	window.plugin.playerRanges.action.toggleSubControl=function( status ) {
-		if ( status===0 ) {
-			$( '.rangesList' ).removeClass( 'open' );
-		} else if ( status===1 ) {
-			$( '.rangesList' ).addClass( 'open' );
-		} else {
-			$( '.rangesList' ).toggleClass( 'open' );
-		}
-		if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
-			$( '.rangesList' ).html( '' );
-		} else {
-			$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
-		}
-		// set Y position
-		var pxTop=$( '.leaflet-playerranges' ).offset().top;
-		var hBox=$( '.leaflet-playerranges .rangesList' ).height();
-		var hMap=$( '#map' ).height();
-		var operazione=hMap-( hBox+pxTop )-30;
-		if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
-		else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
-	}
-	window.plugin.playerRanges.getHtml.controlListRanges=function() {
-		var html='';
-		var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
-		attrChecked=( labelIsEnabled )? 'checked':'';
-		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
-		for ( var i=1;i<=8;i++ ) {
-			var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
-			attrChecked=( rangeIsEnabled )? 'checked':'';
-			html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
-		}
-		var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
-		attrChecked=( jollyIsEnabled )? 'checked':'';
-		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
-		html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
-		return html;
-	}
-	window.plugin.playerRanges.control.initControl=function() {
-		window.plugin.playerRanges.control.addControl();
-		//hide the controls when the layer is off, show it when on
-		map.on( 'layeradd', function( obj ) {
-			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-				window.plugin.playerRanges.control.restoreVibility();
-			}
-		} );
-		map.on( 'layerremove', function( obj ) {
-			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-				window.plugin.playerRanges.control.restoreVibility();
-			}
-		} );
-	}
-	window.plugin.playerRanges.control.restoreVibility=function() {
-		var selector=$( '.playerRanges.leaflet-playerranges' );
-		if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
-			selector.show();
-		} else {
-			selector.hide();
-		}
-	}
+	// window.plugin.playerRanges.control.addControl=function() {
+	// 	L.Control.PlayerRangeControl=L.Control.extend( {
+	// 		options: { position: 'topleft' },
+	// 		onAdd: function( map ) {
+	// 			var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
+	// 			var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
+	// 			// Single toggle button for Portal XMP Ranges overlay
+	// 			var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
+	// 			toggleBtn.title='Toggle Portal XMP Ranges overlay';
+	// 			L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
+	// 				.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
+	// 			L.DomEvent.addListener( toggleBtn, 'click', function() {
+	// 				window.plugin.playerRanges.action.togglePortalRanges();
+	// 			} );
+	// 			return controlDiv;
+	// 		}
+	// 	} );
+	// 	L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
+	// 	map.addControl( new L.control.playerRangesControl() );
+	// }
+	// window.plugin.playerRanges.action.toggleSubControl=function( status ) {
+	// 	if ( status===0 ) {
+	// 		$( '.rangesList' ).removeClass( 'open' );
+	// 	} else if ( status===1 ) {
+	// 		$( '.rangesList' ).addClass( 'open' );
+	// 	} else {
+	// 		$( '.rangesList' ).toggleClass( 'open' );
+	// 	}
+	// 	if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
+	// 		$( '.rangesList' ).html( '' );
+	// 	} else {
+	// 		$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
+	// 	}
+	// 	// set Y position
+	// 	var pxTop=$( '.leaflet-playerranges' ).offset().top;
+	// 	var hBox=$( '.leaflet-playerranges .rangesList' ).height();
+	// 	var hMap=$( '#map' ).height();
+	// 	var operazione=hMap-( hBox+pxTop )-30;
+	// 	if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
+	// 	else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
+	// }
+	// window.plugin.playerRanges.getHtml.controlListRanges=function() {
+	// 	var html='';
+	// 	var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
+	// 	attrChecked=( labelIsEnabled )? 'checked':'';
+	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
+	// 	for ( var i=1;i<=8;i++ ) {
+	// 		var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
+	// 		attrChecked=( rangeIsEnabled )? 'checked':'';
+	// 		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
+	// 	}
+	// 	var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
+	// 	attrChecked=( jollyIsEnabled )? 'checked':'';
+	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
+	// 	html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
+	// 	return html;
+	// }
+	// window.plugin.playerRanges.control.initControl=function() {
+	// 	window.plugin.playerRanges.control.addControl();
+	// 	//hide the controls when the layer is off, show it when on
+	// 	map.on( 'layeradd', function( obj ) {
+	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+	// 			window.plugin.playerRanges.control.restoreVibility();
+	// 		}
+	// 	} );
+	// 	map.on( 'layerremove', function( obj ) {
+	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+	// 			window.plugin.playerRanges.control.restoreVibility();
+	// 		}
+	// 	} );
+	// }
+	// window.plugin.playerRanges.control.restoreVibility=function() {
+	// 	var selector=$( '.playerRanges.leaflet-playerranges' );
+	// 	if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
+	// 		selector.show();
+	// 	} else {
+	// 		selector.hide();
+	// 	}
+	// }
 	//======================================================================
 	// HOOK
 	//======================================================================
@@ -924,11 +924,9 @@ function wrapper( plugin_info ) {
 	// ---------------------------------------------------------------------------------
 	// User Location integration removed
 	//======================================================================
-	var setup = function(){
-		window.plugin.playerRanges.storage.check();
+	var setup=function() {
+		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
 		window.plugin.playerRanges.ui.setupCSS();
-		window.plugin.playerRanges.hook.init();
-		window.plugin.playerRanges.control.initControl();
 		window.plugin.playerRanges.layer.boot();
 		window.plugin.playerRanges.control.initControl();
 		// ensure portal ranges overlay starts hidden

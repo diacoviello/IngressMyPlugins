@@ -736,85 +736,85 @@ function wrapper( plugin_info ) {
 		$( 'div.playerRanges.playerInList' ).remove();
 	}
 	//************
-	window.plugin.playerRanges.control.addControl=function() {
-		L.Control.PlayerRangeControl=L.Control.extend( {
-			options: { position: 'topleft' },
-			onAdd: function( map ) {
-				var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
-				var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
-				// Single toggle button for Portal XMP Ranges overlay
-				var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
-				toggleBtn.title='Toggle Portal XMP Ranges overlay';
-				L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
-					.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
-				L.DomEvent.addListener( toggleBtn, 'click', function() {
-					window.plugin.playerRanges.action.togglePortalRanges();
-				} );
-				return controlDiv;
-			}
-		} );
-		L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
-		map.addControl( new L.control.playerRangesControl() );
-	}
-	window.plugin.playerRanges.action.toggleSubControl=function( status ) {
-		if ( status===0 ) {
-			$( '.rangesList' ).removeClass( 'open' );
-		} else if ( status===1 ) {
-			$( '.rangesList' ).addClass( 'open' );
-		} else {
-			$( '.rangesList' ).toggleClass( 'open' );
-		}
-		if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
-			$( '.rangesList' ).html( '' );
-		} else {
-			$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
-		}
-		// set Y position
-		var pxTop=$( '.leaflet-playerranges' ).offset().top;
-		var hBox=$( '.leaflet-playerranges .rangesList' ).height();
-		var hMap=$( '#map' ).height();
-		var operazione=hMap-( hBox+pxTop )-30;
-		if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
-		else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
-	}
-	window.plugin.playerRanges.getHtml.controlListRanges=function() {
-		var html='';
-		var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
-		attrChecked=( labelIsEnabled )? 'checked':'';
-		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
-		for ( var i=1;i<=8;i++ ) {
-			var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
-			attrChecked=( rangeIsEnabled )? 'checked':'';
-			html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
-		}
-		var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
-		attrChecked=( jollyIsEnabled )? 'checked':'';
-		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
-		html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
-		return html;
-	}
-	window.plugin.playerRanges.control.initControl=function() {
-		window.plugin.playerRanges.control.addControl();
-		//hide the controls when the layer is off, show it when on
-		map.on( 'layeradd', function( obj ) {
-			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-				window.plugin.playerRanges.control.restoreVibility();
-			}
-		} );
-		map.on( 'layerremove', function( obj ) {
-			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-				window.plugin.playerRanges.control.restoreVibility();
-			}
-		} );
-	}
-	window.plugin.playerRanges.control.restoreVibility=function() {
-		var selector=$( '.playerRanges.leaflet-playerranges' );
-		if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
-			selector.show();
-		} else {
-			selector.hide();
-		}
-	}
+	// window.plugin.playerRanges.control.addControl=function() {
+	// 	L.Control.PlayerRangeControl=L.Control.extend( {
+	// 		options: { position: 'topleft' },
+	// 		onAdd: function( map ) {
+	// 			var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
+	// 			var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
+	// 			// Single toggle button for Portal XMP Ranges overlay
+	// 			var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
+	// 			toggleBtn.title='Toggle Portal XMP Ranges overlay';
+	// 			L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
+	// 				.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
+	// 			L.DomEvent.addListener( toggleBtn, 'click', function() {
+	// 				window.plugin.playerRanges.action.togglePortalRanges();
+	// 			} );
+	// 			return controlDiv;
+	// 		}
+	// 	} );
+	// 	L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
+	// 	map.addControl( new L.control.playerRangesControl() );
+	// }
+	// window.plugin.playerRanges.action.toggleSubControl=function( status ) {
+	// 	if ( status===0 ) {
+	// 		$( '.rangesList' ).removeClass( 'open' );
+	// 	} else if ( status===1 ) {
+	// 		$( '.rangesList' ).addClass( 'open' );
+	// 	} else {
+	// 		$( '.rangesList' ).toggleClass( 'open' );
+	// 	}
+	// 	if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
+	// 		$( '.rangesList' ).html( '' );
+	// 	} else {
+	// 		$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
+	// 	}
+	// 	// set Y position
+	// 	var pxTop=$( '.leaflet-playerranges' ).offset().top;
+	// 	var hBox=$( '.leaflet-playerranges .rangesList' ).height();
+	// 	var hMap=$( '#map' ).height();
+	// 	var operazione=hMap-( hBox+pxTop )-30;
+	// 	if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
+	// 	else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
+	// }
+	// window.plugin.playerRanges.getHtml.controlListRanges=function() {
+	// 	var html='';
+	// 	var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
+	// 	attrChecked=( labelIsEnabled )? 'checked':'';
+	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
+	// 	for ( var i=1;i<=8;i++ ) {
+	// 		var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
+	// 		attrChecked=( rangeIsEnabled )? 'checked':'';
+	// 		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
+	// 	}
+	// 	var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
+	// 	attrChecked=( jollyIsEnabled )? 'checked':'';
+	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
+	// 	html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
+	// 	return html;
+	// }
+	// window.plugin.playerRanges.control.initControl=function() {
+	// 	window.plugin.playerRanges.control.addControl();
+	// 	//hide the controls when the layer is off, show it when on
+	// 	map.on( 'layeradd', function( obj ) {
+	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+	// 			window.plugin.playerRanges.control.restoreVibility();
+	// 		}
+	// 	} );
+	// 	map.on( 'layerremove', function( obj ) {
+	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+	// 			window.plugin.playerRanges.control.restoreVibility();
+	// 		}
+	// 	} );
+	// }
+	// window.plugin.playerRanges.control.restoreVibility=function() {
+	// 	var selector=$( '.playerRanges.leaflet-playerranges' );
+	// 	if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
+	// 		selector.show();
+	// 	} else {
+	// 		selector.hide();
+	// 	}
+	// }
 	//======================================================================
 	// HOOK
 	//======================================================================

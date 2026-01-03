@@ -54,9 +54,9 @@ version 2.0.0.20210724.002500
 
     self.getDataZoomForMapZoom = function(zoom) {
         let newzoom = zoom;
-        if (zoom == 12) {
-            newzoom = 13; // change zoom level "links: >300m" to "links: all links"
-        } else if (zoom == 13 || zoom == 14) {
+        if (zoom == 10) {
+            newzoom = 11; // change zoom level "links: >300m" to "links: all links"
+        } else if (zoom == 11 || zoom == 12) {
             newzoom = 15; // change zoom level "links: all links" to "portals: all"
         }
 

@@ -509,40 +509,40 @@ function wrapper( plugin_info ) {
 	//======================================================================
 	// CSS AND CONTROL FUNCTIONS
 	//======================================================================
-	window.plugin.playerRanges.ui.setupCSS=function() {
-		$( "<style>" ).prop( "type", "text/css" ).html( ''
-			+'.playerIcon,.playerRangesButton,.setRangesButton{'
-			+'background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAtCAMAAAD1JOlfAAAApVBMVEV0dHRNTU3i4uITExMBAQH9/f2oqKgVa5cKCgr+/v4NDQ3///+3t7cWcqITZI4VcJ8DeQAvLy8MTwt3d3cDfQDu7u4NDQ0BAQH///9oaGgCcAADewAUaZQCdgATZpEVbZsCcgABXwAWdKQ+Pj4oYEwxMTFylp8BAQEAAAADkAAZhbwDiQADgwD///8DpwAXfK8EtAADmgAdl9YbjsofoeQhrvYEvQA8FIAAAAAAKXRSTlOknJaVa4SLhdRW8Guy4CTFxbYdbPghvEE55lnkZ6NEo3019ekP/QX+AIHvNbUAAAJHSURBVHgBZNLNroMgEIZhd66sxriq4F8IKYAganv/l3Y+jkqFsmqaJ/MmzmSv8/HnK32chJ+BjdUP68pfRvWYst4+UsZaNaTNyeYpe2rRpk0ri5RR5dJqLzfbxYw1wikaKTbJTfYRQ9MZ0fI7I3Zb5cQjVglnnI4+XSnXHdU7qxthlrj6mMBWVG9sUM58jGhY1NzfqLIbqzDsE1fRfL9RJV82agybFyeqb9MPmzGu/DI0l3meUa0vloPhL1+9GG99c/bVa2G88M05VLOribeYUO180z9UL0bR9MyPq8OiDoZxj4MxNDFqWT74dEeVT2jC/LP8YH5RizHOGFTb0NzXdVt3VIuDoWmcUEoAnmfS+0Vt0srtWBiYPw6nNB1awGNhDE2gnhSAvgqGptAVhrChUeL/TIgFKjGE55OVsuBgldDtuSQPfbWUtujOvwBRzeoGKLyaaorjKMjtVHrbv7LnwKKjHSkjJLrPv+bopkViEAbAcOoXqr3YorbHwWry/3/hpjMsSFvYPc57DA+JIMMO9K++n72UKsdfTGUbY/ayP4Ep5/XNpDfauSBiLg+q1mpOpqxIxHUH+c5q2/XGrKPhY+XctEX1wGpaY4FSEytEXIiMvaq1tuZbyyAnoiMzk0QJj5vi6m4gMlN4xhf9clVs9lknmCSf/LR0PK5qn0NwRLBavoW+ecSjtH5T23sEqZYudHBBi27hrn5/Afzrs6PLuA1sVMwSoDqfVHJ0NLQPihltc0RrvYVBceJUA6PktDFC83AshWHwA4y5+fTEG+/4AAAAAElFTkSuQmCC);'
-			+'background-repeat:no-repeat;'
-			+'outline:none !important;'
-			+'}'
-			+'.playerIcon.ENLIGHTENED{background-position:left top;}'
-			+'.playerIcon.RESISTANCE{background-position:right top;}'
-			+'.playerIcon span{display:block;position:relative;color:#fff;line-height:13px;text-align:center;width:77px;min-width:80px;top:29px;left:50%;transform:translateX(-50%);text-shadow:0px 0px 3px #000,0px 0px 3px #000,0px 0px 5px #000,0px 0px 7px #000,0px 0px 9px #000,0px 0px 11px #000;pointer-events:none;}'
-			+'body.hideLabelPlayersRanges .playerIcon span{display:none;}'
-			+'.playerRangesButton{background-position:6px -25px !important;}'
-			+'.setRangesButton{background-position:-18px -25px !important;border-radius:0 0 4px 4px;}'
-			+'.rangesList{display:none;position:absolute;background:#fff;padding:7px;left:35px;top:27px;z-index:1000;}'
-			+'.rangesList{width:160px !important;-webkit-column-count:2;-moz-column-count:2;column-count:2;-webkit-column-rule:1px outset #ddd;-moz-column-rule:1px outset #ddd;column-rule:1px outset #ddd;}'
-			+'.rangesList.open{display:block;}'
-			+'.rangesList label{width:100%;display:inline-block !important;color:#000;font-size:12px;cursor:pointer;}'
-			+'.rangesList input{height:auto;margin-left:0;cursor:pointer;}'
-			+'.rangesList a, .rangesList a:hover{background:#000;color:#fff;margin:4px 0 0;padding:1px;border:0;border-radius:0 !important;width:100%;height:auto;display:inline-block;line-height:normal;text-align:center;cursor:pointer;}'
-			+'.playerInList{margin:8px 0 0;}'
-			+'.playerInList a{display:inline-block;border:1px solid #ffce00;background:rgba(0,0,0,.3);padding:4px 2px 5px;cursor:pointer;}'
-			+'.playerInList a:hover{text-decoration:none;}'
-			+'.playerInList .removeBtn{width:10%;text-align:center;margin-right:3%;}'
-			+'.playerInList .editBtn{width:10%;text-align:center;margin-left:3%;}'
-			+'.playerInList .gotoBtn{width:66%;text-indent:6px;}'
-			+'.prPlayerDetails select{ background-color:rgba(0,0,0,.3); color:#ffce00; border:none; }'
-			+'.prPlayerDetails select option{ background-color:rgb(21,44,65); }'
-			+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button{ margin-left:7px; }'
-			+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button:first{ margin-left:0; }'
-			+'.ui-dialog-prList .ui-dialog-buttonset button{ margin-left:7px; }'
-			+'.ui-dialog-prList .ui-dialog-buttonset button:first{ margin-left:0; }'
-			+'.playerRanges-export textarea{ min-height:100px; resize:vertical; }'
-		).appendTo( "head" );
-	}
+	// window.plugin.playerRanges.ui.setupCSS=function() {
+	// 	$( "<style>" ).prop( "type", "text/css" ).html( ''
+	// 		+'.playerIcon,.playerRangesButton,.setRangesButton{'
+	// 		+'background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAtCAMAAAD1JOlfAAAApVBMVEV0dHRNTU3i4uITExMBAQH9/f2oqKgVa5cKCgr+/v4NDQ3///+3t7cWcqITZI4VcJ8DeQAvLy8MTwt3d3cDfQDu7u4NDQ0BAQH///9oaGgCcAADewAUaZQCdgATZpEVbZsCcgABXwAWdKQ+Pj4oYEwxMTFylp8BAQEAAAADkAAZhbwDiQADgwD///8DpwAXfK8EtAADmgAdl9YbjsofoeQhrvYEvQA8FIAAAAAAKXRSTlOknJaVa4SLhdRW8Guy4CTFxbYdbPghvEE55lnkZ6NEo3019ekP/QX+AIHvNbUAAAJHSURBVHgBZNLNroMgEIZhd66sxriq4F8IKYAganv/l3Y+jkqFsmqaJ/MmzmSv8/HnK32chJ+BjdUP68pfRvWYst4+UsZaNaTNyeYpe2rRpk0ri5RR5dJqLzfbxYw1wikaKTbJTfYRQ9MZ0fI7I3Zb5cQjVglnnI4+XSnXHdU7qxthlrj6mMBWVG9sUM58jGhY1NzfqLIbqzDsE1fRfL9RJV82agybFyeqb9MPmzGu/DI0l3meUa0vloPhL1+9GG99c/bVa2G88M05VLOribeYUO180z9UL0bR9MyPq8OiDoZxj4MxNDFqWT74dEeVT2jC/LP8YH5RizHOGFTb0NzXdVt3VIuDoWmcUEoAnmfS+0Vt0srtWBiYPw6nNB1awGNhDE2gnhSAvgqGptAVhrChUeL/TIgFKjGE55OVsuBgldDtuSQPfbWUtujOvwBRzeoGKLyaaorjKMjtVHrbv7LnwKKjHSkjJLrPv+bopkViEAbAcOoXqr3YorbHwWry/3/hpjMsSFvYPc57DA+JIMMO9K++n72UKsdfTGUbY/ayP4Ep5/XNpDfauSBiLg+q1mpOpqxIxHUH+c5q2/XGrKPhY+XctEX1wGpaY4FSEytEXIiMvaq1tuZbyyAnoiMzk0QJj5vi6m4gMlN4xhf9clVs9lknmCSf/LR0PK5qn0NwRLBavoW+ecSjtH5T23sEqZYudHBBi27hrn5/Afzrs6PLuA1sVMwSoDqfVHJ0NLQPihltc0RrvYVBceJUA6PktDFC83AshWHwA4y5+fTEG+/4AAAAAElFTkSuQmCC);'
+	// 		+'background-repeat:no-repeat;'
+	// 		+'outline:none !important;'
+	// 		+'}'
+	// 		+'.playerIcon.ENLIGHTENED{background-position:left top;}'
+	// 		+'.playerIcon.RESISTANCE{background-position:right top;}'
+	// 		+'.playerIcon span{display:block;position:relative;color:#fff;line-height:13px;text-align:center;width:77px;min-width:80px;top:29px;left:50%;transform:translateX(-50%);text-shadow:0px 0px 3px #000,0px 0px 3px #000,0px 0px 5px #000,0px 0px 7px #000,0px 0px 9px #000,0px 0px 11px #000;pointer-events:none;}'
+	// 		+'body.hideLabelPlayersRanges .playerIcon span{display:none;}'
+	// 		+'.playerRangesButton{background-position:6px -25px !important;}'
+	// 		+'.setRangesButton{background-position:-18px -25px !important;border-radius:0 0 4px 4px;}'
+	// 		+'.rangesList{display:none;position:absolute;background:#fff;padding:7px;left:35px;top:27px;z-index:1000;}'
+	// 		+'.rangesList{width:160px !important;-webkit-column-count:2;-moz-column-count:2;column-count:2;-webkit-column-rule:1px outset #ddd;-moz-column-rule:1px outset #ddd;column-rule:1px outset #ddd;}'
+	// 		+'.rangesList.open{display:block;}'
+	// 		+'.rangesList label{width:100%;display:inline-block !important;color:#000;font-size:12px;cursor:pointer;}'
+	// 		+'.rangesList input{height:auto;margin-left:0;cursor:pointer;}'
+	// 		+'.rangesList a, .rangesList a:hover{background:#000;color:#fff;margin:4px 0 0;padding:1px;border:0;border-radius:0 !important;width:100%;height:auto;display:inline-block;line-height:normal;text-align:center;cursor:pointer;}'
+	// 		+'.playerInList{margin:8px 0 0;}'
+	// 		+'.playerInList a{display:inline-block;border:1px solid #ffce00;background:rgba(0,0,0,.3);padding:4px 2px 5px;cursor:pointer;}'
+	// 		+'.playerInList a:hover{text-decoration:none;}'
+	// 		+'.playerInList .removeBtn{width:10%;text-align:center;margin-right:3%;}'
+	// 		+'.playerInList .editBtn{width:10%;text-align:center;margin-left:3%;}'
+	// 		+'.playerInList .gotoBtn{width:66%;text-indent:6px;}'
+	// 		+'.prPlayerDetails select{ background-color:rgba(0,0,0,.3); color:#ffce00; border:none; }'
+	// 		+'.prPlayerDetails select option{ background-color:rgb(21,44,65); }'
+	// 		+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button{ margin-left:7px; }'
+	// 		+'.ui-dialog-prPlayerDetails .ui-dialog-buttonset button:first{ margin-left:0; }'
+	// 		+'.ui-dialog-prList .ui-dialog-buttonset button{ margin-left:7px; }'
+	// 		+'.ui-dialog-prList .ui-dialog-buttonset button:first{ margin-left:0; }'
+	// 		+'.playerRanges-export textarea{ min-height:100px; resize:vertical; }'
+	// 	).appendTo( "head" );
+	// }
 	//************
 	window.plugin.playerRanges.dialog.chooseName=function() {
 		var promptAction=prompt( 'Choose a label for the player marker.\nNB: you can use only a-z, A-Z, 0-9, "() []" and " "', '' );
@@ -924,9 +924,11 @@ function wrapper( plugin_info ) {
 	// ---------------------------------------------------------------------------------
 	// User Location integration removed
 	//======================================================================
-	var setup=function() {
-		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
+	var setup = function(){
+		window.plugin.playerRanges.storage.check();
 		window.plugin.playerRanges.ui.setupCSS();
+		window.plugin.playerRanges.hook.init();
+		window.plugin.playerRanges.control.initControl();
 		window.plugin.playerRanges.layer.boot();
 		window.plugin.playerRanges.control.initControl();
 		// ensure portal ranges overlay starts hidden

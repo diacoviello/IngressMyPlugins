@@ -679,7 +679,7 @@ version 1.0.0.20251228.002300
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
 				let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
 				if ( !self.settings.hidebuttons ) {
-					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
+					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="\'"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
 				}
 				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
 			}

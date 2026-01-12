@@ -995,7 +995,7 @@ version 1.0.0.20220407.231800
                 }
             } else {
                 if ( setnewClass( waypointcontrol, `${self.id}-newwaypoint` ) ) {
-                    waypointcontrol.setAttribute( 'title', 'Add waypoint [\']\']' );
+                    waypointcontrol.setAttribute( 'title', 'Add waypoint (\']\')' );
                     document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
                 }
             }

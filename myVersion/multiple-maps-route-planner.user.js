@@ -1229,7 +1229,7 @@ a.${self.id}-selectedportalrow {
                 togglebutton.className=self.id+"-togglewaypoint";
                 togglebutton.setAttribute('accesskey',']');
                 togglebutton.title = (togglebutton.title||'') + ' (accesskey: A)';
-                togglebutton.setAttribute('aria-label','Toggle waypoint (accesskey A)');
+                togglebutton.setAttribute('aria-label','Toggle waypoint (accesskey [\']\']');
                 let togglebuttonicon=togglebutton.appendChild( document.createElement( 'img' ) );
                 // + icon
                 togglebuttonicon.src=iconplus;

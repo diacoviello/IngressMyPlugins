@@ -664,7 +664,7 @@ version 1.0.0.20251228.002300
 			if ( linkcount>0 ) {
 				// copybutton
 				let titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to copy all links from this portal to another portal"';
+				if ( !self.isSmartphone ) titledescription=' title="Click to copy all links from this portal to another portal [.]"';
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'copylinks(); return false;'
 				if ( !self.settings.hidebuttons ) {
 					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
@@ -675,7 +675,7 @@ version 1.0.0.20251228.002300
 			if ( true ) {
 				// starbutton
 				let titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to start making multiple links to this portal"';
+				if ( !self.isSmartphone ) titledescription=' title="Click to start making multiple links to this portal [x]"';
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
 				let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
 				if ( !self.settings.hidebuttons ) {
@@ -687,7 +687,7 @@ version 1.0.0.20251228.002300
 			if ( linkcount>0 ) {
 				// movebutton
 				let titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to move all links from this portal to another portal"';
+				if ( !self.isSmartphone ) titledescription=' title="Click to move all links from this portal to another portal [/]"';
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'movelinks(); return false;'
 				if ( !self.settings.hidebuttons ) {
 					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmove" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="/"><span class="screenbutton screenmoveicon" /></a>' );
@@ -698,7 +698,7 @@ version 1.0.0.20251228.002300
 			if ( true ) {
 				// linkbutton
 				let titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to start a link from this portal, click another portal to create a link"';
+				if ( !self.isSmartphone ) titledescription=' title="Click to start a link from this portal, click another portal to create a link [z]"';
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'addMarker(\''+guid+'\',{icon:\'link\'}); return false;'
 				let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='link'? ' style="background-position-y: bottom;"':'' );
 				if ( !self.settings.hidebuttons ) {

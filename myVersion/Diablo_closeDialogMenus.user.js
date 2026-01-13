@@ -21,6 +21,12 @@
 		window._activeDialogIndex=-1;
 		window._preferredActiveIndex=null;
 
+		// Verify jQuery is available
+		console.log( '=== setup() started ===' );
+		console.log( 'jQuery available:', typeof $, '$===jQuery?', $===jQuery );
+		console.log( 'document.querySelectorAll(".ui-dialog"):', document.querySelectorAll( '.ui-dialog' ).length );
+		console.log( '$(".ui-dialog").length:', $( '.ui-dialog' ).length );
+
 		// --- Helpers ---
 		function getVisibleDialogs() {
 			// Prioritize modal dialogs
@@ -153,57 +159,55 @@
 			console.log( 'jQuery event: dialogopen', $( this ).closest( '.ui-dialog' ).find( '.ui-dialog-title' ).text() );
 			setTimeout( () => updateDialogs( 'dialogopen' ), 0 );
 		} );
+		console.log( '✓ dialogopen handler attached' );
 
 		$( document ).on( 'dialogclose', '.ui-dialog-content', function( e ) {
 			console.log( 'jQuery event: dialogclose', $( this ).closest( '.ui-dialog' ).find( '.ui-dialog-title' ).text() );
 			setTimeout( () => updateDialogs( 'dialogclose' ), 0 );
 		} );
+		console.log( '✓ dialogclose handler attached' );
 
-		// Catch clicks on the dialog close button to set preferred index reliably
-		$( document ).on( 'click', '.ui-dialog .ui-dialog-titlebar-close', function( e ) {
+		// Catch clicks on the dialog close button
+		$( document ).on( 'click', '.ui-dialog-titlebar-close', function( e ) {
 			const $dlg = $( this ).closest( '.ui-dialog' );
 			const title = $dlg.find( '.ui-dialog-title' ).text();
 			const dialogs = getVisibleDialogs();
 			const idx = dialogs.indexOf( $dlg[0] );
-			console.log( 'close-button clicked for', title, 'index=', idx );
+			console.log( 'close-button clicked for:', title, 'index=', idx );
 			if ( idx>=0 ) {
 				window._preferredActiveIndex = idx - 1;
 				console.log( 'close-button -> set preferredActiveIndex=', window._preferredActiveIndex );
 			}
 			setTimeout( () => updateDialogs( 'close-button' ), 50 );
 		} );
+		console.log( '✓ close-button click handler attached' );
 
-		// Observe DOM changes as a fallback if dialogs are removed without triggering dialogclose
-		try {
-			const mo = new MutationObserver( function( muts ) {
-				let changed = false;
-				for ( const m of muts ) {
-					if ( m.addedNodes.length || m.removedNodes.length ) { changed = true; break; }
-				}
-				if ( changed ) {
-					console.log( 'MutationObserver: DOM changed, checking dialogs' );
-					setTimeout( () => updateDialogs( 'mutation' ), 0 );
-				}
-			} );
-			mo.observe( document.body, { childList: true, subtree: true } );
-		} catch (err) {
-			console.warn( 'MutationObserver not available', err );
-		}
-
-		// Capturing keydown so 'g' always triggers close (works even when focus is inside inputs)
+		// Capture keydown for 'x' to close active dialog
 		document.addEventListener( 'keydown', function( e ) {
-			if ( e.key === 'g' || e.key === 'G' ) {
-				console.log( 'captured keydown: g' );
+			if ( e.key === 'x' || e.key === 'X' ) {
+				console.log( 'captured keydown:', e.key );
 				e.stopImmediatePropagation();
 				e.preventDefault();
 				closeActiveDialog();
+			} else if ( e.key === '>' ) {
+				console.log( 'captured keydown: >' );
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				cycleDialogs( false );
+			} else if ( e.key === '<' ) {
+				console.log( 'captured keydown: <' );
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				cycleDialogs( true );
 			}
 		}, true );
+		console.log( '✓ keydown capturing handler attached for x, >, <' );
 
 		// --- Shortcuts ---
 		window.registerShortcut( '>', () => cycleDialogs( false ), 'Cycle dialogs forward' );
 		window.registerShortcut( '<', () => cycleDialogs( true ), 'Cycle dialogs backward' );
-		window.registerShortcut( 'g', () => { console.log('shortcut: Escape'); closeActiveDialog(); }, 'Close active dialog' );
+		window.registerShortcut( 'x', () => { console.log('shortcut: x'); closeActiveDialog(); }, 'Close active dialog' );
+		console.log( '=== setup() complete ===' );
 	}
 
 	if ( window.iitcLoaded ) {

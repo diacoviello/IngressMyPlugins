@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         IITC Close Button Accesskey
+// @name         closeDialogMenus
 // @author       DiabloEnMusica
 // @version      0.1
 // @description  Adds an accesskey to the IITC dialog close button
@@ -13,123 +13,116 @@
 // @grant        none
 // ==/UserScript==
 
-function wrapper( plugin_info ) {
-
-	// ensure plugin framework is there, even if iitc is not yet loaded
-	if ( typeof window.plugin!=='function' ) window.plugin=function() { };
-
-	const W=window;
-	let DIALOGS={};
-
-	function itemOnClick( ev ) {
-		const id=ev.target.closest( "tr" ).dataset.id;
-		const dialog=$( DIALOGS[ id ] );
-		dialog.dialog( "moveToTop" );
-	}
-
-	function itemOnClose( ev ) {
-		const id=ev.target.closest( "tr" ).dataset.id;
-		const dialog=$( DIALOGS[ id ] );
-		dialog.dialog( "close" );
-	}
-
-	function dialogListItem( id ) {
-		const dialog=$( DIALOGS[ id ] );
-		const option=dialog.dialog( "option" );
-		const text=option.title;
-		const tr=document.createElement( "tr" );
-		tr.dataset.id=id;
-		const title=document.createElement( "td" );
-		tr.appendChild( title );
-		title.textContent=text;
-		if ( !dialog.is( ":hidden" ) ) title.classList.add( "ui-dialog-title-inactive" );
-		title.addEventListener( "click", itemOnClick );
-		const closeButton=document.createElement( "td" );
-		tr.appendChild( closeButton );
-		closeButton.textContent="X";
-		closeButton.addEventListener( "click", itemOnClose );
-
-		return tr;
-	}
-
-	function updateList() {
-		const list=document.getElementById( "dialog-list" );
-		list.textContent="";
-		Object.keys( DIALOGS ).forEach( ( id ) => {
-			list.appendChild( dialogListItem( id ) );
-		} );
-	}
-
-	const dialogMonitor={
-		set: function( obj, prop, valeur ) {
-			obj[ prop ]=valeur;
-			updateList();
-			return true;
-		},
-		deleteProperty: function( obj, prop ) {
-			delete obj[ prop ];
-			updateList();
-			return true;
-		},
-	};
+( function() {
+	'use strict';
 
 	function setup() {
-		DIALOGS=W.DIALOGS=new Proxy( W.DIALOGS, dialogMonitor );
+		window._dialogs=[];
+		window._activeDialogIndex=-1;
 
-		$( "<style>" )
-			.prop( "type", "text/css" )
-			.html(
-				`
-#dialog-list {
-  padding: 3px;
-}
-#dialog-list tr:nth-last-child(n+2) td {
-  border-bottom: 1px white dotted;
-}
-#dialog-list tr td:first-child {
-  width: 280px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#dialog-list tr td:first-child:hover {
-  color: #03fe03; /*bookmark hover*/
-}
-#dialog-list tr td:last-child {
-  color: red;
-  font-weight: bold;
-}`
-			)
-			.appendTo( "head" );
+		// --- Helpers ---
+		function getVisibleDialogs() {
+			// Prioritize modal dialogs
+			const modals=$( '.ui-dialog.ui-dialog-modal:visible' );
+			const base=modals.length? modals:$( '.ui-dialog:visible' );
 
-		const sidebar=document.getElementById( "sidebar" );
-		const dialogList=document.createElement( "div" );
-		sidebar.appendChild( dialogList );
-		dialogList.id="dialog-list";
+			return base
+				.sort( ( a, b ) =>
+					parseInt( $( a ).css( 'z-index' ) )-parseInt( $( b ).css( 'z-index' ) )
+				)
+				.toArray();
+		}
+
+		function outlineActiveDialog() {
+			$( '.ui-dialog' ).css( 'outline', '' );
+			if ( window._activeDialogIndex<0 ) return;
+
+			const dlg=window._dialogs[ window._activeDialogIndex ];
+			if ( !dlg ) return;
+
+			$( dlg ).css( 'outline', '3px solid #00ffff' ); // bright cyan outline
+		}
+
+		function updateDialogs( evt ) {
+			const prevIndex=window._activeDialogIndex;
+
+			window._dialogs=getVisibleDialogs();
+
+			if ( !window._dialogs.length ) {
+				window._activeDialogIndex=-1;
+			} else {
+				// Keep previous active index if possible
+				if ( prevIndex<0||prevIndex>=window._dialogs.length ) {
+					window._activeDialogIndex=window._dialogs.length-1; // topmost
+				}
+			}
+
+			outlineActiveDialog();
+
+			if ( window._activeDialogIndex>=0 ) {
+				console.log(
+					'Active dialog:',
+					$( window._dialogs[ window._activeDialogIndex ] )
+						.find( '.ui-dialog-title' )
+						.text()
+				);
+			}
+		}
+
+		function cycleDialogs() {
+			if ( !window._dialogs.length ) return;
+
+			window._activeDialogIndex=
+				( window._activeDialogIndex+1 )%window._dialogs.length;
+
+			const dlg=window._dialogs[ window._activeDialogIndex ];
+			if ( !dlg ) return;
+
+			// Bring to top visually
+			$( dlg ).find( '.ui-dialog-content' ).dialog( 'moveToTop' );
+
+			outlineActiveDialog();
+
+			console.log(
+				'Cycled to dialog:',
+				$( dlg ).find( '.ui-dialog-title' ).text()
+			);
+		}
+
+		function closeActiveDialog() {
+			if ( window._activeDialogIndex<0 ) return;
+
+			const dlg=window._dialogs[ window._activeDialogIndex ];
+			if ( !dlg ) return;
+
+			console.log(
+				'Closing dialog:',
+				$( dlg ).find( '.ui-dialog-title' ).text()
+			);
+
+			$( dlg ).find( '.ui-dialog-content' ).dialog( 'close' );
+		}
+
+		// --- Event hooks ---
+		$( document ).on(
+			'dialogopen dialogclose',
+			'.ui-dialog-content',
+			function( evt ) {
+				setTimeout( updateDialogs, 0, evt ); // allow DOM updates
+			}
+		);
+
+		// Initialize state if dialogs already exist
+		updateDialogs();
+
+		// --- Shortcuts ---
+		window.registerShortcut( 'Tab', cycleDialogs, 'Cycle open dialogs' );
+		window.registerShortcut( 'Escape', closeActiveDialog, 'Close active dialog' );
 	}
 
-	if ( !window.bootPlugins ) window.bootPlugins=[];
-	window.bootPlugins.push( setup );
-	// if IITC has already booted, immediately run the 'setup' function
-	if ( window.iitcLoaded&&typeof setup==='function' ) setup();
-
-	setup.info=plugin_info; //add the script info data to the function as a property
-}
-
-// inject code into site context
-var info={};
-if ( typeof GM_info!=='undefined'&&GM_info&&GM_info.script ) info.script={ version: GM_info.script.version, name: GM_info.script.name, description: GM_info.script.description };
-
-var script=document.createElement( 'script' );
-// if on last IITC mobile, will be replaced by wrapper(info)
-var mobile=`script.appendChild(document.createTextNode('('+ wrapper +')('+JSON.stringify(info)+');'));
-(document.body || document.head || document.documentElement).appendChild(script);`;
-// detect if mobile
-if ( mobile.startsWith( 'script' ) ) {
-	script.appendChild( document.createTextNode( '('+wrapper+')('+JSON.stringify( info )+');' ) );
-	script.appendChild( document.createTextNode( '//# sourceURL=iitc:///plugins/dialogs.js' ) );
-	( document.body||document.head||document.documentElement ).appendChild( script );
-} else {
-	// mobile string
-	wrapper( info );
-}
+	if ( window.iitcLoaded ) {
+		setup();
+	} else {
+		window.addHook( 'iitcLoaded', setup );
+	}
+} )();

@@ -608,7 +608,8 @@ version 1.0.0.20220407.231800
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-'+self.pluginname,
             title: self.title+' - About',
-            width: 'auto'
+            width: 'auto',
+            accesskey: 'k'
         } ).dialog( 'option', 'buttons', {
             '< Main menu': function() { self.menu(); },
             'Changelog': function() { alert( self.changelog ); },
@@ -1269,6 +1270,7 @@ a.${self.id}-selectedportalrow {
 
                 let menubutton=container.appendChild( document.createElement( 'a' ) );
                 menubutton.className=self.id+"-menu";
+                menubutton.setAttribute('accesskey','k');
                 let menubuttonicon=menubutton.appendChild( document.createElement( 'img' ) );
                 menubuttonicon.src=iconmenu;
                 menubuttonicon.width=16;

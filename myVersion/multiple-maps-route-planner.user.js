@@ -87,7 +87,7 @@ version 1.0.0.20220407.231800
     self.localstorageroutes=self.pluginname+'-routes';
     self.routes={};
 
-    self.maxwaypoints=9;
+    self.maxwaypoints=12;
     self.waypoints={};
     self.waypointsroutelayer=undefined;
 

@@ -104,6 +104,8 @@ version 1.0.0.20251228.002300
 	self.selectedlink=undefined;
 	self.movelinksposition=undefined;
 	self.copylinksposition=undefined;
+	self.masscopypaste=false; // flag for mass copy-paste mode
+	self.masscopypasteposition=undefined; // source portal for mass copy-paste
 	self.linkstyle=[
 		'10,5,5,5,5,5,5,5,100%'
 	];
@@ -204,6 +206,8 @@ version 1.0.0.20251228.002300
 		self.movelinksposition=undefined;
 		self.multistartpos=undefined;
 		self.copylinksposition=undefined;
+		self.masscopypaste=false;
+		self.masscopypasteposition=undefined;
 		self.closedialog();
 		self.deactivatebuttons();
 	};
@@ -548,6 +552,87 @@ version 1.0.0.20251228.002300
 		localStorage[ self.localstoragetitlecache ]=JSON.stringify( savetitles );
 	};
 
+	// Get key count HTML for a portal GUID
+	self.getkeycount=function( guid ) {
+		if ( !guid ) return '';
+		if ( window.plugin&&window.plugin.playerInventory&&window.plugin.playerInventory.inventory&&window.plugin.playerInventory.inventory.keys ) {
+			var keyData=window.plugin.playerInventory.inventory.keys.get( guid );
+			if ( keyData&&keyData.total>0 ) {
+				return ' <span class="inventory-details" style="color: #FFA500;">['+keyData.total+' key'+( keyData.total>1? 's':'' )+']</span>';
+			} else if ( window.portals&&window.portals[ guid ] ) {
+				// Portal exists but no keys in inventory
+				return ' <span class="inventory-details" style="color: #ff0000;"><strong>[0 keys]</strong></span>';
+			}
+		}
+		return '';
+	};
+
+	// Auto-bookmark portal with no keys (green color)
+	self.autobookmarknokeys=function( guid ) {
+		if ( !guid ) return false;
+		if ( !window.plugin||!window.plugin.bookmarks ) return false;
+		if ( !window.portals||!window.portals[ guid ] ) return false;
+
+		// Check if portal has no keys
+		var hasNoKeys=false;
+		if ( window.plugin.playerInventory&&window.plugin.playerInventory.inventory&&window.plugin.playerInventory.inventory.keys ) {
+			var keyData=window.plugin.playerInventory.inventory.keys.get( guid );
+			if ( !keyData ) hasNoKeys=true;
+		}
+
+		if ( !hasNoKeys ) return false;
+
+		// Check if already bookmarked
+		var existingBookmark=window.plugin.bookmarks.findByGuid( guid );
+		if ( existingBookmark ) return false; // Already bookmarked
+
+		// Add bookmark with green color
+		var portal=window.portals[ guid ];
+		var latlng=portal.getLatLng();
+		var label=portal.options.data.title||'Portal';
+
+		try {
+			// Find or create "No Keys" folder
+			var folderName='No Keys';
+			var folderID=null;
+
+			for ( var ID in window.plugin.bookmarks.bkmrksObj.portals ) {
+				if ( window.plugin.bookmarks.bkmrksObj.portals[ ID ].label===folderName ) {
+					folderID=ID;
+					break;
+				}
+			}
+
+			// Create folder if it doesn't exist
+			if ( !folderID ) {
+				folderID=window.plugin.bookmarks.generateID();
+				window.plugin.bookmarks.bkmrksObj.portals[ folderID ]={ label: folderName, state: 1, bkmrk: {} };
+			}
+
+			// Add bookmark with green color
+			var bookmarkID=window.plugin.bookmarks.generateID();
+			var bookmarkData={
+				guid: guid,
+				latlng: latlng.lat+','+latlng.lng,
+				label: label
+			};
+
+			// Add color if bookmarks-addon is available
+			if ( window.plugin.bookmarksAddon ) {
+				bookmarkData.color='#00ff00'; // Green
+			}
+
+			window.plugin.bookmarks.bkmrksObj.portals[ folderID ].bkmrk[ bookmarkID ]=bookmarkData;
+			window.plugin.bookmarks.saveStorage();
+			window.plugin.bookmarks.refreshBkmrks();
+
+			return true;
+		} catch ( e ) {
+			console.warn( 'Auto-bookmark failed:', e );
+			return false;
+		}
+	};
+
 	self.restoretitles=function() {
 		// restore stored titles
 		try {
@@ -637,6 +722,14 @@ version 1.0.0.20251228.002300
 					self.copylinksposition=undefined;
 					// remove marker
 					self.removeMarker();
+				} else if ( self.masscopypaste&&self.masscopypasteposition ) {
+					// mass copy-paste mode: copy links to this portal and keep mode active
+					var tempCopyPos=self.copylinksposition;
+					self.copylinksposition=self.masscopypasteposition;
+					self.copylines();
+					self.copylinksposition=tempCopyPos;
+					// Don't remove marker or clear mode - keep going!
+					return;
 				} else {
 					self.addline();
 					// remove marker
@@ -670,6 +763,16 @@ version 1.0.0.20251228.002300
 					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
 				}
 				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon" /></a>' );
+
+				// mass copy-paste button
+				titledescription='';
+				if ( !self.isSmartphone ) titledescription=' title="Click to enable mass copy-paste mode - paste links to multiple portals [ESC to cancel] [g]"';
+				onclickaction=self.namespace+'clearall(); '+self.namespace+'startMassCopyPaste(); return false;'
+				let styleactivebutton=( self.masscopypaste? ' style="background-position-y: bottom;"':'' );
+				if ( !self.settings.hidebuttons ) {
+					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmasscopypaste" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="g"><span class="screenbutton screencopyicon"'+styleactivebutton+' /></a>' );
+				}
+				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon"'+styleactivebutton+' /></a>' );
 			}
 
 			if ( true ) {
@@ -1030,42 +1133,42 @@ version 1.0.0.20251228.002300
 	};
 
 	self.checkAllLinksForCrosslinks=function() {
-    if ( self.crosslinklayerdisabled ) return;
+		if ( self.crosslinklayerdisabled ) return;
 
-    self.crosslinkLayer.clearLayers();
-    self.crosslinkLayerGuids={};
+		self.crosslinkLayer.clearLayers();
+		self.crosslinkLayerGuids={};
 
-    console.log(self.id+': checkAllLinksForCrosslinks start: gameLinks=', Object.keys(window.links||{}).length, 'drawn=', Object.keys((self.getDrawlayer()||{})._layers||{}).length );
+		console.log( self.id+': checkAllLinksForCrosslinks start: gameLinks=', Object.keys( window.links||{} ).length, 'drawn=', Object.keys( ( self.getDrawlayer()||{} )._layers||{} ).length );
 
-    $.each( window.links, function( guid, link ) {
-        self.testLinkAndDrawCrosslinks( link );
-    } );
+		$.each( window.links, function( guid, link ) {
+			self.testLinkAndDrawCrosslinks( link );
+		} );
 
-    // also test drawn links against other drawn links (so drawn-drawn intersections are found)
-    var drawlayer=self.getDrawlayer();
-    if ( drawlayer ) {
-        for ( var id in drawlayer._layers ) {
-            if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
-            var layer=drawlayer._layers[ id ];
-            if ( !layer ) continue;
-            // only test line-like layers
-            if ( !( layer instanceof L.GeoJSON )&&!( layer instanceof L.GeodesicPolyline )&&!( layer instanceof L.GeodesicPolygon ) ) continue;
+		// also test drawn links against other drawn links (so drawn-drawn intersections are found)
+		var drawlayer=self.getDrawlayer();
+		if ( drawlayer ) {
+			for ( var id in drawlayer._layers ) {
+				if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
+				var layer=drawlayer._layers[ id ];
+				if ( !layer ) continue;
+				// only test line-like layers
+				if ( !( layer instanceof L.GeoJSON )&&!( layer instanceof L.GeodesicPolyline )&&!( layer instanceof L.GeodesicPolygon ) ) continue;
 
-            // ensure a guid exists so drawCrossLink can index results without collision
-            layer.options=layer.options||{};
-            if ( !layer.options.guid ) layer.options.guid='drawn-'+( Math.random().toString( 36 ).slice( 2 ) );
+				// ensure a guid exists so drawCrossLink can index results without collision
+				layer.options=layer.options||{};
+				if ( !layer.options.guid ) layer.options.guid='drawn-'+( Math.random().toString( 36 ).slice( 2 ) );
 
-            try {
-                // console.log(self.id+': testing drawn layer', id, 'guid=', layer.options.guid, 'latLngs=', layer.getLatLngs && JSON.stringify(layer.getLatLngs()) );
-                self.testDrawnLinksAgainstLayer( layer );
-            } catch ( e ) {
-                console.warn( self.id+': error testing drawn vs drawn for layer', id, e );
-            }
-        }
-    }
+				try {
+					// console.log(self.id+': testing drawn layer', id, 'guid=', layer.options.guid, 'latLngs=', layer.getLatLngs && JSON.stringify(layer.getLatLngs()) );
+					self.testDrawnLinksAgainstLayer( layer );
+				} catch ( e ) {
+					console.warn( self.id+': error testing drawn vs drawn for layer', id, e );
+				}
+			}
+		}
 
-    console.log(self.id+': checkAllLinksForCrosslinks done: crosslinks=', Object.keys(self.crosslinkLayerGuids||{}).length );
-};
+		console.log( self.id+': checkAllLinksForCrosslinks done: crosslinks=', Object.keys( self.crosslinkLayerGuids||{} ).length );
+	};
 
 	self.testLinkAndDrawCrosslinks=function( link ) {
 		if ( self.settings.showcrosslinks===0 ) { // 0 = Links, 1 = Drawn, 2 = Both
@@ -1229,37 +1332,37 @@ version 1.0.0.20251228.002300
 
 	// new: test the newly added drawn link against other drawn links and draw crosslinks when they intersect
 	self.testDrawnLinksAgainstLayer=function( layer ) {
-				if ( self.crosslinklayerdisabled ) return;
-				if ( !layer ) return;
-				var drawlayer=self.getDrawlayer();
-				if ( !drawlayer ) return;
+		if ( self.crosslinklayerdisabled ) return;
+		if ( !layer ) return;
+		var drawlayer=self.getDrawlayer();
+		if ( !drawlayer ) return;
 
-					for ( var id in drawlayer._layers ) {
-								if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
-								var other=drawlayer._layers[ id ];
-								if ( !other||other===layer ) continue;
-								// only consider line-like drawn items
-									if ( !( other instanceof L.GeoJSON ) ) continue;
-		
-									// test both directions using existing testPolyLine helper
-									var crosses=false;
-								try {
-											if ( self.testPolyLine( other, layer ) ) crosses=true;
-											else if ( self.testPolyLine( layer, other ) ) crosses=true;
-									} catch ( e ) { /* ignore any unexpected geometry */ }
-		
-									if ( crosses ) {
-												// settings.showcrosslinks: 0 = Links, 1 = Drawn, 2 = Both
-													if ( self.settings.showcrosslinks===0 ) {
-																// don't show crosslinks for drawn-drawn intersections
-																	continue;
-														}
-												// draw crosslink markers for both drawn layers (drawCrossLink guards duplicates)
-													try { self.drawCrossLink( other ); } catch ( e ) { }
-												try { self.drawCrossLink( layer ); } catch ( e ) { }
-										}
-						}
-		};	
+		for ( var id in drawlayer._layers ) {
+			if ( !drawlayer._layers.hasOwnProperty( id ) ) continue;
+			var other=drawlayer._layers[ id ];
+			if ( !other||other===layer ) continue;
+			// only consider line-like drawn items
+			if ( !( other instanceof L.GeoJSON ) ) continue;
+
+			// test both directions using existing testPolyLine helper
+			var crosses=false;
+			try {
+				if ( self.testPolyLine( other, layer ) ) crosses=true;
+				else if ( self.testPolyLine( layer, other ) ) crosses=true;
+			} catch ( e ) { /* ignore any unexpected geometry */ }
+
+			if ( crosses ) {
+				// settings.showcrosslinks: 0 = Links, 1 = Drawn, 2 = Both
+				if ( self.settings.showcrosslinks===0 ) {
+					// don't show crosslinks for drawn-drawn intersections
+					continue;
+				}
+				// draw crosslink markers for both drawn layers (drawCrossLink guards duplicates)
+				try { self.drawCrossLink( other ); } catch ( e ) { }
+				try { self.drawCrossLink( layer ); } catch ( e ) { }
+			}
+		}
+	};
 
 	self.testForDeletedLinks=function() {
 		self.checkAllLinksForCrosslinks();
@@ -1472,7 +1575,10 @@ version 1.0.0.20251228.002300
 			var displaylength=length<100000? Math.round( length )+'m':Math.round( length/1000 )+'km';
 			if ( drawnlinks ) displaylength='<a href="#" onclick="if ('+self.namespace+'selectlinkbylatlng('+[ latLngs[ 0 ].lat, latLngs[ 0 ].lng, latLngs[ 1 ].lat, latLngs[ 1 ].lng ].join( ',' )+'))'+self.namespace+'linkmenu(); return false;" title="Select link">'+displaylength+'</a>';
 
-			rows.push( { length: length, text: direction+' <a href="#" onclick="'+self.namespace+'focusportal('+[ '\''+portalguid+'\'', portalposition.lat, portalposition.lng ].join( ',' )+'); '+self.namespace+'overviewConnected(); return false;" onmouseover="'+self.namespace+'highlightlinkbylatlng('+[ latLngs[ 0 ].lat, latLngs[ 0 ].lng, latLngs[ 1 ].lat, latLngs[ 1 ].lng ].join( ',' )+')" onmouseout="'+self.namespace+'stophighlightlink()" title="Go to portal">'+title+'</a> - '+displaylength } );
+			// Auto-bookmark portals with no keys
+			if ( portalguid ) self.autobookmarknokeys( portalguid );
+
+			rows.push( { length: length, text: direction+' <a href="#" onclick="'+self.namespace+'focusportal('+[ '\''+portalguid+'\'', portalposition.lat, portalposition.lng ].join( ',' )+'); '+self.namespace+'overviewConnected(); return false;" onmouseover="'+self.namespace+'highlightlinkbylatlng('+[ latLngs[ 0 ].lat, latLngs[ 0 ].lng, latLngs[ 1 ].lat, latLngs[ 1 ].lng ].join( ',' )+')" onmouseout="'+self.namespace+'stophighlightlink()" title="Go to portal">'+title+'</a>'+self.getkeycount( portalguid )+' - '+displaylength } );
 		}
 
 		rows.sort( function( a, b ) {
@@ -1518,10 +1624,10 @@ version 1.0.0.20251228.002300
 		} );
 
 		var html='<div class="quickdrawlinksdialog">'+
-			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="m">&lt Main menu</a>'+
+			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r">&lt Main menu</a>'+
 			'</div><div>'+
 			'Selected portal (<a href="#" onclick="'+self.namespace+'overviewConnected(); return false;">refresh</a>):<br />\n'+
-			'<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a><br />\n'+
+			'<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a>'+self.getkeycount( window.selectedPortal )+'<br />\n'+
 			'<br />\n'+
 			'<u><b>Drawn links:</b> '+( drawnLinks.in.length+drawnLinks.out.length )+' ('+drawnLinks.out.length+' out, '+drawnLinks.in.length+' in)</u><br />\n'+
 			self.linkedportalshtml( drawnLinks.out, position, true )+
@@ -1745,14 +1851,18 @@ version 1.0.0.20251228.002300
 
 	self.linkstarttitle=function() {
 		if ( !self.selectedlink ) return;
-		var title=self.gettitle( self.selectedlink.getLatLngs()[ 0 ] );
-		return ( title? title:'unknown' );
+		var position=self.selectedlink.getLatLngs()[ 0 ];
+		var guid=self.getguid( position );
+		var title=self.gettitle( position );
+		return ( title? title:'unknown' )+self.getkeycount( guid );
 	};
 
 	self.linkendtitle=function() {
 		if ( !self.selectedlink ) return;
-		var title=self.gettitle( self.selectedlink.getLatLngs()[ 1 ] );
-		return ( title? title:'unknown' );
+		var position=self.selectedlink.getLatLngs()[ 1 ];
+		var guid=self.getguid( position );
+		var title=self.gettitle( position );
+		return ( title? title:'unknown' )+self.getkeycount( guid );
 	};
 
 	self.linklength=function( link ) {
@@ -2441,6 +2551,36 @@ version 1.0.0.20251228.002300
 		}
 		self.copylinksposition=portalposition;
 		self.addMarker( guid, { icon: 'copy' } );
+	};
+
+	self.startMassCopyPaste=function() {
+		var drawlayer=self.getDrawlayer();
+
+		if ( window.selectedPortal===null ) {
+			alert( 'No portal selected to copy links from.' );
+			return;
+		}
+
+		var guid=window.selectedPortal;
+		var portalposition=window.portals[ guid ].getLatLng();
+		if ( self.linkcount( portalposition )===0 ) {
+			alert( 'No links connected to selected portal to copy.' );
+			return;
+		}
+
+		self.masscopypaste=true;
+		self.masscopypasteposition=portalposition;
+		self.addMarker( guid, { icon: 'copy' } );
+		self.activatebutton( 'copy' );
+		alert( 'Mass Copy-Paste mode activated! Click portals to paste links. Press ESC to cancel.' );
+	};
+
+	self.stopMassCopyPaste=function() {
+		if ( !self.masscopypaste ) return;
+		self.masscopypaste=false;
+		self.masscopypasteposition=undefined;
+		self.removeMarker();
+		self.deactivatebuttons();
 	};
 
 	self.getstoreddata=function() {
@@ -3543,6 +3683,14 @@ version 1.0.0.20251228.002300
 		window.addHook( 'mapDataRefreshEnd', self.onMapDataRefreshEnd );
 
 		window.addHook( 'portalDetailLoaded', function( data ) { if ( self.requestid===data.guid ) { self.requestid=undefined; window.renderPortalDetails( data.guid ); } } );
+
+		// Add ESC key handler for mass copy-paste mode
+		$( document ).on( 'keydown.quickdrawlinks', function( e ) {
+			if ( e.keyCode===27&&self.masscopypaste ) { // ESC key
+				self.stopMassCopyPaste();
+				alert( 'Mass Copy-Paste mode cancelled.' );
+			}
+		} );
 
 		//add options menu
 		if ( window.useAndroidPanes() ) {

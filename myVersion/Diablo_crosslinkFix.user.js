@@ -763,16 +763,6 @@ version 1.0.0.20251228.002300
 					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttoncopy" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="."><span class="screenbutton screencopyicon" /></a>' );
 				}
 				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon" /></a>' );
-
-				// mass copy-paste button
-				titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to enable mass copy-paste mode - paste links to multiple portals [ESC to cancel] [g]"';
-				onclickaction=self.namespace+'clearall(); '+self.namespace+'startMassCopyPaste(); return false;'
-				let styleactivebutton=( self.masscopypaste? ' style="background-position-y: bottom;"':'' );
-				if ( !self.settings.hidebuttons ) {
-					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmasscopypaste" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="g"><span class="screenbutton screencopyicon"'+styleactivebutton+' /></a>' );
-				}
-				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon"'+styleactivebutton+' /></a>' );
 			}
 
 			if ( true ) {
@@ -785,6 +775,24 @@ version 1.0.0.20251228.002300
 					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
 				}
 				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
+			}
+
+			// mass copy-paste button (keep visible while active, even if new portal has no links)
+			if ( linkcount>0||self.masscopypaste ) {
+				let titledescription='';
+				if ( !self.isSmartphone ) {
+					titledescription=self.masscopypaste
+						? ' title="Click to end mass copy-paste mode [ESC to cancel] [g]"'
+						: ' title="Click to enable mass copy-paste mode - paste links to multiple portals [ESC to cancel] [g]"';
+				}
+				let onclickaction=self.masscopypaste
+					? self.namespace+'stopMassCopyPaste(); return false;'
+					: self.namespace+'clearall(); '+self.namespace+'startMassCopyPaste(); return false;'
+				let styleactivebutton=( self.masscopypaste? ' style="background-position-y: bottom;"':'' );
+				if ( !self.settings.hidebuttons ) {
+					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonmasscopypaste" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="g"><span class="screenbutton screencopyicon masscopypasteicon"'+styleactivebutton+' /></a>' );
+				}
+				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlecopyicon masscopypasteicon"'+styleactivebutton+' /></a>' );
 			}
 
 			if ( linkcount>0 ) {
@@ -3733,7 +3741,7 @@ version 1.0.0.20251228.002300
 			'.screenbuttonmove { float:right; margin:'+topoffset+'px '+( 1*screenbuttonwidth+leftoffset )+'px 0 0px; }'+
 			'.screenbuttonstar { float:right; margin:'+topoffset+'px '+( 2*screenbuttonwidth+leftoffset )+'px 0 0px; }'+
 			'.screenbuttoncopy { float:right; margin:'+topoffset+'px '+( 3*screenbuttonwidth+leftoffset )+'px 0 0px; }'+
-			'.screenbutton {\n    background-image:url('+self.menuicons+');\n	background-repeat: no-repeat;\n	background-size:'+( screenbuttonwidth*4 )+'px '+( screenbuttonheight*2 )+'px;\n\n	width:'+screenbuttonwidth+'px;\n	height:'+screenbuttonheight+'px;\n   float:left;\n   margin:3px 1px 0 4px;\n}\n.screenlinkicon {\n	background-position: 0px top;\n}\n.screenmoveicon {\n	background-position: -'+( 1*screenbuttonwidth )+'px top;\n}\n.screenstaricon {\n	background-position: -'+( 2*screenbuttonwidth )+'px top;\n}\n.screencopyicon {\n	background-position: -'+( 3*screenbuttonwidth )+'px top;\n}'+
+			'.screenbutton {\n    background-image:url('+self.menuicons+');\n	background-repeat: no-repeat;\n	background-size:'+( screenbuttonwidth*4 )+'px '+( screenbuttonheight*2 )+'px;\n\n	width:'+screenbuttonwidth+'px;\n	height:'+screenbuttonheight+'px;\n   float:left;\n   margin:3px 1px 0 4px;\n}\n.screenlinkicon {\n	background-position: 0px top;\n}\n.screenmoveicon {\n	background-position: -'+( 1*screenbuttonwidth )+'px top;\n}\n.screenstaricon {\n	background-position: -'+( 2*screenbuttonwidth )+'px top;\n}\n.screencopyicon {\n	background-position: -'+( 3*screenbuttonwidth )+'px top;\n}\n.masscopypasteicon {\n	filter: brightness(0) saturate(100%) invert(46%) sepia(82%) saturate(387%) hue-rotate(84deg) brightness(96%) contrast(92%);\n}'+
 			'</style>' );
 
 		console.log( 'IITC plugin loaded: '+self.title+' version '+self.version );

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @author         DiabloEnMusica
-// @name           diablo-26-QuickDrawLinx-mincross_changeAll
+// @name           QuickDrawLinx-mincross_changeAll
 // @category       Diablo
 // @version        1.0.0.20251228.002300
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js
@@ -562,7 +562,6 @@ version 1.0.0.20251228.002300
 				return ' <span class="inventory-details" style="color: #FFA500;">['+keyData.total+' key'+( keyData.total>1? 's':'' )+']</span>';
 			} else if ( window.portals&&window.portals[ guid ] ) {
 				// Portal exists but no keys in inventory
-				console.log( 'Key data for portal '+guid+' doesn\'t exist: ', keyData );
 				return ' <span class="inventory-details" style="color: #ff0000;"><strong>[0 keys]</strong></span>';
 			}
 		}

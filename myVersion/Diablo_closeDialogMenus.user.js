@@ -141,15 +141,18 @@
 			$( dlg ).find( '.ui-dialog-content' ).dialog( 'close' );
 		}
 
-		window.addHook( 'dialog-opened', function() {
-			console.log('hook: dialog-opened');
-			setTimeout( () => updateDialogs( 'dialog-opened' ), 0 );
-		} );
+		// Register IITC hooks if available
+		if ( window.addHook ) {
+			window.addHook( 'dialog-opened', function() {
+				console.log('hook: dialog-opened');
+				setTimeout( () => updateDialogs( 'dialog-opened' ), 0 );
+			} );
 
-		window.addHook( 'dialog-closed', function() {
-			console.log('hook: dialog-closed');
-			setTimeout( () => updateDialogs( 'dialog-closed' ), 0 );
-		} );
+			window.addHook( 'dialog-closed', function() {
+				console.log('hook: dialog-closed');
+				setTimeout( () => updateDialogs( 'dialog-closed' ), 0 );
+			} );
+		}
 
 		// Initialize state if dialogs already exist
 		updateDialogs();

@@ -598,11 +598,33 @@
   }
 
   // ── IITC bootstrap ──────────────────────────────────────────────────────────
-  function setup() {
-    window.addHook('portalDetailsUpdated', addPortalButton);
+  window.plugin.portalStreetView=function() { };
+
+  // function setup() {
+  //   window.addHook('portalDetailsUpdated', addPortalButton);
+  //   addMapTrigger();
+  //   $(document).on('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  //   console.log(`[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile() ? 'mobile' : 'desktop'} mode).`);
+  // }
+  window.plugin.portalStreetView.setup=function() {
+    // Add safety check to ensure IITC is loaded
+    if ( !window.addHook ) return;
+
+    window.addHook( 'portalDetailsUpdated', addPortalButton );
     addMapTrigger();
-    $(document).on('keydown', e => { if (e.key === 'Escape') closeModal(); });
-    console.log(`[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile() ? 'mobile' : 'desktop'} mode).`);
+    $( document ).on( 'keydown', e => { if ( e.key==='Escape' ) closeModal(); } );
+
+    console.log( `[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile()? 'mobile':'desktop'} mode).` );
+  };
+
+  var setup=window.plugin.portalStreetView.setup;
+
+  if ( window.iitcLoaded&&typeof setup==='function' ) {
+    setup();
+  } else if ( window.bootPlugins ) {
+    window.bootPlugins.push( setup );
+  } else {
+    window.bootPlugins=[ setup ];
   }
 
   const plugin_info = {};
@@ -614,10 +636,25 @@
     };
   }
 
-  if (window.iitcLoaded) {
+  function setup() {
+    window.addHook( 'portalDetailsUpdated', addPortalButton );
+    addMapTrigger();
+    $( document ).on( 'keydown', e => { if ( e.key==='Escape' ) closeModal(); } );
+    console.log( `[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile()? 'mobile':'desktop'} mode).` );
+  }
+
+  // --- BOILERPLATE TO FIX THE ERROR ---
+  setup.info=GM_info.script; // Allows IITC to display plugin info
+  if ( !window.plugin ) window.plugin={};
+  window.plugin.portalStreetView=setup;
+
+  if ( window.iitcLoaded&&typeof setup==='function' ) {
     setup();
   } else {
-    if (!window.bootPlugins) window.bootPlugins = [];
-    window.bootPlugins.push(setup);
+    if ( window.bootPlugins ) {
+      window.bootPlugins.push( setup );
+    } else {
+      window.bootPlugins=[ setup ];
+    }
   }
-})();
+} )(); // End of IIFE

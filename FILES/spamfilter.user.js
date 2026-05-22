@@ -30,6 +30,10 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 var setup = function() {
 	var renderData_orig = window.chat.renderData;
 
+	if ( !window.renderData_orig ) {
+		window.renderData_orig=window.chat.renderData;
+	}
+	
 	// spam filter
 	window.chat.renderData = function(data, element, likelyWereOldMsgs) {
 		var filteredData = {};

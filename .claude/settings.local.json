@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Content \"c:\\\\Users\\\\DavidIacoviello\\\\Documents\\\\MyStuff\\\\My-IITC-git\\\\IngressMyPlugins\\\\myVersion\\\\Diablo_crosslinkFix.user.js\")",
+      "Bash(Select-Object -Last 20)"
+    ]
+  }
+}

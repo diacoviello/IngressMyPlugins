@@ -1,6 +1,6 @@
 // ==UserScript==
 // @author         DiabloEnMusica
-// @name           QuickDrawLinx-mincross_changeAll
+// @name           QuickDrawLinx-final
 // @category       Diablo
 // @version        1.0.0.20251228.002300
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js

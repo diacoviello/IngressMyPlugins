@@ -207,9 +207,13 @@
 		console.log( '✓ keydown capturing handler attached for x, >, <' );
 
 		// --- Shortcuts ---
-		window.registerShortcut( '>', () => cycleDialogs( false ), 'Cycle dialogs forward' );
-		window.registerShortcut( '<', () => cycleDialogs( true ), 'Cycle dialogs backward' );
-		window.registerShortcut( 'x', () => { console.log('shortcut: x'); closeActiveDialog(); }, 'Close active dialog' );
+		if ( typeof window.registerShortcut==='function' ) {
+			window.registerShortcut( '>', () => cycleDialogs( false ), 'Cycle dialogs forward' );
+			window.registerShortcut( '<', () => cycleDialogs( true ), 'Cycle dialogs backward' );
+			window.registerShortcut( 'x', () => { console.log( 'shortcut: x' ); closeActiveDialog(); }, 'Close active dialog' );
+		} else {
+			console.warn( 'IITC registerShortcut not found. Using fallback keydown listener.' );
+		}
 		console.log( '=== setup() complete ===' );
 	}
 

@@ -928,7 +928,6 @@ function wrapper( plugin_info ) {
 		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
 		window.plugin.playerRanges.ui.setupCSS();
 		window.plugin.playerRanges.layer.boot();
-		window.plugin.playerRanges.control.initControl();
 		// ensure portal ranges overlay starts hidden
 		if ( window.plugin.playerRanges.obj.portalRangesLayer&&window.map.hasLayer( window.plugin.playerRanges.obj.portalRangesLayer ) ) {
 			window.map.removeLayer( window.plugin.playerRanges.obj.portalRangesLayer );

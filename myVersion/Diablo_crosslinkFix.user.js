@@ -112,7 +112,7 @@ version 1.0.0.20251228.002300
 	self.crosslinklayerdisabled=false;
 
 	// default dash pattern (string form; e.g. "1,6" or "4,3,1,3")
-	self.dashArray="1,6";
+	self.dashArray="9,12";
 
 	self.highlightlinkoptions={
 		color: "#ae29b3ff",

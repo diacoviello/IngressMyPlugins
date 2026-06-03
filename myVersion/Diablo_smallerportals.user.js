@@ -73,14 +73,36 @@ version 0.0.1.20161103.114400
         // backup function:
         if (!self.backup_portalMarkerScale) self.backup_portalMarkerScale = window.portalMarkerScale.toString();
 
+        console.log('[smallerportals] set() called at zoom', window.map.getZoom());
+        console.log('[smallerportals] BEFORE scale value:', window.portalMarkerScale());
+        console.log('[smallerportals] BEFORE function body:', window.portalMarkerScale.toString());
+
         // override function:
         let portalMarkerScale_string = window.portalMarkerScale.toString();
         // zoom: higher is more zoomed in
         // Mobile:
-        portalMarkerScale_string = portalMarkerScale_string.replace(/return zoom >= 16.*;/,'return zoom >= 16 ? 1.5 : zoom >= 15 ? 1.0 : zoom >= 14 ? 0.65 : zoom >= 13 ? 0.5 : zoom >= 12 ? 0.4 : zoom >= 11 ? 0.3 : zoom >= 10 ? 0.2 : zoom >= 8 ? 0.15 : 0.1;');
+        let after_mobile = portalMarkerScale_string.replace(/return zoom >= 16.*;/,'return zoom >= 16 ? 1.5 : zoom >= 15 ? 1.0 : zoom >= 14 ? 0.65 : zoom >= 13 ? 0.5 : zoom >= 12 ? 0.4 : zoom >= 11 ? 0.3 : zoom >= 10 ? 0.2 : zoom >= 8 ? 0.15 : 0.1;');
+        console.log('[smallerportals] Mobile regex matched:', after_mobile !== portalMarkerScale_string);
+        portalMarkerScale_string = after_mobile;
         // Desktop:
-        portalMarkerScale_string = portalMarkerScale_string.replace(/return zoom >= 14.*;/,'return zoom >= 14 ? 1.0 : zoom >= 13 ? 0.75 : zoom >= 12 ? 0.6 : zoom >= 11 ? 0.5 : zoom >= 10 ? 0.4 : zoom >= 8 ? 0.28 : 0.15;');
+        let after_desktop = portalMarkerScale_string.replace(/return zoom >= 14.*;/,'return zoom >= 14 ? 1.0 : zoom >= 13 ? 0.75 : zoom >= 12 ? 0.6 : zoom >= 11 ? 0.5 : zoom >= 10 ? 0.4 : zoom >= 8 ? 0.28 : 0.15;');
+        console.log('[smallerportals] Desktop regex matched:', after_desktop !== portalMarkerScale_string);
+        portalMarkerScale_string = after_desktop;
+
         eval('window.portalMarkerScale = ' + portalMarkerScale_string);
+        console.log('[smallerportals] AFTER scale value:', window.portalMarkerScale());
+
+        // Watch for another script overwriting portalMarkerScale after we set it
+        let ourFn = window.portalMarkerScale;
+        let watchInterval = setInterval(function() {
+            if (window.portalMarkerScale !== ourFn) {
+                console.warn('[smallerportals] portalMarkerScale was OVERWRITTEN by another script!');
+                console.warn('[smallerportals] New function body:', window.portalMarkerScale.toString());
+                clearInterval(watchInterval);
+            }
+        }, 250);
+        setTimeout(function() { clearInterval(watchInterval); }, 15000);
+
         window.resetHighlightedPortals();
 
         self.enabled = true;

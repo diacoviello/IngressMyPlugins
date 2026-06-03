@@ -2,10 +2,10 @@
 // @author         DiabloEnMusica
 // @name           QuickDrawLinx-final
 // @category       Diablo
-// @version        1.0.0.20251228.002300
+// @version        2.0.0.20260602.1000
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js
-// @description    [diabloenmusica-1.0.0.20251228.002300] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
+// @description    [diabloenmusica-2.0.0.20260602.1000] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
 // @id             quick-draw-links@DiabloEnMusica
 // @namespace      https://softspot.nl/ingress/
 // @match          https://intel.ingress.com/*

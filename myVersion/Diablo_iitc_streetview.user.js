@@ -303,6 +303,8 @@
   let svPathLine     = null;
   let svPovListener  = null;
   let svCurrentPortal = null; // { lat, lng, imageUrl }
+  let svDistToPortal  = 0;
+  let svPanoLatLng    = null;
 
   function openStreetView(lat, lng, portalName, portalImageUrl) {
     buildModal();
@@ -356,6 +358,8 @@
             panoLatLng, new google.maps.LatLng(lat, lng)
           )
         );
+        svDistToPortal = dist;
+        svPanoLatLng   = panoLatLng;
         const parkLat = panoLatLng.lat().toFixed(6);
         const parkLng = panoLatLng.lng().toFixed(6);
         const outOfRange = dist > DEPLOY_RANGE;
@@ -409,7 +413,7 @@
       : { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#00bfff', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 };
 
     if (!svPortalMarker) {
-      svPortalMarker = new google.maps.Marker({ position: portalLatLng, map: svMiniMap, icon: portalIcon, title: 'Portal', zIndex: 2 });
+      svPortalMarker = new google.maps.marker.AdvancedMarkerElement({ position: portalLatLng, map: svMiniMap, icon: portalIcon, title: 'Portal', zIndex: 2 });
     } else {
       svPortalMarker.setPosition(portalLatLng);
       svPortalMarker.setIcon(portalIcon);
@@ -428,7 +432,7 @@
     };
 
     if (!svPanoMarker) {
-      svPanoMarker = new google.maps.Marker({
+      svPanoMarker = new google.maps.marker.AdvancedMarkerElement({
         position: panoLatLng, map: svMiniMap, icon: arrowIcon,
         title: dist > DEPLOY_RANGE ? 'Park here' : 'Street View camera', zIndex: 1,
       });
@@ -463,11 +467,15 @@
 
     // Sync minimap arrow rotation with current heading
     if (svPanoMarker) {
-      const icon = svPanoMarker.getIcon();
-      if (icon && typeof icon === 'object' && 'rotation' in icon) {
-        icon.rotation = svPanorama.getPov().heading;
-        svPanoMarker.setIcon(icon);
-      }
+      svPanoMarker.setIcon({
+        path: 'M 0,-10 L 6,6 L 0,2 L -6,6 Z',
+        scale: 1.2,
+        fillColor: svDistToPortal > DEPLOY_RANGE ? '#ff4444' : '#4285F4',
+        fillOpacity: 1,
+        strokeColor: '#fff',
+        strokeWeight: 1.5,
+        rotation: svPanorama.getPov().heading,
+      });
     }
 
     const panoPos = svPanorama.getPosition();
@@ -598,35 +606,6 @@
   }
 
   // ── IITC bootstrap ──────────────────────────────────────────────────────────
-  window.plugin.portalStreetView=function() { };
-
-  // function setup() {
-  //   window.addHook('portalDetailsUpdated', addPortalButton);
-  //   addMapTrigger();
-  //   $(document).on('keydown', e => { if (e.key === 'Escape') closeModal(); });
-  //   console.log(`[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile() ? 'mobile' : 'desktop'} mode).`);
-  // }
-  window.plugin.portalStreetView.setup=function() {
-    // Add safety check to ensure IITC is loaded
-    if ( !window.addHook ) return;
-
-    window.addHook( 'portalDetailsUpdated', addPortalButton );
-    addMapTrigger();
-    $( document ).on( 'keydown', e => { if ( e.key==='Escape' ) closeModal(); } );
-
-    console.log( `[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile()? 'mobile':'desktop'} mode).` );
-  };
-
-  var setup=window.plugin.portalStreetView.setup;
-
-  if ( window.iitcLoaded&&typeof setup==='function' ) {
-    setup();
-  } else if ( window.bootPlugins ) {
-    window.bootPlugins.push( setup );
-  } else {
-    window.bootPlugins=[ setup ];
-  }
-
   const plugin_info = {};
   if (typeof GM_info !== 'undefined' && GM_info && GM_info.script) {
     plugin_info.script = {

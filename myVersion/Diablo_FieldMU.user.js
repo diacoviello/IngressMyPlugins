@@ -364,6 +364,11 @@ function setup() {
 
 if ( win.iitcLoaded ) {
 	setup();
-} else {
+} else if ( typeof win.addHook==='function' ) {
 	win.addHook( 'iitcLoaded', setup );
+} else {
+	// Fallback: wait for the window to load or IITC to inject
+	win.addEventListener( 'load', () => {
+		if ( typeof win.addHook==='function' ) setup();
+	} );
 }

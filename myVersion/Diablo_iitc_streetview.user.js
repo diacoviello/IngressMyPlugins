@@ -97,7 +97,7 @@
         #sv-minimap {
           position: absolute;
           bottom: 8px; right: 8px;
-          width: 180px; height: 180px;
+          width: 11.25rem; height: 11.25rem;
           border: 2px solid #00bfff;
           border-radius: 4px;
           box-shadow: 0 0 8px rgba(0,0,0,0.6);
@@ -121,7 +121,7 @@
         }
         /* ── Mobile layout — full-screen ── */
         @media (max-width: 768px) {
-          #sv-minimap { width: 170px; height: 170px; bottom: 8px; right: 8px; }
+          #sv-minimap { width: 10.625rem; height: 10.625rem; bottom: 0.5rem; right: 0.5rem; }
           /* Shrink the minimap's zoom control so it doesn't cover the map */
           #sv-minimap .gm-bundled-control,
           #sv-minimap .gm-bundled-control-on-bottom {

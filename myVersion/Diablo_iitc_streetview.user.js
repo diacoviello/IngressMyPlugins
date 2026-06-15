@@ -104,6 +104,15 @@
           z-index: 10;
           overflow: hidden;
         }
+        /* Shrink the minimap's zoom (.gm-bundled-control) and pegman (.gm-svpc)
+           controls and tuck them into the bottom-right corner so they don't
+           cover the small map. Applies on both desktop and mobile. */
+        #sv-minimap .gm-bundled-control,
+        #sv-minimap .gm-bundled-control-on-bottom,
+        #sv-minimap .gm-svpc {
+          transform: scale(0.6);
+          transform-origin: 100% 100%;
+        }
         #sv-status {
           padding: 5px 12px;
           font-size: 11px;
@@ -122,12 +131,6 @@
         /* ── Mobile layout — full-screen ── */
         @media (max-width: 768px) {
           #sv-minimap { width: 10.625rem; height: 10.625rem; bottom: 0.5rem; right: 0.5rem; }
-          /* Shrink the minimap's zoom control so it doesn't cover the map */
-          #sv-minimap .gm-bundled-control,
-          #sv-minimap .gm-bundled-control-on-bottom {
-            transform: scale(0.6);
-            transform-origin: 100% 100%;
-          }
           #sv-modal {
             width: 100% !important;
             height: 100% !important;

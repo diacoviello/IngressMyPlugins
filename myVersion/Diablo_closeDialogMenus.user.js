@@ -219,7 +219,12 @@
 
 	if ( window.iitcLoaded ) {
 		setup();
-	} else {
+	} else if ( typeof window.addHook==='function' ) {
 		window.addHook( 'iitcLoaded', setup );
+	} else {
+		// Fallback: wait for the window to load or IITC to inject
+		window.addEventListener( 'load', () => {
+			if ( typeof window.addHook==='function' ) setup();
+		} );
 	}
 } )();

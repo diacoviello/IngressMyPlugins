@@ -1643,6 +1643,9 @@ function setup () {
     window.runHooks('pluginInventoryRefresh', {
       inventory: playerInventory.inventory
     });
+  }).catch(() => {
+    // No inventory has been saved yet; nothing to load. Will populate on first refresh.
+    autoRefresh();
   });
 }
 

@@ -261,6 +261,16 @@
       svPosListener = svPanorama.addListener('position_changed', onPanoMoved);
       // Re-scale beacons on pan/zoom so they hold a constant real-world height.
       svPanorama.addListener('pov_changed', resizePanoMarkers);
+      // Keep the panorama's WebGL canvas in sync with its container. On mobile
+      // the full-screen height changes when the browser toolbar shows/hides a
+      // moment after opening; without a resize the canvas keeps its old size
+      // and the pano renders white. Re-trigger Google's resize on any change.
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+          if (svPanorama) google.maps.event.trigger(svPanorama, 'resize');
+        });
+        ro.observe(document.getElementById('sv-pano'));
+      }
     } else {
       svPanorama.setPosition(pos);
       svPanorama.setPov({ heading: 0, pitch: SV_PITCH });
@@ -447,7 +457,9 @@
         tilt: 0,
         gestureHandling: 'greedy', // scroll/drag/pinch zoom without modifier keys
         zoomControl: true,
+        zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
         streetViewControl: true,    // shows the draggable pegman
+        streetViewControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
         mapTypeControl: false,
         fullscreenControl: false,
         rotateControl: false,

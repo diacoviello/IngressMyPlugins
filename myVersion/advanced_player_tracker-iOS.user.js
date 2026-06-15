@@ -2,7 +2,7 @@
 // @author         BlancLapin & DiabloEnMusica
 // @id             advanced_player_tracker+@DiabloEnMusica
 // @name           Advanced Tracker Player +
-// @category       Misc
+// @category       Diablo
 // @version        0.0.4
 // @namespace      https://raw.githack.com/diacoviello/IITCCommunity-plugins
 // @updateURL      https://raw.githack.com/diacoviello/IITCCommunity-plugins/master/dist/DiabloEnMusica/advanced_player_tracker-iOS.user.js

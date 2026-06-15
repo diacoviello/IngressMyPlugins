@@ -2,8 +2,8 @@
 // @author         DiabloEnMusica
 // @name           Portal Street View
 // @category       Diablo
-// @description    Adds a Google Streetview popup for portals, accessible via a button in the portal details or by long-pressing the map (mobile) / right-clicking the map (desktop). Works on both desktop IITC and IITC-Mobile. In cases where Street View is available but the nearest camera is out of Ingress deploy range, it shows the distance and a suggested parking spot to get within range.
-// @version        2.0.0
+// @description    Adds a Google Streetview popup for portals, accessible via a button in the portal details or by long-pressing the map (mobile) / right-clicking the map (desktop). The target portal and any other portals within 100 m are pinned onto the Street View sphere at their true ground positions (and stay anchored as you move). An interactive overhead minimap shows a live Google pegman you can drag to reposition the view, plus zoom. Works on both desktop IITC and IITC-Mobile. When the nearest camera is out of Ingress deploy range, it shows the distance and a suggested parking spot.
+// @version        2.1.1
 // @namespace      https://github.com/diacoviello/IngressMyPlugins
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/iitc_streetview.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/iitc_streetview.user.js
@@ -25,50 +25,11 @@
   const SV_PITCH     = 5;
   const PANO_RADIUS  = 100; // metres to search for coverage
   const DEPLOY_RANGE = 40;  // Ingress interaction/deploy range in metres
+  const PORTAL_HEIGHT_M = 1.83; // real-world height (~6 ft) the beacon should appear in Street View
 
-  // Ingress portal beacon icon (SVG, transparent background)
-  const _PORTAL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 130">
-    <defs>
-      <filter id="sv-glow" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <filter id="sv-flame" x="-120%" y="-10%" width="340%" height="130%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <linearGradient id="sv-fl" x1=".5" y1="0" x2=".5" y2="1">
-        <stop offset="0%"   stop-color="#eef8ff"/>
-        <stop offset="40%"  stop-color="#7ad8e8" stop-opacity=".9"/>
-        <stop offset="80%"  stop-color="#3a8090" stop-opacity=".4"/>
-        <stop offset="100%" stop-color="#2a5860" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <g stroke="#3a6870" stroke-width="1.5" opacity=".8">
-      <line x1="60" y1="75" x2="60" y2="38"/>
-      <line x1="60" y1="75" x2="86" y2="49"/>
-      <line x1="60" y1="75" x2="97" y2="75"/>
-      <line x1="60" y1="75" x2="86" y2="101"/>
-      <line x1="60" y1="75" x2="60" y2="112"/>
-      <line x1="60" y1="75" x2="34" y2="101"/>
-      <line x1="60" y1="75" x2="23" y2="75"/>
-      <line x1="60" y1="75" x2="34" y2="49"/>
-    </g>
-    <g fill="#263d45" stroke="#4aa8b8" stroke-width=".8" filter="url(#sv-glow)">
-      <polygon points="60,33 65,38 60,43 55,38"/>
-      <polygon points="86,44 91,49 86,54 81,49"/>
-      <polygon points="97,70 102,75 97,80 92,75"/>
-      <polygon points="86,96 91,101 86,106 81,101"/>
-      <polygon points="60,107 65,112 60,117 55,112"/>
-      <polygon points="34,96 39,101 34,106 29,101"/>
-      <polygon points="23,70 28,75 23,80 18,75"/>
-      <polygon points="34,44 39,49 34,54 29,49"/>
-    </g>
-    <polygon points="60,64 69,75 60,86 51,75" fill="#3a8090" stroke="#7ae0e8" stroke-width="1.5" filter="url(#sv-glow)"/>
-    <path d="M52,73 Q46,42 60,3 Q74,42 68,73Z"  fill="url(#sv-fl)" filter="url(#sv-flame)" opacity=".75"/>
-    <path d="M57,73 Q55,50 60,12 Q65,50 63,73Z" fill="#d0f4ff" opacity=".7"/>
-  </svg>`;
-  const PORTAL_ICON_URL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(_PORTAL_SVG);
+  // Map pin icon (SVG, transparent background)
+  const _PORTAL_SVG= `<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M512 85.333333c-164.949333 0-298.666667 133.738667-298.666667 298.666667 0 164.949333 298.666667 554.666667 298.666667 554.666667s298.666667-389.717333 298.666667-554.666667c0-164.928-133.717333-298.666667-298.666667-298.666667z m0 448a149.333333 149.333333 0 1 1 0-298.666666 149.333333 149.333333 0 0 1 0 298.666666z" fill="#FF3D00" /></svg>`;
+  const PORTAL_ICON_URL= 'data:image/svg+xml,' + encodeURIComponent(_PORTAL_SVG);
   // ───────────────────────────────────────────────────────────────────────────
 
   // ── Device detection ────────────────────────────────────────────────────────
@@ -136,7 +97,7 @@
         #sv-minimap {
           position: absolute;
           bottom: 8px; right: 8px;
-          width: 150px; height: 150px;
+          width: 180px; height: 180px;
           border: 2px solid #00bfff;
           border-radius: 4px;
           box-shadow: 0 0 8px rgba(0,0,0,0.6);
@@ -178,50 +139,6 @@
           #sv-status { font-size: 12px; padding: 6px 14px 10px; }
         }
 
-        /* Portal pin overlay on Street View sphere */
-        #sv-portal-overlay {
-          position: absolute;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
-          pointer-events: none;
-          z-index: 5;
-          overflow: hidden;
-        }
-        #sv-portal-pin {
-          position: absolute;
-          display: none;
-          flex-direction: column;
-          align-items: center;
-          transform: translate(-50%, -100%);
-          pointer-events: none;
-          filter: drop-shadow(0 2px 8px rgba(0,0,0,0.95));
-        }
-        #sv-portal-pin .sv-pin-icon {
-          width: 40px; height: 40px;
-          border-radius: 50%;
-          border: 2px solid #00bfff;
-          box-shadow: 0 0 10px rgba(0,191,255,0.7);
-          background: #001520;
-          overflow: visible;
-          position: relative;
-        }
-        /* SVG beacon: hub (60,75) in a 120x130 viewBox is centred by translate(-50%,-57%) */
-        #sv-portal-pin .sv-pin-icon img {
-          width: 90px; height: 98px;
-          position: absolute;
-          top: 50%; left: 50%;
-          transform: translate(-50%, -57%);
-          pointer-events: none;
-        }
-        #sv-portal-pin::after {
-          content: '';
-          width: 0; height: 0;
-          border-left: 7px solid transparent;
-          border-right: 7px solid transparent;
-          border-top: 11px solid #00bfff;
-          margin-top: -2px;
-        }
-
         /* Street View button — portal pane */
         .sv-btn {
           display: inline-block;
@@ -255,18 +172,12 @@
         </div>
         <div id="sv-pano-container">
           <div id="sv-pano"></div>
-          <div id="sv-portal-overlay">
-            <div id="sv-portal-pin">
-              <div class="sv-pin-icon"><img id="sv-portal-pin-img" src="" alt=""></div>
-            </div>
-          </div>
           <div id="sv-minimap"></div>
         </div>
         <div id="sv-status">Loading…</div>
       </div>
     `);
 
-    $('#sv-portal-pin-img').attr('src', PORTAL_ICON_URL);
     $('#sv-close').on('click', closeModal);
 
     // Mobile: tap overlay to close
@@ -296,15 +207,13 @@
   }
 
   // ── Open Street View ────────────────────────────────────────────────────────
-  let svPanorama    = null;
-  let svMiniMap     = null;
-  let svPortalMarker = null;
-  let svPanoMarker  = null;
-  let svPathLine     = null;
-  let svPovListener  = null;
+  let svPanorama      = null;
+  let svMiniMap       = null;
+  let svPathLine      = null;
+  let svPosListener   = null;
+  let svPanoMarkers   = []; // google.maps.Marker[] drawn on the panorama sphere
+  let svMiniMarkers   = []; // google.maps.Marker[] drawn on the overhead minimap
   let svCurrentPortal = null; // { lat, lng, imageUrl }
-  let svDistToPortal  = 0;
-  let svPanoLatLng    = null;
 
   function openStreetView(lat, lng, portalName, portalImageUrl) {
     buildModal();
@@ -319,8 +228,6 @@
 
     const pos = { lat, lng };
     svCurrentPortal = { lat, lng, imageUrl: portalImageUrl };
-    const pin = document.getElementById('sv-portal-pin');
-    if (pin) pin.style.display = 'none';
 
     if (!svPanorama) {
       svPanorama = new google.maps.StreetViewPanorama(
@@ -338,6 +245,13 @@
           scrollwheel: !isMobile(),
         }
       );
+      // Re-draw nearby portals & recenter the minimap whenever the camera
+      // is moved (clicking an arrow, dragging the pegman, etc.). The target
+      // portal marker is anchored by Google and tracks automatically — this
+      // listener only refreshes the *nearby* set relative to the new spot.
+      svPosListener = svPanorama.addListener('position_changed', onPanoMoved);
+      // Re-scale beacons on pan/zoom so they hold a constant real-world height.
+      svPanorama.addListener('pov_changed', resizePanoMarkers);
     } else {
       svPanorama.setPosition(pos);
       svPanorama.setPov({ heading: 0, pitch: SV_PITCH });
@@ -358,8 +272,6 @@
             panoLatLng, new google.maps.LatLng(lat, lng)
           )
         );
-        svDistToPortal = dist;
-        svPanoLatLng   = panoLatLng;
         const parkLat = panoLatLng.lat().toFixed(6);
         const parkLng = panoLatLng.lng().toFixed(6);
         const outOfRange = dist > DEPLOY_RANGE;
@@ -369,12 +281,10 @@
         setStatus(
           isMobile()
             ? `📷 ~${dist}m away · Swipe down or tap ✕ to close${parkingNote}`
-            : `📷 Coverage ~${dist}m from portal · Drag header to move${parkingNote}`
+            : `📷 Coverage ~${dist}m from portal · Drag the pegman to move${parkingNote}`
         );
         updateMiniMap(lat, lng, panoLatLng, dist, portalImageUrl);
-        if (svPovListener) google.maps.event.removeListener(svPovListener);
-        svPovListener = svPanorama.addListener('pov_changed', updatePortalOverlay);
-        updatePortalOverlay();
+        drawPortalMarkers(panoLatLng);
       } else {
         setStatus('⚠ No Street View coverage within 100 m of this portal.');
       }
@@ -383,7 +293,129 @@
 
   function setStatus(msg) { $('#sv-status').text(msg); }
 
+  // Fired when the user navigates the panorama (arrows / pegman drag).
+  function onPanoMoved() {
+    if (!svPanorama) return;
+    const p = svPanorama.getPosition();
+    if (!p) return;
+    drawPortalMarkers(p);
+    if (svMiniMap) svMiniMap.panTo(p);
+  }
+
+  // ── Street View sphere markers (target portal + everything within range) ─────
+  // Markers added with `setMap(panorama)` are projected onto the sphere by
+  // Google at their real-world ground position and stay locked there as the
+  // camera pans and as you walk between adjacent panoramas — no manual trig.
+  function drawPortalMarkers(centerLatLng) {
+    if (!svPanorama || !svCurrentPortal) return;
+
+    // Clear previous sphere markers
+    svPanoMarkers.forEach(m => m.setMap(null));
+    svPanoMarkers = [];
+
+    const targetLatLng = new google.maps.LatLng(svCurrentPortal.lat, svCurrentPortal.lng);
+    svPanoMarkers.push(makePanoMarker(targetLatLng, 'Target portal'));
+
+    // Other portals within PANO_RADIUS of where we're standing
+    getNearbyPortals(centerLatLng, PANO_RADIUS, targetLatLng).forEach(p => {
+      svPanoMarkers.push(makePanoMarker(p.latLng, p.title));
+    });
+
+    resizePanoMarkers(); // size them for the current distance/zoom
+  }
+
+  // Beacon marker on the panorama. Size is set later by resizePanoMarkers().
+  function makePanoMarker(latLng, title) {
+    return new google.maps.Marker({
+      position: latLng,
+      map: svPanorama,
+      title,
+      optimized: false, // required for crisp SVG data-URL rendering
+      icon: { url: PORTAL_ICON_URL, scaledSize: new google.maps.Size(56, 56), anchor: new google.maps.Point(28, 52) },
+    });
+  }
+
+  // Street View markers are fixed pixel size (Google does not perspective-scale
+  // them), so we resize each one ourselves to hold a constant real-world height
+  // of PORTAL_HEIGHT_M as the camera distance and zoom change.
+  function resizePanoMarkers() {
+    if (!svPanorama || !svPanoMarkers.length) return;
+    const camPos = svPanorama.getPosition();
+    if (!camPos) return;
+    const panoEl = document.getElementById('sv-pano');
+    if (!panoEl) return;
+    const W = panoEl.offsetWidth, H = panoEl.offsetHeight;
+    if (!W || !H) return;
+
+    // Vertical field of view in radians: hFov = 180 / 2^zoom degrees.
+    const zoom    = svPanorama.getPov().zoom || 1;
+    const hFovRad = (180 / Math.pow(2, zoom)) * Math.PI / 180;
+    const vFovRad = hFovRad * H / W;
+    const spherical = google.maps.geometry.spherical;
+
+    svPanoMarkers.forEach(m => {
+      const pos = m.getPosition();
+      if (!pos) return;
+      const d = Math.max(1, spherical.computeDistanceBetween(camPos, pos));
+      // Angular height subtended by a PORTAL_HEIGHT_M object at distance d → px.
+      const angular = 2 * Math.atan((PORTAL_HEIGHT_M / 2) / d);
+      let hPx = (angular / vFovRad) * H;
+      hPx = Math.max(12, Math.min(hPx, H * 4)); // clamp to sane bounds
+      // Skip redundant setIcon (pure heading pans don't change size) to avoid
+      // reloading the SVG and flickering.
+      if (Math.abs((m.__svH || 0) - hPx) < 0.5) return;
+      m.__svH = hPx;
+      const wPx = hPx;                           // preserve SVG aspect ratio (1:1)
+      m.setIcon({
+        url: PORTAL_ICON_URL,
+        scaledSize: new google.maps.Size(wPx, hPx),
+        anchor: new google.maps.Point(wPx / 2, hPx * 0.92), // pin tip sits on ground
+      });
+    });
+  }
+
+  // Build a portal-beacon Marker. Anchor sits near the base of the beacon so
+  // the icon "stands" on the ground at the coordinate.
+  function makeBeaconMarker(latLng, title, size, targetMap) {
+    const h = size; // preserve SVG aspect ratio (1:1)
+    return new google.maps.Marker({
+      position: latLng,
+      map: targetMap,
+      title,
+      optimized: false, // required for crisp SVG data-URL rendering
+      icon: {
+        url: PORTAL_ICON_URL,
+        scaledSize: new google.maps.Size(size, h),
+        anchor: new google.maps.Point(size / 2, Math.round(h * 0.92)),
+      },
+    });
+  }
+
+  // Collect IITC portals (window.portals) within `radius` m of `centerLatLng`,
+  // skipping the target portal itself.
+  function getNearbyPortals(centerLatLng, radius, targetLatLng) {
+    const out = [];
+    if (!window.portals) return out;
+    const spherical = google.maps.geometry.spherical;
+    for (const guid in window.portals) {
+      const layer = window.portals[guid];
+      if (!layer || typeof layer.getLatLng !== 'function') continue;
+      const ll = layer.getLatLng();
+      const latLng = new google.maps.LatLng(ll.lat, ll.lng);
+      // Skip the target (same spot, within ~3 m)
+      if (spherical.computeDistanceBetween(latLng, targetLatLng) < 3) continue;
+      if (spherical.computeDistanceBetween(latLng, centerLatLng) > radius) continue;
+      const data = (layer.options && layer.options.data) || {};
+      out.push({ latLng, title: data.title || 'Portal' });
+    }
+    return out;
+  }
+
   // ── Mini overhead map ────────────────────────────────────────────────────────
+  // The minimap is *linked* to the panorama (setStreetView). That makes Google
+  // render its own pegman on the map showing the camera's position + heading,
+  // and dragging that pegman drives the Street View. Zoom & pan are enabled so
+  // the user can scroll in/out and reposition the pegman manually.
   function updateMiniMap(portalLat, portalLng, panoLatLng, dist, portalImageUrl) {
     const portalLatLng = new google.maps.LatLng(portalLat, portalLng);
     const mapEl = document.getElementById('sv-minimap');
@@ -391,59 +423,38 @@
     if (!svMiniMap) {
       svMiniMap = new google.maps.Map(mapEl, {
         mapTypeId: 'satellite',
-        disableDefaultUI: true,
-        gestureHandling: 'none',
+        tilt: 0,
+        gestureHandling: 'greedy', // scroll/drag/pinch zoom without modifier keys
+        zoomControl: true,
+        streetViewControl: true,    // shows the draggable pegman
+        mapTypeControl: false,
+        fullscreenControl: false,
+        rotateControl: false,
         clickableIcons: false,
         keyboardShortcuts: false,
       });
+      svMiniMap.setStreetView(svPanorama); // link → live pegman + drag-to-move
     }
 
-    // Fit both points in view
+    // Fit both points in view (only on (re)open, not on every pano move)
     const bounds = new google.maps.LatLngBounds();
     bounds.extend(portalLatLng);
     bounds.extend(panoLatLng);
-    svMiniMap.fitBounds(bounds, 20);
+    svMiniMap.fitBounds(bounds, 24);
     google.maps.event.addListenerOnce(svMiniMap, 'bounds_changed', () => {
-      if ((svMiniMap.getZoom() || 0) > 18) svMiniMap.setZoom(18);
+      if ((svMiniMap.getZoom() || 0) > 19) svMiniMap.setZoom(19);
     });
 
-    // Portal marker — use portal image if available, else a cyan circle
-    const portalIcon = portalImageUrl
-      ? { url: portalImageUrl, scaledSize: new google.maps.Size(32, 32), anchor: new google.maps.Point(16, 16) }
-      : { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#00bfff', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 };
-
-    if (!svPortalMarker) {
-      svPortalMarker = new google.maps.marker.AdvancedMarkerElement({ position: portalLatLng, map: svMiniMap, icon: portalIcon, title: 'Portal', zIndex: 2 });
-    } else {
-      svPortalMarker.setPosition(portalLatLng);
-      svPortalMarker.setIcon(portalIcon);
-      svPortalMarker.setMap(svMiniMap);
-    }
-
-    const povHeading = svPanorama ? svPanorama.getPov().heading : 0;
-    const arrowIcon = {
-      path: 'M 0,-10 L 6,6 L 0,2 L -6,6 Z',
-      scale: 1.2,
-      fillColor: dist > DEPLOY_RANGE ? '#ff4444' : '#4285F4',
-      fillOpacity: 1,
-      strokeColor: '#fff',
-      strokeWeight: 1.5,
-      rotation: povHeading,
-    };
-
-    if (!svPanoMarker) {
-      svPanoMarker = new google.maps.marker.AdvancedMarkerElement({
-        position: panoLatLng, map: svMiniMap, icon: arrowIcon,
-        title: dist > DEPLOY_RANGE ? 'Park here' : 'Street View camera', zIndex: 1,
-      });
-    } else {
-      svPanoMarker.setPosition(panoLatLng);
-      svPanoMarker.setIcon(arrowIcon);
-      svPanoMarker.setMap(svMiniMap);
-    }
+    // Overhead portal markers (target + nearby) — mirror the sphere markers.
+    svMiniMarkers.forEach(m => m.setMap(null));
+    svMiniMarkers = [];
+    svMiniMarkers.push(makeBeaconMarker(portalLatLng, 'Target portal', 30, svMiniMap));
+    getNearbyPortals(panoLatLng, PANO_RADIUS, portalLatLng).forEach(p => {
+      svMiniMarkers.push(makeBeaconMarker(p.latLng, p.title, 20, svMiniMap));
+    });
 
     if (dist > DEPLOY_RANGE) {
-      // Dashed line from parking to portal
+      // Dashed line from camera/parking spot to portal
       const dash = { path: 'M 0,-1 0,1', strokeOpacity: 1, strokeColor: '#ffcc00', scale: 3 };
       if (!svPathLine) {
         svPathLine = new google.maps.Polyline({
@@ -461,73 +472,13 @@
     }
   }
 
-  // ── Portal sphere overlay (updates on every pov_changed) ────────────────────
-  function updatePortalOverlay() {
-    if (!svPanorama || !svCurrentPortal) return;
-
-    // Sync minimap arrow rotation with current heading
-    if (svPanoMarker) {
-      svPanoMarker.setIcon({
-        path: 'M 0,-10 L 6,6 L 0,2 L -6,6 Z',
-        scale: 1.2,
-        fillColor: svDistToPortal > DEPLOY_RANGE ? '#ff4444' : '#4285F4',
-        fillOpacity: 1,
-        strokeColor: '#fff',
-        strokeWeight: 1.5,
-        rotation: svPanorama.getPov().heading,
-      });
-    }
-
-    const panoPos = svPanorama.getPosition();
-    if (!panoPos) return;
-
-    const pov    = svPanorama.getPov();
-    const zoom   = pov.zoom || 1;
-    const panoEl = document.getElementById('sv-pano');
-    if (!panoEl) return;
-    const W = panoEl.offsetWidth;
-    const H = panoEl.offsetHeight;
-    if (!W || !H) return;
-
-    // Google Street View FOV: hFov = 180 / 2^zoom (degrees)
-    const hFovDeg = 180 / Math.pow(2, zoom);
-    const vFovDeg = hFovDeg * H / W;
-    const hFovRad = hFovDeg * Math.PI / 180;
-    const vFovRad = vFovDeg * Math.PI / 180;
-
-    const portalLatLng  = new google.maps.LatLng(svCurrentPortal.lat, svCurrentPortal.lng);
-    const portalHeading = google.maps.geometry.spherical.computeHeading(panoPos, portalLatLng);
-
-    let dH = portalHeading - pov.heading;
-    while (dH >  180) dH -= 360;
-    while (dH < -180) dH += 360;
-    const dP = 0 - pov.pitch; // portals assumed at horizon pitch
-
-    // Perspective projection → screen coordinates
-    const x = W / 2 + Math.tan(dH * Math.PI / 180) / Math.tan(hFovRad / 2) * (W / 2);
-    const y = H / 2 - Math.tan(dP * Math.PI / 180) / Math.tan(vFovRad / 2) * (H / 2);
-
-    const pin = document.getElementById('sv-portal-pin');
-    if (!pin) return;
-
-    const inView = Math.abs(dH) < hFovDeg / 2 && x > 0 && x < W && y > -60 && y < H + 20;
-    if (inView) {
-      pin.style.display = 'flex';
-      pin.style.left    = x + 'px';
-      pin.style.top     = y + 'px';
-    } else {
-      pin.style.display = 'none';
-    }
-  }
-
   // ── Close modal ─────────────────────────────────────────────────────────────
   function closeModal() {
-    if (svPovListener) {
-      google.maps.event.removeListener(svPovListener);
-      svPovListener = null;
-    }
-    const pin = document.getElementById('sv-portal-pin');
-    if (pin) pin.style.display = 'none';
+    svPanoMarkers.forEach(m => m.setMap(null));
+    svPanoMarkers = [];
+    svMiniMarkers.forEach(m => m.setMap(null));
+    svMiniMarkers = [];
+    if (svPathLine) svPathLine.setMap(null);
     $('#sv-modal, #sv-overlay').hide();
   }
 

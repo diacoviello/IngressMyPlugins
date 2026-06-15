@@ -2,7 +2,7 @@
 // @author         DanielOnDiordna + DiabloEnMusica
 // @name           Bookmarks add-on (fix)
 // @category       Diablo
-// @version        2.1.0.20260615.130000
+// @version        2.1.0.20260615.140000
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @description    [danielondiordna-2.1.0.20240227.204800] Bookmark plugin add-on, to replace the default yellow marker by a color marker (color change requires colorpicker or drawtools), and show bookmark names (layer), including optional scaling. Modified export file with timestamp in text/plain format. Also an option for bookmarks export to kml file format (for google maps). Add/remove bookmarks with filters for level, faction, captured, visited and resonator counts. Integrated Spectrum Colorpicker 1.8.1
@@ -23,10 +23,13 @@ function wrapper(plugin_info) {
     var self = window.plugin.bookmarksAddon;
     self.id = 'bookmarksAddon';
     self.title = 'Bookmarks add-on';
-    self.version = '2.1.0.20260615.130000';
+    self.version = '2.1.0.20260615.140000';
     self.author = 'DanielOnDiordna';
     self.changelog = `
 Changelog:
+
+version 2.1.0.20260615.140000
+- added "Recolor visible bookmarks..." action in the Add/Remove bookmarks menu: sets every bookmark within the current map view to the current bookmarks color and redraws the markers
 
 version 2.1.0.20260615.130000
 - fixed compatibility with base Bookmarks plugin v0.4.7: the icon override, scaling and new-bookmark color patches silently no-op'd because the base source changed (icon: L.icon -> new L.Icon, [15,40] -> [15, 40] spacing, and bookmarks now created via addPortalBookmarkByMarker). Patterns made version-tolerant; colored SVG markers now render again so bookmark colors work.
@@ -307,6 +310,31 @@ version 0.0.1.20180405.092300
         window.runHooks('pluginBkmrksEdit', {"target": "all", "action": "reset"});
         return removecnt;
     };
+
+    self.recolorbookmarks = function(bounds,color) {
+        // set the color of all portal bookmarks to the given color
+        // optionally limit to portals within given bounds (the currently visible bookmarks)
+        if (!color) color = self.settings.color;
+        let changecnt = 0;
+        for (const folderid in window.plugin.bookmarks.bkmrksObj.portals) {
+            for (const ID in window.plugin.bookmarks.bkmrksObj.portals[folderid].bkmrk) {
+                let bookmark = window.plugin.bookmarks.bkmrksObj.portals[folderid].bkmrk[ID];
+                let bookmarkpos = window.L.latLng(bookmark.latlng.split(","));
+                if (!bounds || bounds.contains(bookmarkpos)) {
+                    if (bookmark.color !== color) {
+                        bookmark.color = color;
+                        changecnt++;
+                    }
+                }
+            }
+        }
+        window.plugin.bookmarks.saveStorage();
+        window.plugin.bookmarks.refreshBkmrks();
+        // 'all'/'import' makes the base editStar hook call resetAllStars(), redrawing the colored markers
+        window.runHooks('pluginBkmrksEdit', {"target": "all", "action": "import"});
+        return changecnt;
+    };
+
     self.drawbookmarks = function(bookmarkslist,replaceexisting) { // {<guid>:{folder:<string>,latlng:<window.L.LatLng>,label:<string>,color:<string>}};
         // super fast: draw bookmarks instantly by replacing all bookmarks data, without slow hooks and console calls
         replaceexisting = replaceexisting || false;
@@ -683,6 +711,7 @@ Add to folder: <input type="text" name="autofolder"><br>
 <div id="bkmrksSetbox">
 <a href="#" name="addbookmarks">Add bookmarks...</a>
 <a href="#" name="removematching">Remove matching bookmarks...</a>
+<a href="#" name="recolorvisible">Recolor visible bookmarks...</a>
 <a href="#" name="clearvisible">Clear all visible bookmarks...</a>
 <a href="#" name="clearinvisible">Clear all invisible bookmarks...</a>
 <a href="#" name="clearallbookmarks">Clear all bookmarks + folders...</a>
@@ -699,6 +728,7 @@ Add to folder: <input type="text" name="autofolder"><br>
         let replaceexistingcheckbox = container.querySelector('input[type=checkbox][name=replaceexisting]');
         let addbookmarksbutton = container.querySelector('a[name=addbookmarks]');
         let removematchingbutton = container.querySelector('a[name=removematching]');
+        let recolorvisiblebutton = container.querySelector('a[name=recolorvisible]');
         let clearvisiblebutton = container.querySelector('a[name=clearvisible]');
         let clearinvisiblebutton = container.querySelector('a[name=clearinvisible]');
         let clearallbookmarksbutton = container.querySelector('a[name=clearallbookmarks]');
@@ -845,6 +875,18 @@ Add to folder: <input type="text" name="autofolder"><br>
                 return;
             }
             if (confirm('Portals matching the filters: ' + Object.keys(bookmarkslist).length + '\n\nDo you want to remove all matching bookmarks?')) self.removebookmarks(true);
+        },false);
+        recolorvisiblebutton.addEventListener('click',function(e) {
+            e.preventDefault();
+            let visiblecnt = self.countbookmarks(window.map.getBounds());
+            if (visiblecnt == 0) {
+                alert('There are no visible bookmarks to recolor.');
+                return;
+            }
+            if (confirm('Visible bookmarks: ' + visiblecnt + '\n\nRecolor all visible bookmarks to the current bookmarks color (' + self.settings.color + ')?')) {
+                let changecnt = self.recolorbookmarks(window.map.getBounds(),self.settings.color);
+                alert('Recolored bookmarks: ' + changecnt);
+            }
         },false);
         clearvisiblebutton.addEventListener('click',function(e) {
             e.preventDefault();

@@ -3,7 +3,7 @@
 // @name           Bookmarks add-on (fix)
 // @category       Diablo
 // @version        2.1.0.20260227.102800
-// @updateURL     https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @description    [danielondiordna-2.1.0.20240227.204800] Bookmark plugin add-on, to replace the default yellow marker by a color marker (color change requires colorpicker or drawtools), and show bookmark names (layer), including optional scaling. Modified export file with timestamp in text/plain format. Also an option for bookmarks export to kml file format (for google maps). Add/remove bookmarks with filters for level, faction, captured, visited and resonator counts. Integrated Spectrum Colorpicker 1.8.1
 // @id             bookmarks-addon@DanielOnDiordna
@@ -1340,9 +1340,11 @@ Add to folder: <input type="text" name="autofolder"><br>
             change: function(color) {
                 self.settings.color = color.toHexString();
                 self.storesettings();
+                console.log(self.title + ': color change ->', self.settings.color, '| selectedPortal:', window.selectedPortal);
                 if (window.selectedPortal !== null) {
                     let guid = window.selectedPortal;
                     let bkmrkData = window.plugin.bookmarks.findByGuid(guid);
+                    console.log(self.title + ': bkmrkData for', guid, '=', bkmrkData);
                     if (bkmrkData) {
                         // persist the new color in storage
                         window.plugin.bookmarks.bkmrksObj.portals[bkmrkData.id_folder].bkmrk[bkmrkData.id_bookmark].color = self.settings.color;
@@ -1350,16 +1352,21 @@ Add to folder: <input type="text" name="autofolder"><br>
 
                         // update the live marker's stored icon color so it survives redraws
                         let star = window.plugin.bookmarks.starLayers[guid];
+                        console.log(self.title + ': starLayer present:', !!star, '| icon.options.color was:', star && star.options.icon && star.options.icon.options ? star.options.icon.options.color : '(n/a)');
                         if (star && star.options.icon && star.options.icon.options) {
                             star.options.icon.options.color = self.settings.color;
                         }
 
                         // recolor the SVG in-place if it happens to be rendered...
                         let fillel = document.getElementById('fill_' + guid);
+                        console.log(self.title + ': fill_' + guid + ' element found:', !!fillel);
                         if (fillel) fillel.style.fill = self.settings.color;
 
                         // ...otherwise force a redraw so the new color shows
+                        console.log(self.title + ': calling resetAllStars() to redraw with new color');
                         window.plugin.bookmarks.resetAllStars();
+                    } else {
+                        console.log(self.title + ': no bookmark found for selected portal - nothing to recolor');
                     }
                 }
             },
@@ -1428,7 +1435,7 @@ Add to folder: <input type="text" name="autofolder"><br>
 
     self.setupColoredBookmarks = function() {
         let addPortalBookmarkString = window.plugin.bookmarks.addPortalBookmark.toString();
-        addPortalBookmarkString = addPortalBookmarkString.replace('var ID','var color = ' + self.namespace + 'settings.color;\n    var ID');
+        addPortalBookmarkString = addPortalBookmarkString.replace('var ID','var color = ' + self.namespace + 'settings.color;\n    console.log("' + self.title + ': addPortalBookmark - new bookmark color =", color, "| guid =", guid);\n    var ID');
         addPortalBookmarkString = addPortalBookmarkString.replace('label}','label,"color":color}');
         eval('window.plugin.bookmarks.addPortalBookmark = ' + addPortalBookmarkString + ';');
 

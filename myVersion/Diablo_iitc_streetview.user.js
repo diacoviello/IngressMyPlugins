@@ -5,8 +5,8 @@
 // @description    Adds a Google Streetview popup for portals, accessible via a button in the portal details or by long-pressing the map (mobile) / right-clicking the map (desktop). The target portal and any other portals within 100 m are pinned onto the Street View sphere at their true ground positions (and stay anchored as you move). An interactive overhead minimap shows a live Google pegman you can drag to reposition the view, plus zoom. Works on both desktop IITC and IITC-Mobile. When the nearest camera is out of Ingress deploy range, it shows the distance and a suggested parking spot.
 // @version        2.1.1
 // @namespace      https://github.com/diacoviello/IngressMyPlugins
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/iitc_streetview.user.js
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/iitc_streetview.user.js
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_iitc_streetview.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_iitc_streetview.user.js
 // @match          https://intel.ingress.com/*
 // @match          http://intel.ingress.com/*
 // @match          https://*.ingress.com/intel*

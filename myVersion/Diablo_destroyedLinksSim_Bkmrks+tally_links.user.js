@@ -1,6 +1,6 @@
 // ==UserScript==
 // @author         Zaso + Diablo
-// @name           Destroy Links Sim+bookmarks+tally
+// @name           Destroy Links Sim wBkmrksTally
 // @category       Diablo
 // @version        0.0.8.20200216.174029
 // @description    Simulate the destruction of portal links: hide its links and fields.

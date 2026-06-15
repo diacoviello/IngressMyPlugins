@@ -265,8 +265,16 @@
           panoLatLng,
           new google.maps.LatLng(lat, lng)
         );
-        svPanorama.setPano(data.location.pano);
-        svPanorama.setPov({ heading, pitch: SV_PITCH });
+        // The modal was just shown (display:none → block); the panorama's
+        // canvas may have initialized at the wrong size before layout flushed,
+        // leaving it blank until an interaction forces a resize. Wait one frame
+        // for layout, trigger the resize ourselves, then apply the pano + POV
+        // so the imagery renders without needing a pegman drag.
+        requestAnimationFrame(() => {
+          google.maps.event.trigger(svPanorama, 'resize');
+          svPanorama.setPano(data.location.pano);
+          svPanorama.setPov({ heading, pitch: SV_PITCH });
+        });
         const dist = Math.round(
           google.maps.geometry.spherical.computeDistanceBetween(
             panoLatLng, new google.maps.LatLng(lat, lng)

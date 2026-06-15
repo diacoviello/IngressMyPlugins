@@ -242,7 +242,7 @@ function wrapper( plugin_info ) {
 }
 
 const script=document.createElement( 'script' );
-const info={};
+var info={};
 if ( typeof GM_info!=='undefined'&&GM_info&&GM_info.script ) {
 	info.script={
 		version: GM_info.script.version,

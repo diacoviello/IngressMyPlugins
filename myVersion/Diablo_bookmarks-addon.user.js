@@ -2,7 +2,7 @@
 // @author         DanielOnDiordna + DiabloEnMusica
 // @name           Bookmarks add-on (fix)
 // @category       Diablo
-// @version        2.1.0.20260615.120000
+// @version        2.1.0.20260615.130000
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @description    [danielondiordna-2.1.0.20240227.204800] Bookmark plugin add-on, to replace the default yellow marker by a color marker (color change requires colorpicker or drawtools), and show bookmark names (layer), including optional scaling. Modified export file with timestamp in text/plain format. Also an option for bookmarks export to kml file format (for google maps). Add/remove bookmarks with filters for level, faction, captured, visited and resonator counts. Integrated Spectrum Colorpicker 1.8.1
@@ -23,10 +23,13 @@ function wrapper(plugin_info) {
     var self = window.plugin.bookmarksAddon;
     self.id = 'bookmarksAddon';
     self.title = 'Bookmarks add-on';
-    self.version = '2.1.0.20260615.120000';
+    self.version = '2.1.0.20260615.130000';
     self.author = 'DanielOnDiordna';
     self.changelog = `
 Changelog:
+
+version 2.1.0.20260615.130000
+- fixed compatibility with base Bookmarks plugin v0.4.7: the icon override, scaling and new-bookmark color patches silently no-op'd because the base source changed (icon: L.icon -> new L.Icon, [15,40] -> [15, 40] spacing, and bookmarks now created via addPortalBookmarkByMarker). Patterns made version-tolerant; colored SVG markers now render again so bookmark colors work.
 
 version 2.1.0.20260615.120000
 - fixed "Cannot read properties of null (reading 'style')" when choosing a bookmark color: guard document.getElementById('fill_' + guid) against null, persist color before touching the DOM, update the marker's stored icon color, and redraw via resetAllStars()
@@ -929,7 +932,7 @@ Add to folder: <input type="text" name="autofolder"><br>
                 '    let width = ' + self.namespace + 'zoomscale(25 * scale/100.0);\n' +
                 '    let height = ' + self.namespace + 'zoomscale(45 * scale/100.0);');
             addStar_override = addStar_override.replace(
-                /icon: L\.icon\(\{[\s\S]+?\}\)/,
+                /icon:\s*(?:new L\.Icon|L\.icon)\(\{[\s\S]+?\}\)/,
                 'icon: L.divIcon({\n' +
                 '        iconSize: new L.Point(width, height),\n' +
                 '        iconAnchor: new L.Point(parseInt(width / 2), height),\n' +
@@ -939,6 +942,9 @@ Add to folder: <input type="text" name="autofolder"><br>
                 '        // be able to simply retrieve the color for serializing markers\n' +
                 '        color: ' + self.namespace + 'settings.color\n' +
                 '      })');
+            if (!addStar_override.includes('L.divIcon')) {
+                console.log('IITC plugin WARNING: ' + self.title + ' version ' + self.version + ' - could not patch addStar icon (base bookmarks plugin source changed); colored bookmarks will not work');
+            }
             try {
                 eval('window.plugin.bookmarks.addStar = ' + addStar_override);
             } catch(e) {
@@ -1305,8 +1311,8 @@ Add to folder: <input type="text" name="autofolder"><br>
 
     self.setupScaleableBookmarks = function() {
         let addStar_string = window.plugin.bookmarks.addStar.toString();
-        addStar_string = addStar_string.replace('[15,40]','[' + self.namespace + 'zoomscale(15),' + self.namespace + 'zoomscale(40)]');
-        addStar_string = addStar_string.replace('[30,40]','[' + self.namespace + 'zoomscale(30),' + self.namespace + 'zoomscale(40)]');
+        addStar_string = addStar_string.replace(/\[\s*15\s*,\s*40\s*\]/,'[' + self.namespace + 'zoomscale(15),' + self.namespace + 'zoomscale(40)]');
+        addStar_string = addStar_string.replace(/\[\s*30\s*,\s*40\s*\]/,'[' + self.namespace + 'zoomscale(30),' + self.namespace + 'zoomscale(40)]');
         eval('window.plugin.bookmarks.addStar = ' + addStar_string);
     };
 
@@ -1434,10 +1440,23 @@ Add to folder: <input type="text" name="autofolder"><br>
     };
 
     self.setupColoredBookmarks = function() {
-        let addPortalBookmarkString = window.plugin.bookmarks.addPortalBookmark.toString();
-        addPortalBookmarkString = addPortalBookmarkString.replace('var ID','var color = ' + self.namespace + 'settings.color;\n    console.log("' + self.title + ': addPortalBookmark - new bookmark color =", color, "| guid =", guid);\n    var ID');
-        addPortalBookmarkString = addPortalBookmarkString.replace('label}','label,"color":color}');
-        eval('window.plugin.bookmarks.addPortalBookmark = ' + addPortalBookmarkString + ';');
+        // Store the chosen color on every newly created bookmark.
+        // The base plugin changed across versions (and now creates bookmarks via
+        // addPortalBookmarkByMarker, not the deprecated addPortalBookmark), so patch
+        // every code path with a version-tolerant pattern and warn if it stops matching.
+        let injectColor = function(fnName) {
+            if (!window.plugin.bookmarks[fnName]) return;
+            let src = window.plugin.bookmarks[fnName].toString();
+            if (!/label:\s*label/.test(src)) {
+                console.log('IITC plugin WARNING: ' + self.title + ' version ' + self.version + ' - could not inject color into ' + fnName + ' (base bookmarks plugin source changed)');
+                return;
+            }
+            src = src.replace(/label:\s*label/, 'label: label, color: ' + self.namespace + 'settings.color');
+            src = src.replace('{', '{\n    console.log("' + self.title + ': ' + fnName + ' - new bookmark color =", ' + self.namespace + 'settings.color);');
+            eval('window.plugin.bookmarks.' + fnName + ' = ' + src + ';');
+        };
+        injectColor('addPortalBookmark');         // deprecated path (kept for compatibility)
+        injectColor('addPortalBookmarkByMarker');  // current path used by the star toggle
 
         let addAllStarsString = window.plugin.bookmarks.addAllStars.toString();
         addAllStarsString = addAllStarsString.replace('.label;','.label;\n        ' + self.namespace + 'settings.color = (list[idFolders][\'bkmrk\'][idBkmrks].color?list[idFolders][\'bkmrk\'][idBkmrks].color:' + self.namespace + 'defaultcolor);');

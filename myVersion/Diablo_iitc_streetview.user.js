@@ -119,22 +119,31 @@
           }
           #sv-pano { height: 450px; }
         }
-        /* ── Mobile layout — full-screen sheet ── */
+        /* ── Mobile layout — full-screen ── */
         @media (max-width: 768px) {
           #sv-minimap { width: 110px; height: 110px; bottom: 6px; right: 6px; }
+          /* Shrink the minimap's zoom control so it doesn't cover the map */
+          #sv-minimap .gm-bundled-control,
+          #sv-minimap .gm-bundled-control-on-bottom {
+            transform: scale(0.6);
+            transform-origin: 100% 100%;
+          }
           #sv-modal {
             width: 100% !important;
+            height: 100% !important;
+            height: 100dvh !important;
             left: 0 !important;
-            bottom: 0 !important;
-            top: auto !important;
+            top: 0 !important;
+            bottom: auto !important;
             transform: none !important;
-            border-radius: 12px 12px 0 0;
-            border-left: none;
-            border-right: none;
-            border-bottom: none;
+            border-radius: 0;
+            border: none;
+            display: flex;
+            flex-direction: column;
           }
           #sv-header { cursor: default; }
-          #sv-pano { height: 55vw; min-height: 220px; max-height: 360px; }
+          #sv-pano-container { flex: 1 1 auto; min-height: 0; }
+          #sv-pano { height: 100%; min-height: 0; max-height: none; }
           #sv-close { font-size: 26px; }
           #sv-status { font-size: 12px; padding: 6px 14px 10px; }
         }

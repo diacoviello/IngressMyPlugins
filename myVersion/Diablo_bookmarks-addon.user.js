@@ -2,7 +2,7 @@
 // @author         DanielOnDiordna + DiabloEnMusica
 // @name           Bookmarks add-on (fix)
 // @category       Diablo
-// @version        2.1.0.20260615.140000
+// @version        2.1.0.20260615.150000
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @description    [danielondiordna-2.1.0.20240227.204800] Bookmark plugin add-on, to replace the default yellow marker by a color marker (color change requires colorpicker or drawtools), and show bookmark names (layer), including optional scaling. Modified export file with timestamp in text/plain format. Also an option for bookmarks export to kml file format (for google maps). Add/remove bookmarks with filters for level, faction, captured, visited and resonator counts. Integrated Spectrum Colorpicker 1.8.1
@@ -23,10 +23,13 @@ function wrapper(plugin_info) {
     var self = window.plugin.bookmarksAddon;
     self.id = 'bookmarksAddon';
     self.title = 'Bookmarks add-on';
-    self.version = '2.1.0.20260615.140000';
+    self.version = '2.1.0.20260615.150000';
     self.author = 'DanielOnDiordna';
     self.changelog = `
 Changelog:
+
+version 2.1.0.20260615.150000
+- "Recolor visible bookmarks..." now uses the "Color for new bookmarks" picker in the same Add/Remove dialog (self.settings.addcolor) instead of the main menu color, so the color you select right above the button is the one applied
 
 version 2.1.0.20260615.140000
 - added "Recolor visible bookmarks..." action in the Add/Remove bookmarks menu: sets every bookmark within the current map view to the current bookmarks color and redraws the markers
@@ -883,8 +886,8 @@ Add to folder: <input type="text" name="autofolder"><br>
                 alert('There are no visible bookmarks to recolor.');
                 return;
             }
-            if (confirm('Visible bookmarks: ' + visiblecnt + '\n\nRecolor all visible bookmarks to the current bookmarks color (' + self.settings.color + ')?')) {
-                let changecnt = self.recolorbookmarks(window.map.getBounds(),self.settings.color);
+            if (confirm('Visible bookmarks: ' + visiblecnt + '\n\nRecolor all visible bookmarks to the "Color for new bookmarks" (' + self.settings.addcolor + ')?')) {
+                let changecnt = self.recolorbookmarks(window.map.getBounds(),self.settings.addcolor);
                 alert('Recolored bookmarks: ' + changecnt);
             }
         },false);

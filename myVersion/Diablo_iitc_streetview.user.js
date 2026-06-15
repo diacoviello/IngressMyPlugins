@@ -265,16 +265,20 @@
           panoLatLng,
           new google.maps.LatLng(lat, lng)
         );
+        // Load the imagery synchronously so it always appears, even where a
+        // deferred callback might not run (IITC-Mobile's WebView doesn't
+        // reliably service requestAnimationFrame).
+        svPanorama.setPano(data.location.pano);
+        svPanorama.setPov({ heading, pitch: SV_PITCH });
         // The modal was just shown (display:none → block); the panorama's
-        // canvas may have initialized at the wrong size before layout flushed,
-        // leaving it blank until an interaction forces a resize. Wait one frame
-        // for layout, trigger the resize ourselves, then apply the pano + POV
-        // so the imagery renders without needing a pegman drag.
-        requestAnimationFrame(() => {
+        // canvas can initialize at the wrong size before layout flushed,
+        // leaving it blank until an interaction forces a resize. Once layout
+        // settles, force the resize ourselves and re-apply the POV so the
+        // imagery renders without needing a pegman drag.
+        setTimeout(() => {
           google.maps.event.trigger(svPanorama, 'resize');
-          svPanorama.setPano(data.location.pano);
           svPanorama.setPov({ heading, pitch: SV_PITCH });
-        });
+        }, 0);
         const dist = Math.round(
           google.maps.geometry.spherical.computeDistanceBetween(
             panoLatLng, new google.maps.LatLng(lat, lng)

@@ -1,13 +1,11 @@
 // ==UserScript==
-// @author          DanielOnDiordna
+// @author          DiabloEnMusica
 // @name            See More
-// @category        Tweak
+// @category        Diablo
 // @version         2.0.0.20210724.002500
-// @updateURL       https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/see-more.meta.js
-// @downloadURL     https://raw.githubusercontent.com/IITC-CE/Community-plugins/master/dist/DanielOnDiordna/see-more.user.js
-// @description     [danielondiordna-2.0.0.20210724.002500] See more portals and links when zooming out: zoom level all links changes to all portals, zoom level links>300m changes to all links. Beware: This plugin will cause slightly more data usage when zooming out.
-// @id              see-more@DanielOnDiordna
-// @namespace       https://softspot.nl/ingress/
+// @updateURL       https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_see-more.user.js
+// @downloadURL     https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_see-more.user.js
+// @id              see-more@DiabloEnMusica
 // @antiFeatures    highLoad
 // @match           https://intel.ingress.com/*
 // @grant           none
@@ -23,7 +21,7 @@ function wrapper( plugin_info ) {
 	self.id='seeMore';
 	self.title='See More';
 	self.version='2.0.0.20210724.002500';
-	self.author='DanielOnDiordna';
+	self.author='DiabloEnMusica';
 	self.changelog=`
 		Changelog:
 
@@ -45,6 +43,9 @@ function wrapper( plugin_info ) {
 
 		version 2.0.0.20210724.002500
 		- prevent double plugin setup on hook iitcLoaded
+
+		version 2.0.0.20260616.002500
+		- My changes
 		`;
 	self.namespace='window.plugin.'+self.id+'.';
 	self.pluginname='plugin-'+self.id;

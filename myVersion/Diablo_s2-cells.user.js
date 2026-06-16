@@ -35,7 +35,117 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 	// use own namespace for plugin
 	window.plugin.s2celldrawer = function() {};            
 	window.plugin.s2celldrawer.seenCells = {};
-	window.plugin.s2celldrawer.bounds = null;	  
+	window.plugin.s2celldrawer.bounds = null;
+
+	window.plugin.s2celldrawer.defaultSettings = {
+		color: '#FF6600',
+		opacity: 1.0
+	};
+	window.plugin.s2celldrawer.settings = {};
+
+	window.plugin.s2celldrawer.storeSettings = function() {
+		localStorage['plugin.s2celldrawer.settings'] = JSON.stringify(window.plugin.s2celldrawer.settings);
+	};
+
+	window.plugin.s2celldrawer.loadSettings = function() {
+		var stored = localStorage['plugin.s2celldrawer.settings'];
+		if (stored) {
+			try { window.plugin.s2celldrawer.settings = JSON.parse(stored); } catch(e) {}
+		}
+		var s = window.plugin.s2celldrawer.settings;
+		var d = window.plugin.s2celldrawer.defaultSettings;
+		if (!s.color) s.color = d.color;
+		if (s.opacity === undefined) s.opacity = d.opacity;
+	};
+
+	window.plugin.s2celldrawer.redraw = function() {
+		var s2Layer = window.plugin.s2celldrawer.layer;
+		if (!s2Layer) return;
+		s2Layer.clearLayers();
+		var s = window.plugin.s2celldrawer.settings;
+		window.plugin.s2celldrawer.drawCellList(s2Layer, 14, {
+			color: s.color,
+			opacity: s.opacity,
+			weight: 1,
+			fill: false
+		});
+	};
+
+	window.plugin.s2celldrawer.showMenu = function() {
+		var s = window.plugin.s2celldrawer.settings;
+
+		var container = document.createElement('div');
+		container.style.padding = '10px';
+
+		// Color row
+		var colorRow = container.appendChild(document.createElement('div'));
+		colorRow.style.marginBottom = '12px';
+		var colorLabel = colorRow.appendChild(document.createElement('label'));
+		colorLabel.textContent = 'Cell Color:  ';
+		colorLabel.style.fontWeight = 'bold';
+		var colorInput = colorRow.appendChild(document.createElement('input'));
+		colorInput.type = 'color';
+		colorInput.value = s.color;
+		colorInput.style.width = '60px';
+		colorInput.style.height = '30px';
+		colorInput.style.cursor = 'pointer';
+		colorInput.style.border = 'none';
+		colorInput.style.padding = '0';
+		colorInput.style.marginLeft = '6px';
+
+		// Reset color button
+		var resetColorBtn = colorRow.appendChild(document.createElement('button'));
+		resetColorBtn.textContent = 'Reset';
+		resetColorBtn.style.marginLeft = '8px';
+		resetColorBtn.addEventListener('click', function() {
+			colorInput.value = window.plugin.s2celldrawer.defaultSettings.color;
+		});
+
+		// Opacity row
+		var opacityRow = container.appendChild(document.createElement('div'));
+		opacityRow.style.marginBottom = '12px';
+		var opacityLabel = opacityRow.appendChild(document.createElement('label'));
+		opacityLabel.textContent = 'Opacity:  ';
+		opacityLabel.style.fontWeight = 'bold';
+		var opacityInput = opacityRow.appendChild(document.createElement('input'));
+		opacityInput.type = 'range';
+		opacityInput.min = '0';
+		opacityInput.max = '1';
+		opacityInput.step = '0.05';
+		opacityInput.value = s.opacity;
+		opacityInput.style.width = '140px';
+		opacityInput.style.marginLeft = '6px';
+		opacityInput.style.verticalAlign = 'middle';
+		var opacityValue = opacityRow.appendChild(document.createElement('span'));
+		opacityValue.textContent = '  ' + Math.round(s.opacity * 100) + '%';
+		opacityInput.addEventListener('input', function() {
+			opacityValue.textContent = '  ' + Math.round(this.value * 100) + '%';
+		});
+
+		// Reset opacity button
+		var resetOpacityBtn = opacityRow.appendChild(document.createElement('button'));
+		resetOpacityBtn.textContent = 'Reset';
+		resetOpacityBtn.style.marginLeft = '8px';
+		resetOpacityBtn.addEventListener('click', function() {
+			opacityInput.value = window.plugin.s2celldrawer.defaultSettings.opacity;
+			opacityValue.textContent = '  ' + Math.round(window.plugin.s2celldrawer.defaultSettings.opacity * 100) + '%';
+		});
+
+		window.dialog({
+			html: container,
+			id: 's2celldrawer',
+			title: 'S2 Cell Drawer - Settings',
+			width: 'auto'
+		}).dialog('option', 'buttons', {
+			'Apply': function() {
+				window.plugin.s2celldrawer.settings.color = colorInput.value;
+				window.plugin.s2celldrawer.settings.opacity = parseFloat(opacityInput.value);
+				window.plugin.s2celldrawer.storeSettings();
+				window.plugin.s2celldrawer.redraw();
+			},
+			'Close': function() { $(this).dialog('close'); }
+		});
+	};
   
 	window.plugin.s2celldrawer.drawCellList = function(layer, cellSize, cellOptions, showCallback, markerCss) {       
  		window.plugin.s2celldrawer.bounds = map.getBounds();
@@ -131,6 +241,9 @@ var setup = function() {
   window.pluginCreateHook('displayedLayerUpdated');
   window.updateDisplayedLayerGroup = window.updateDisplayedLayerGroupModified;
 
+  // Load saved settings (color, opacity)
+  window.plugin.s2celldrawer.loadSettings();
+
   // Create a Leaflet layer group for the S2 cells
   var s2Layer = new L.LayerGroup();
   window.plugin.s2celldrawer.layer = s2Layer;
@@ -138,14 +251,11 @@ var setup = function() {
   // Register with IITC's layer control so it appears in the dropdown
   window.addLayerGroup('S2 Cell Drawer', s2Layer, false);
 
-  // Draw on map move/zoom
-  var redraw = function() {
-    s2Layer.clearLayers();
-    window.plugin.s2celldrawer.drawCellList(s2Layer, 14, {color: '#FF6600', weight: 1, fill: false});
-  };
+  // Add toolbox button to open settings menu
+  $('#toolbox').append('<a onclick="window.plugin.s2celldrawer.showMenu();return false;" title="S2 Cell Drawer Settings">S2 Cells</a>');
 
-  map.on('moveend', redraw);
-  redraw();
+  map.on('moveend', window.plugin.s2celldrawer.redraw);
+  window.plugin.s2celldrawer.redraw();
 };
 
 // Overload for IITC default in order to catch the manual select/deselect event and handle it properly

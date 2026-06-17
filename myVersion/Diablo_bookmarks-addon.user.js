@@ -2,7 +2,7 @@
 // @author         DanielOnDiordna + DiabloEnMusica
 // @name           Bookmarks add-on (fix)
 // @category       Diablo
-// @version        2.1.0.20260615.150000
+// @version        2.1.0.20260617.120000
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js
 // @description    [danielondiordna-2.1.0.20240227.204800] Bookmark plugin add-on, to replace the default yellow marker by a color marker (color change requires colorpicker or drawtools), and show bookmark names (layer), including optional scaling. Modified export file with timestamp in text/plain format. Also an option for bookmarks export to kml file format (for google maps). Add/remove bookmarks with filters for level, faction, captured, visited and resonator counts. Integrated Spectrum Colorpicker 1.8.1
@@ -23,10 +23,13 @@ function wrapper(plugin_info) {
     var self = window.plugin.bookmarksAddon;
     self.id = 'bookmarksAddon';
     self.title = 'Bookmarks add-on';
-    self.version = '2.1.0.20260615.150000';
+    self.version = '2.1.0.20260617.120000';
     self.author = 'DanielOnDiordna';
     self.changelog = `
 Changelog:
+
+version 2.1.0.20260617.120000
+- fixed "Identifier 'bkmrk' has already been declared" SyntaxError on iitcLoaded hook: renamed the injected variable in setupEditStar from 'bkmrk' to '_bkmrkAddon' to avoid collision with the same-named variable now present in base Bookmarks v0.4.7's editStar function
 
 version 2.1.0.20260615.150000
 - "Recolor visible bookmarks..." now uses the "Color for new bookmarks" picker in the same Add/Remove dialog (self.settings.addcolor) instead of the main menu color, so the color you select right above the button is the one applied
@@ -1530,8 +1533,8 @@ Add to folder: <input type="text" name="autofolder"><br>
         // remove the hook, modify the function, add the hook again:
         window.removeHook('pluginBkmrksEdit', window.plugin.bookmarks.editStar);
         let editStar_override = window.plugin.bookmarks.editStar.toString();
-        editStar_override = editStar_override.replace(/(var latlng = )(.*?);/s,'let bkmrk = window.plugin.bookmarks.findByGuid(guid);\n        if (!window.portals[guid] && !bkmrk) return;\n        $1(bkmrk?window.L.latLng(window.plugin.bookmarks.bkmrksObj.portals[bkmrk.id_folder].bkmrk[bkmrk.id_bookmark].latlng.split(",")):$2);');
-        editStar_override = editStar_override.replace(/(var lbl = )(.*?);/s,'$1(bkmrk?window.plugin.bookmarks.bkmrksObj.portals[bkmrk.id_folder].bkmrk[bkmrk.id_bookmark].label:$2);');
+        editStar_override = editStar_override.replace(/(var latlng = )(.*?);/s,'let _bkmrkAddon = window.plugin.bookmarks.findByGuid(guid);\n        if (!window.portals[guid] && !_bkmrkAddon) return;\n        $1(_bkmrkAddon?window.L.latLng(window.plugin.bookmarks.bkmrksObj.portals[_bkmrkAddon.id_folder].bkmrk[_bkmrkAddon.id_bookmark].latlng.split(",")):$2);');
+        editStar_override = editStar_override.replace(/(var lbl = )(.*?);/s,'$1(_bkmrkAddon?window.plugin.bookmarks.bkmrksObj.portals[_bkmrkAddon.id_folder].bkmrk[_bkmrkAddon.id_bookmark].label:$2);');
         eval('window.plugin.bookmarks.editStar = ' + editStar_override + ';');
         window.addHook('pluginBkmrksEdit', window.plugin.bookmarks.editStar);
     };

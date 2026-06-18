@@ -19,9 +19,9 @@ function wrapper( plugin_info ) {
 
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 	//(leaving them in place might break the 'About IITC' page or break update checks)
-	plugin_info.buildName='ZasoItems';
-	plugin_info.dateTimeVersion='2020-02-16-174029';
-	plugin_info.pluginId='destroyed-links-simulator';
+	// plugin_info.buildName='ZasoItems';
+	// plugin_info.dateTimeVersion='2020-02-16-174029';
+	// plugin_info.pluginId='destroyed-links-simulator';
 	//END PLUGIN AUTHORS NOTE
 
 

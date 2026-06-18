@@ -17,9 +17,9 @@ function wrapper( plugin_info ) {
 	if ( typeof window.plugin!=='function' ) window.plugin=function() { };
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 	//(leaving them in place might break the 'About IITC' page or break update checks)
-	plugin_info.buildName='ZasoItems';
-	plugin_info.dateTimeVersion='2021-01-03-154230';
-	plugin_info.pluginId='player-ranges';
+	// plugin_info.buildName='ZasoItems';
+	// plugin_info.dateTimeVersion='2021-01-03-154230';
+	// plugin_info.pluginId='player-ranges';
 	//END PLUGIN AUTHORS NOTE
 	// PLUGIN START ////////////////////////////////////////////////////////
 	// History
@@ -1145,6 +1145,7 @@ function wrapper( plugin_info ) {
 	}
 	//======================================================================
 	var setup=function() {
+		console.time('ranges');
 		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
 		window.plugin.playerRanges.ui.setupCSS();
 		window.plugin.playerRanges.layer.boot();
@@ -1153,6 +1154,7 @@ function wrapper( plugin_info ) {
 		if ( window.plugin.playerRanges.obj.portalRangesLayer&&window.map.hasLayer( window.plugin.playerRanges.obj.portalRangesLayer ) ) {
 			window.map.removeLayer( window.plugin.playerRanges.obj.portalRangesLayer );
 		}
+		console.timeEnd('ranges');
 	}
 	// PLUGIN END //////////////////////////////////////////////////////////
 	setup.info=plugin_info; //add the script info data to the function as a property

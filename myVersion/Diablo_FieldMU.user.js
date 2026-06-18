@@ -349,6 +349,7 @@ self.showDialog=function() {
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
 function setup() {
+	console.time('FieldMU');
 	if ( win.useAndroidPanes() ) {
 		win.android.addPane( self.id, self.title, 'ic_action_share' );
 		win.addHook( 'paneChanged', function( pane ) {
@@ -360,6 +361,7 @@ function setup() {
 		);
 	}
 	console.log( 'IITC plugin loaded: QuickDrawLinks-FieldMU version '+self.version );
+	console.timeEnd('FieldMU');
 }
 
 if ( win.iitcLoaded ) {

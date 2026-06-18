@@ -28,9 +28,9 @@ function wrapper(plugin_info) {
 if(typeof window.plugin !== 'function') window.plugin = function() {};
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 	//(leaving them in place might break the 'About IITC' page or break update checks)
-  plugin_info.buildName = 'iitc';
-  plugin_info.dateTimeVersion = '20181209.010307';
-  plugin_info.pluginId = 'S2 Cell Drawer';
+  // plugin_info.buildName = 'iitc';
+  // plugin_info.dateTimeVersion = '20181209.010307';
+  // plugin_info.pluginId = 'S2 Cell Drawer';
 	// PLUGIN START ///////////////////////////////////////////////////////	
 	// use own namespace for plugin
 	window.plugin.s2celldrawer = function() {};            
@@ -238,6 +238,8 @@ window.plugin.s2celldrawer.drawCell = function(layer, cell, cellSize, cellOption
 }   
  
 var setup = function() {
+  console.time('S2 Cell Drawer setup');
+
   window.pluginCreateHook('displayedLayerUpdated');
   window.updateDisplayedLayerGroup = window.updateDisplayedLayerGroupModified;
 
@@ -256,6 +258,7 @@ var setup = function() {
 
   map.on('moveend', window.plugin.s2celldrawer.redraw);
   window.plugin.s2celldrawer.redraw();
+  console.timeEnd('S2 Cell Drawer setup');
 };
 
 // Overload for IITC default in order to catch the manual select/deselect event and handle it properly

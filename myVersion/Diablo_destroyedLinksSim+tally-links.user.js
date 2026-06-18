@@ -19,9 +19,9 @@ function wrapper( plugin_info ) {
 
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 	//(leaving them in place might break the 'About IITC' page or break update checks)
-	plugin_info.buildName='ZasoItems';
-	plugin_info.dateTimeVersion='2025-12-30';
-	plugin_info.pluginId='destroyed-links-simulator+tally';
+	// plugin_info.buildName='ZasoItems';
+	// plugin_info.dateTimeVersion='2025-12-30';
+	// plugin_info.pluginId='destroyed-links-simulator+tally';
 	//END PLUGIN AUTHORS NOTE
 
 
@@ -892,6 +892,7 @@ function wrapper( plugin_info ) {
 	//*****************************
 
 	var setup=function() {
+		console.time('destroyedLinksSim');
 		// window.plugin.destroyedLinks.util.checkFriendPlugins();
 		// window.plugin.destroyedLinks.storage.check();
 		window.plugin.destroyedLinks.setupCSS();
@@ -951,6 +952,7 @@ function wrapper( plugin_info ) {
 			window.pluginCreateHook( 'pluginDrawTools' );
 			window.addHook( 'pluginDrawTools', window.plugin.destroyedLinks.cross.hookDrawTools );
 		}
+		console.timeEnd('destroyedLinksSim');
 	};
 
 	// PLUGIN END //////////////////////////////////////////////////////////

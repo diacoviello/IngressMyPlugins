@@ -19,9 +19,9 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
-plugin_info.buildName = 'ZasoItems';
-plugin_info.dateTimeVersion = '2020-02-16-174030';
-plugin_info.pluginId = 'portal-hack-range';
+// plugin_info.buildName = 'ZasoItems';
+// plugin_info.dateTimeVersion = '2020-02-16-174030';
+// plugin_info.pluginId = 'portal-hack-range';
 //END PLUGIN AUTHORS NOTE
 
 

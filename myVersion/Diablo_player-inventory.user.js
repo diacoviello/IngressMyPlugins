@@ -1559,6 +1559,7 @@ function setupDisplay() {
 
 // iitc setup
 function setup () {
+  console.time('player-inventory');
   // Dummy inventory
   playerInventory.inventory = new Inventory();
   playerInventory.isHighlighActive = false;
@@ -1647,6 +1648,7 @@ function setup () {
     // No inventory has been saved yet; nothing to load. Will populate on first refresh.
     autoRefresh();
   });
+  console.timeEnd('player-inventory');
 }
 
 if(!window.bootPlugins) window.bootPlugins = [];

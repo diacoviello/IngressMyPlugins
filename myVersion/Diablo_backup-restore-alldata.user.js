@@ -287,6 +287,7 @@ version 0.0.1.20191209.145200
     };
 
     self.setup = function() {
+        console.time('backup-restore');
         if ('pluginloaded' in self) {
             console.log('IITC plugin already loaded: ' + self.title + ' version ' + self.version);
             return;
@@ -302,6 +303,7 @@ version 0.0.1.20191209.145200
             '.' + self.id + '-formatting > textarea { width:96%; height:250px; resize:vertical; }' +
             '</style>');
         console.log('IITC plugin loaded: ' + self.title + ' version ' + self.version);
+        console.timeEnd('backup-restore');
     };
 
     var setup = function() {

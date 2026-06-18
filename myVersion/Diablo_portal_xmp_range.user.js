@@ -17,9 +17,9 @@ function wrapper( plugin_info ) {
 	if ( typeof window.plugin!=='function' ) window.plugin=function() { };
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 	//(leaving them in place might break the 'About IITC' page or break update checks)
-	plugin_info.buildName='ZasoItems';
-	plugin_info.dateTimeVersion='2021-01-03-154230';
-	plugin_info.pluginId='player-ranges';
+	// plugin_info.buildName='ZasoItems';
+	// plugin_info.dateTimeVersion='2021-01-03-154230';
+	// plugin_info.pluginId='player-ranges';
 	//END PLUGIN AUTHORS NOTE
 	// PLUGIN START ////////////////////////////////////////////////////////
 	// History
@@ -37,13 +37,15 @@ function wrapper( plugin_info ) {
 	window.plugin.playerRanges.control={};
 	window.plugin.playerRanges.mpe={};
 	window.plugin.playerRanges.override={};
+	window.plugin.playerRanges.userLocation={};
 	window.plugin.playerRanges.dialog={};
 	window.plugin.playerRanges.hook={};
 	//	window.plugin.playerRanges.obj.rangeVal = [window.HACK_RANGE, 42, 48, 58, 72, 90, 112, 138, 168];
-	window.plugin.playerRanges.obj.rangeVal=[ 42, 48, 58, 72, 90, 112, 138, 168 ];
-	window.plugin.playerRanges.obj.rangeName=[ 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'mark', 'jolly' ];
+	window.plugin.playerRanges.obj.rangeVal=[ 40, 42, 48, 58, 72, 90, 112, 138, 168 ];
+	window.plugin.playerRanges.obj.rangeRecharge=[ 0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000 ];
+	window.plugin.playerRanges.obj.rangeName=[ 'hack', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'mark', 'recharge', 'jolly' ];
 	window.plugin.playerRanges.obj.settings={ dashArr: [ 7, 7 ], weight: 1.5, opacity: 0.7 }
-	window.plugin.playerRanges.obj.main={ opt: { L1: 1, L2: 1, L3: 1, L4: 1, L5: 1, L6: 1, L7: 1, L8: 1, label: 1, jolly: 0 }, markers: {} };
+	window.plugin.playerRanges.obj.main={ opt: { hack: 1, L1: 1, L2: 1, L3: 1, L4: 1, L5: 1, L6: 1, L7: 1, L8: 1, recharge: 0, label: 1, jolly: 0 }, markers: {} };
 	window.plugin.playerRanges.obj.layerGroup={};
 	window.plugin.playerRanges.obj.playersLayers={};
 	window.plugin.playerRanges.obj.rangesLayers={};
@@ -61,7 +63,7 @@ function wrapper( plugin_info ) {
 		return window.localStorage[ window.plugin.playerRanges.storage.NAME ];
 	}
 	window.plugin.playerRanges.storage.reset=function() {
-		window.plugin.playerRanges.obj.main={ opt: { L1: 1, L2: 1, L3: 1, L4: 1, L5: 1, L6: 1, L7: 1, L8: 1, label: 1, jolly: 0 }, markers: {} };
+		window.plugin.playerRanges.obj.main={ opt: { hack: 1, L1: 1, L2: 1, L3: 1, L4: 1, L5: 1, L6: 1, L7: 1, L8: 1, recharge: 0, label: 1, jolly: 0 }, markers: {} };
 		window.plugin.playerRanges.storage.save();
 	}
 	window.plugin.playerRanges.storage.check=function() {
@@ -71,6 +73,10 @@ function wrapper( plugin_info ) {
 		window.plugin.playerRanges.storage.load();
 		if ( window.plugin.playerRanges.obj.main.opt===undefined ) {
 			window.plugin.playerRanges.storage.isOldVersion();
+		}
+		if ( window.plugin.playerRanges.obj.main.opt.recharge===undefined ) {
+			window.plugin.playerRanges.obj.main.opt.recharge=0;
+			window.plugin.playerRanges.storage.save();
 		}
 	}
 	window.plugin.playerRanges.storage.isOldVersion=function() {
@@ -103,6 +109,18 @@ function wrapper( plugin_info ) {
 		var player=players[ idPlayer ];
 		return ( player )? player:false;
 	}
+	window.plugin.playerRanges.data.getIDplayersByLabel=function( label ) {
+		var players=window.plugin.playerRanges.data.getPlayers();
+		var withLabelInserted=[];
+		for ( idPlayer in players ) {
+			var player=players[ idPlayer ];
+			var labelPlayer=player.label;
+			if ( labelPlayer===label ) {
+				withLabelInserted.push( idPlayer );
+			}
+		}
+		return withLabelInserted;
+	}
 	window.plugin.playerRanges.data.setPlayerLabel=function( idPlayer, label ) {
 		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
 		player.label=label;
@@ -110,6 +128,18 @@ function wrapper( plugin_info ) {
 	window.plugin.playerRanges.data.getPlayerLabel=function( idPlayer ) {
 		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
 		return ( player )? player.label:false;
+	}
+	window.plugin.playerRanges.data.setPlayerLevel=function( idPlayer, level=0 ) {
+		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+		if ( level>=0&&level<=16 ) {
+			player.level=Number( level );
+		} else {
+			player.level=0;
+		}
+	}
+	window.plugin.playerRanges.data.getPlayerLevel=function( idPlayer ) {
+		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
+		return ( player )? player.level:false;
 	}
 	window.plugin.playerRanges.data.setPlayerJolly=function( idPlayer, jolly=0 ) {
 		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
@@ -120,10 +150,16 @@ function wrapper( plugin_info ) {
 		return ( player )? player.jolly:false;
 	}
 	window.plugin.playerRanges.data.getRangeNameByIndex=function( rangeIndex ) {
+		if ( rangeIndex==10 ) { return 'recharge'; }
+		else if ( rangeIndex==11 ) { return 'jolly'; }
+		else if ( rangeIndex==12 ) { return 'label'; }
 		var rangeName=window.plugin.playerRanges.obj.rangeName[ rangeIndex ];
 		return ( rangeName )? rangeName:false;
 	}
 	window.plugin.playerRanges.data.getRangeIndexByName=function( rangeName ) {
+		if ( rangeIndex=='recharge' ) { return 10; }
+		else if ( rangeIndex=='jolly' ) { return 11; }
+		else if ( rangeIndex=='label' ) { return 12; }
 		var rangeIndex=window.plugin.playerRanges.obj.rangeName.indexOf( rangeName );
 		return ( rangeIndex>-1 )? rangeIndex:false;
 	}
@@ -135,6 +171,18 @@ function wrapper( plugin_info ) {
 		var rangeIndex=window.plugin.playerRanges.data.getRangeIndexByName( rangeName );
 		var rangeVal=window.plugin.playerRanges.obj.rangeVal[ rangeIndex ];
 		return ( rangeVal )? rangeVal:false;
+	}
+	window.plugin.playerRanges.data.getRangeRecharge=function( playerLevel ) {
+		if ( playerLevel==0 ) return 0;
+		if ( playerLevel>=1&&playerLevel<=16 ) {
+			return window.plugin.playerRanges.obj.rangeRecharge[ playerLevel ];
+			// return 250*1000*playerLevel;
+		}
+		return false;
+	}
+	window.plugin.playerRanges.data.getMyRangeRecharge=function() {
+		var playerLevel=parseInt( window.PLAYER.verified_level );
+		return window.plugin.playerRanges.data.getRangeRecharge( playerLevel );
 	}
 	window.plugin.playerRanges.data.setRangeStatus=function( rangeName, status ) {
 		var ranges=window.plugin.playerRanges.data.getRangeStatusByName( rangeName );
@@ -179,11 +227,16 @@ function wrapper( plugin_info ) {
 		var player=window.plugin.playerRanges.data.getPlayer( idPlayer );
 		return player.ll;
 	}
-	window.plugin.playerRanges.data.addPlayer=function( idPlayer, latlng, label='', jolly=undefined ) {
+	window.plugin.playerRanges.data.addPlayer=function( idPlayer, latlng, label='', level=undefined, jolly=undefined ) {
 		var obj={
 			ll: latlng,
 			label: ( label===undefined )? '':label
 		};
+		if ( level!==undefined&&$.isNumeric( level )&&level>=0&&level<=16 ) {
+			obj.level=Number( level );
+		} else {
+			obj.level=0;
+		}
 		if ( jolly!==undefined&&$.isNumeric( jolly )&&jolly>-1 ) {
 			obj.jolly=Number( jolly );
 		}
@@ -220,7 +273,6 @@ function wrapper( plugin_info ) {
 				window.plugin.playerRanges.obj.portalRangesLayer.clearLayers();
 				return;
 			}
-			window.plugin.playerRanges.layer.getPortalsInRadius( window.portals[ guid ].getLatLng(), 168 );
 			window.plugin.playerRanges.layer.drawXmpRangesAtPortal( guid );
 		} );
 	}
@@ -263,6 +315,10 @@ function wrapper( plugin_info ) {
 	window.plugin.playerRanges.layer.setPlayerLabel=function( idPlayer, newLabel ) {
 		var playerLayers=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
 		$( playerLayers.mark._icon ).find( 'span' ).text( newLabel );
+	}
+	window.plugin.playerRanges.layer.setPlayerRecharge=function( idPlayer, newLevel ) {
+		var lays=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
+		lays.recharge.setRadius( window.plugin.playerRanges.data.getRangeRecharge( newLevel ) );
 	}
 	window.plugin.playerRanges.layer.setPlayerJolly=function( idPlayer, newJolly ) {
 		var lays=window.plugin.playerRanges.layer.getPlayerLayers( idPlayer );
@@ -329,8 +385,23 @@ function wrapper( plugin_info ) {
 				}
 			);
 		}
-		// Jolly Range
+		// Recharge Range
+		var rangeRechargeVal=( player.level===undefined )?
+			window.plugin.playerRanges.data.getMyRangeRecharge():
+			window.plugin.playerRanges.data.getRangeRecharge( player.level );
 		playerRangesLayers[ 9 ]=new L.geodesicCircle(
+			latlng,
+			rangeRechargeVal,
+			{
+				weight: optWeight,
+				opacity: optOpacity,
+				clickable: false,
+				fill: false,
+				color: window.ACCESS_INDICATOR_COLOR,
+			}
+		);
+		// Jolly Range
+		playerRangesLayers[ 10 ]=new L.geodesicCircle(
 			latlng,
 			( ( player.jolly===undefined||player.jolly<0 )? 0:player.jolly ),
 			{
@@ -348,7 +419,9 @@ function wrapper( plugin_info ) {
 			var layer=playerRangesLayers[ i ];
 			window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, rangeName, layer );
 		}
-		window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'jolly', playerRangesLayers[ 9 ] );
+		window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'hack', playerRangesLayers[ 0 ] );
+		window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'recharge', playerRangesLayers[ 9 ] );
+		window.plugin.playerRanges.layer.salvaDaParteIlLayer( idPlayer, 'jolly', playerRangesLayers[ 10 ] );
 	}
 
 	// Draw XMP range circles centered on a portal (levels 1..8)
@@ -368,12 +441,11 @@ function wrapper( plugin_info ) {
 			if ( !lay ) return null;
 			if ( typeof lay.getLatLngs==='function' ) {
 				var ll=lay.getLatLngs();
-				if ( Array.isArray( ll )&&ll.length>0&&Array.isArray( ll[ 0 ] ) ) return ll[ 0 ];
+				if ( Array.isArray( ll ) && ll.length>0 && Array.isArray( ll[0] ) ) return ll[0];
 				return ll;
 			}
-			if ( lay._latlngs ) return Array.isArray( lay._latlngs[ 0 ] )? lay._latlngs[ 0 ]:lay._latlngs;
-			if ( lay._rings ) return Array.isArray( lay._rings[ 0 ] )? lay._rings[ 0 ]:lay._rings;
-			console.log( 'playerRanges coordinates are: ', lay );
+			if ( lay._latlngs ) return Array.isArray( lay._latlngs[0] )? lay._latlngs[0]:lay._latlngs;
+			if ( lay._rings ) return Array.isArray( lay._rings[0] )? lay._rings[0]:lay._rings;
 			return null;
 		}
 
@@ -386,60 +458,35 @@ function wrapper( plugin_info ) {
 			// create outer and inner geodesic polygons to get coordinates (increase steps for smoother rings)
 			var outer=new L.geodesicCircle( latlng, radius, { steps: 128 } );
 			var outerCoords=_coordsFromLayer( outer );
-			if ( prevRadius<=0||!outerCoords ) {
+			if ( prevRadius<=0 || !outerCoords ) {
 				// solid filled circle for level 1 or fallback if coords unavailable
 				if ( outerCoords ) {
-					var poly=L.polygon( outerCoords, { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.42, color: clr } );
+					var poly=L.polygon( outerCoords, { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.28, color: clr } );
 					layerGroup.addLayer( poly );
 				} else {
 					// fallback to L.circle (meters) if geodesic coords not extractable
-					var c=L.circle( latlng, { radius: radius, weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.42, color: clr } );
+					var c=L.circle( latlng, { radius: radius, weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.28, color: clr } );
 					layerGroup.addLayer( c );
 				}
 			} else {
 				var inner=new L.geodesicCircle( latlng, prevRadius, { steps: 128 } );
 				var innerCoords=_coordsFromLayer( inner );
-				if ( outerCoords&&innerCoords ) {
+				if ( outerCoords && innerCoords ) {
 					// ensure inner ring winding is opposite (improve hole rendering)
 					innerCoords=innerCoords.slice().reverse();
-					var ring=L.polygon( [ outerCoords, innerCoords ], { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.42, color: clr } );
+					var ring=L.polygon( [ outerCoords, innerCoords ], { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.28, color: clr } );
 					layerGroup.addLayer( ring );
 				} else if ( outerCoords ) {
-					var poly=L.polygon( outerCoords, { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.42, color: clr } );
+					var poly=L.polygon( outerCoords, { weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.28, color: clr } );
 					layerGroup.addLayer( poly );
 				} else {
-					var c=L.circle( latlng, { radius: radius, weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.42, color: clr } );
+					var c=L.circle( latlng, { radius: radius, weight: optWeight, opacity: optOpacity, interactive: false, fill: true, fillColor: clr, fillOpacity: 0.28, color: clr } );
 					layerGroup.addLayer( c );
 				}
 			}
-			// console.log( "innerCoords: ", innerCoords );
-			// console.log("outerCoords: ", outerCoords);
-			// console.log("prevRadius: ", prevRadius, "radius: ", radius);
 			prevRadius=radius;
 		}
 	}
-
-	// get portals inside radius of latlng
-	window.plugin.playerRanges.layer.getPortalsInRadius=function( latlng, radius ) {
-		var portalsInRange=[];
-
-		for ( var guid in window.portals ) {
-			var portalLayer=window.portals[ guid ];
-			var portalLatLng=portalLayer.getLatLng();
-			var distance=latlng.distanceTo( portalLatLng );
-			if ( distance<=radius ) {
-				portalsInRange.push( portalLayer );
-			}
-		}
-		console.log( 'Found '+portalsInRange.length+' portals within '+radius+' meters of '+latlng.toString() );
-		console.log( "The portal GUIDs found are: ",portalsInRange );
-		return portalsInRange;
-	};
-
-	window.plugin.playerRanges.layer.getLinksFromAdjacentPortals=function() {
-		console.log(getPortalsInRadius(portalLayer).getPortalLinks());
-	};
-
 	window.plugin.playerRanges.layer.setEventsOnMarkerPlayer=function( idPlayer, mark ) {
 		// Remove the elements from the layers
 		mark.on( 'dblclick', function( e ) {
@@ -597,6 +644,11 @@ function wrapper( plugin_info ) {
 		html+='<label for="player-ll">Player LatLng</label> ';
 		html+='<input name="player-ll" placeholder="Insert ll for marker" value="" />';
 		html+='<br/><br/>';
+		html+='<label for="player-level">Player level</label> ';
+		html+='<select name="player-level" placeholder="Select player level">';
+		for ( var lvl=0;lvl<=16;lvl++ ) html+='<option value="'+lvl+'">'+lvl+'</option>';
+		html+='</select>';
+		html+='<br/><br/>';
 		html+='<label for="player-jolly">Jolly ranges [meters] (eg. operative range)</label> ';
 		html+='<input type="number" min="0" name="player-jolly" placeholder="Insert meters" value="" />';
 		html+='<br/><br/>';
@@ -615,10 +667,13 @@ function wrapper( plugin_info ) {
 					var d=$( this ).find( '.playerRanges.prPlayerDetails' );
 					var newLabel=d.find( '[name="player-label"]' ).val();
 					var newLatLng=d.find( '[name="player-ll"]' ).val();
+					var newLevel=d.find( '[name="player-level"]' ).val();
 					var newJolly=d.find( '[name="player-jolly"]' ).val();
 					window.plugin.playerRanges.action.setPlayerLatLng( idPlayer, L.latLng( newLatLng.split( ',' ) ) );
 					window.plugin.playerRanges.data.setPlayerLabel( idPlayer, newLabel );
 					window.plugin.playerRanges.layer.setPlayerLabel( idPlayer, newLabel );
+					window.plugin.playerRanges.data.setPlayerLevel( idPlayer, newLevel );
+					window.plugin.playerRanges.layer.setPlayerRecharge( idPlayer, newLevel );
 					window.plugin.playerRanges.data.setPlayerJolly( idPlayer, newJolly );
 					window.plugin.playerRanges.layer.setPlayerJolly( idPlayer, newJolly );
 					window.plugin.playerRanges.storage.save();
@@ -631,6 +686,11 @@ function wrapper( plugin_info ) {
 		div.html( window.plugin.playerRanges.getHtml.playerFormTemplate() );
 		div.find( '[name="player-label"]' ).val( player.label );
 		div.find( '[name="player-ll"]' ).val( player.ll.lat.toFixed( 6 )+','+player.ll.lng.toFixed( 6 ) );
+		if ( player.level!==undefined ) {
+			div.find( '[name="player-level"] option[value="'+player.level+'"]' ).prop( 'selected', true );
+		} else {
+			div.find( '[name="player-level"] option[value="0"]' ).prop( 'selected', true );
+		}
 		if ( player.jolly!==undefined&&player.jolly>0 ) {
 			div.find( '[name="player-jolly"]' ).val( player.jolly );
 		}
@@ -736,85 +796,91 @@ function wrapper( plugin_info ) {
 		$( 'div.playerRanges.playerInList' ).remove();
 	}
 	//************
-	// window.plugin.playerRanges.control.addControl=function() {
-	// 	L.Control.PlayerRangeControl=L.Control.extend( {
-	// 		options: { position: 'topleft' },
-	// 		onAdd: function( map ) {
-	// 			var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
-	// 			var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
-	// 			// Single toggle button for Portal XMP Ranges overlay
-	// 			var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
-	// 			toggleBtn.title='Toggle Portal XMP Ranges overlay';
-	// 			L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
-	// 				.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
-	// 			L.DomEvent.addListener( toggleBtn, 'click', function() {
-	// 				window.plugin.playerRanges.action.togglePortalRanges();
-	// 			} );
-	// 			return controlDiv;
-	// 		}
-	// 	} );
-	// 	L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
-	// 	map.addControl( new L.control.playerRangesControl() );
-	// }
-	// window.plugin.playerRanges.action.toggleSubControl=function( status ) {
-	// 	if ( status===0 ) {
-	// 		$( '.rangesList' ).removeClass( 'open' );
-	// 	} else if ( status===1 ) {
-	// 		$( '.rangesList' ).addClass( 'open' );
-	// 	} else {
-	// 		$( '.rangesList' ).toggleClass( 'open' );
-	// 	}
-	// 	if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
-	// 		$( '.rangesList' ).html( '' );
-	// 	} else {
-	// 		$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
-	// 	}
-	// 	// set Y position
-	// 	var pxTop=$( '.leaflet-playerranges' ).offset().top;
-	// 	var hBox=$( '.leaflet-playerranges .rangesList' ).height();
-	// 	var hMap=$( '#map' ).height();
-	// 	var operazione=hMap-( hBox+pxTop )-30;
-	// 	if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
-	// 	else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
-	// }
-	// window.plugin.playerRanges.getHtml.controlListRanges=function() {
-	// 	var html='';
-	// 	var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
-	// 	attrChecked=( labelIsEnabled )? 'checked':'';
-	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
-	// 	for ( var i=1;i<=8;i++ ) {
-	// 		var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
-	// 		attrChecked=( rangeIsEnabled )? 'checked':'';
-	// 		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
-	// 	}
-	// 	var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
-	// 	attrChecked=( jollyIsEnabled )? 'checked':'';
-	// 	html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
-	// 	html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
-	// 	return html;
-	// }
-	// window.plugin.playerRanges.control.initControl=function() {
-	// 	window.plugin.playerRanges.control.addControl();
-	// 	//hide the controls when the layer is off, show it when on
-	// 	map.on( 'layeradd', function( obj ) {
-	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-	// 			window.plugin.playerRanges.control.restoreVibility();
-	// 		}
-	// 	} );
-	// 	map.on( 'layerremove', function( obj ) {
-	// 		if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
-	// 			window.plugin.playerRanges.control.restoreVibility();
-	// 		}
-	// 	} );
-	// }
-	// window.plugin.playerRanges.control.restoreVibility=function() {
-	// 	var selector=$( '.playerRanges.leaflet-playerranges' );
-	// 	if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
-	// 		selector.show();
-	// 	} else {
-	// 		selector.hide();
-	// 	}
-	// }
+	window.plugin.playerRanges.control.addControl=function() {
+		L.Control.PlayerRangeControl=L.Control.extend( {
+			options: { position: 'topleft' },
+			onAdd: function( map ) {
+				var controlDiv=L.DomUtil.create( 'div', 'leaflet-playerranges playerRanges' );
+				var controlSubDIV=L.DomUtil.create( 'div', 'leaflet-bar', controlDiv );
+				// Single toggle button for Portal XMP Ranges overlay
+				var toggleBtn=L.DomUtil.create( 'a', 'playerRanges playerRangesButton', controlSubDIV );
+				toggleBtn.title='Toggle Portal XMP Ranges overlay';
+				L.DomEvent.addListener( toggleBtn, 'click', L.DomEvent.stopPropagation )
+					.addListener( toggleBtn, 'click', L.DomEvent.preventDefault );
+				L.DomEvent.addListener( toggleBtn, 'click', function() {
+					window.plugin.playerRanges.action.togglePortalRanges();
+				} );
+				return controlDiv;
+			}
+		} );
+		L.control.playerRangesControl=function( options ) { return new L.Control.PlayerRangeControl( options ); };
+		map.addControl( new L.control.playerRangesControl() );
+	}
+	window.plugin.playerRanges.action.toggleSubControl=function( status ) {
+		if ( status===0 ) {
+			$( '.rangesList' ).removeClass( 'open' );
+		} else if ( status===1 ) {
+			$( '.rangesList' ).addClass( 'open' );
+		} else {
+			$( '.rangesList' ).toggleClass( 'open' );
+		}
+		if ( $( '.rangesList' ).hasClass( 'open' )==false ) {
+			$( '.rangesList' ).html( '' );
+		} else {
+			$( '.rangesList' ).html( window.plugin.playerRanges.getHtml.controlListRanges() );
+		}
+		// set Y position
+		var pxTop=$( '.leaflet-playerranges' ).offset().top;
+		var hBox=$( '.leaflet-playerranges .rangesList' ).height();
+		var hMap=$( '#map' ).height();
+		var operazione=hMap-( hBox+pxTop )-30;
+		if ( operazione>0 ) { $( '.leaflet-playerranges .rangesList' ).css( 'top', 27 ); }
+		else { $( '.leaflet-playerranges .rangesList' ).css( 'top', -86 ); }
+	}
+	window.plugin.playerRanges.getHtml.controlListRanges=function() {
+		var html='';
+		var labelIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'label' );
+		attrChecked=( labelIsEnabled )? 'checked':'';
+		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'label\'); return false;" '+attrChecked+' /> Label</label>'
+		var hackIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'hack' );
+		attrChecked=( hackIsEnabled )? 'checked':'';
+		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'hack\'); return false;" '+attrChecked+' /> Hack</label>';
+		var hackIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'recharge' );
+		attrChecked=( hackIsEnabled )? 'checked':'';
+		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'recharge\'); return false;" '+attrChecked+' /> Recharge</label>';
+		for ( var i=1;i<=8;i++ ) {
+			var rangeIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'L'+i );
+			attrChecked=( rangeIsEnabled )? 'checked':'';
+			html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'L'+i+'\'); return false;" '+attrChecked+' /> XMP L'+i+'</label>';
+		}
+		var jollyIsEnabled=window.plugin.playerRanges.data.getRangeStatusByName( 'jolly' );
+		attrChecked=( jollyIsEnabled )? 'checked':'';
+		html+='<label class="check"><input type="checkbox" onchange="window.plugin.playerRanges.action.toggleRangeLayerVisibility(\'jolly\'); return false;" '+attrChecked+' /> Jolly</label>';
+		html+='<a onclick="window.plugin.playerRanges.dialog.openListPlayers();">List</a>';
+		return html;
+	}
+	window.plugin.playerRanges.control.initControl=function() {
+		window.plugin.playerRanges.control.addControl();
+		//hide the controls when the layer is off, show it when on
+		map.on( 'layeradd', function( obj ) {
+			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+				window.plugin.playerRanges.control.restoreVibility();
+			}
+		} );
+		map.on( 'layerremove', function( obj ) {
+			if ( obj.layer===window.plugin.playerRanges.obj.layerGroup ) {
+				window.plugin.playerRanges.control.restoreVibility();
+			}
+		} );
+	}
+	window.plugin.playerRanges.control.restoreVibility=function() {
+		var selector=$( '.playerRanges.leaflet-playerranges' );
+		if ( map.hasLayer( window.plugin.playerRanges.obj.layerGroup ) ) {
+			selector.show();
+		} else {
+			selector.hide();
+		}
+	}
 	//======================================================================
 	// HOOK
 	//======================================================================
@@ -922,16 +988,173 @@ function wrapper( plugin_info ) {
 	// ---------------------------------------------------------------------------------
 	// USERLOCATION IITCM
 	// ---------------------------------------------------------------------------------
-	// User Location integration removed
+	window.plugin.playerRanges.userLocation.init=function() {
+		if ( window.plugin.userLocation===undefined ) return false;
+		window.pluginCreateHook( 'pluginUserLocation' );
+		window.plugin.playerRanges.override.userLocation();
+		window.addHook( 'pluginUserLocation', window.plugin.playerRanges.userLocation.onChangeUserLocation );
+		window.addHook( 'pluginPlayerRanges', window.plugin.playerRanges.userLocation.onChangeRangeVisibility );
+		window.plugin.playerRanges.userLocation.addMyRanges();
+	}
+	window.plugin.playerRanges.userLocation.addMyRanges=function() {
+		window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ]={};
+		var optWeight=window.plugin.playerRanges.obj.settings.weight;
+		var optOpacity=window.plugin.playerRanges.obj.settings.opacity;
+		var optDashArr=window.plugin.playerRanges.obj.settings.dashArr;
+		var latlng=window.plugin.userLocation.circle.getLatLng();
+		for ( i=1;i<=8;i++ ) {
+			var xmpLayer=new L.geodesicCircle(
+				latlng,
+				window.plugin.playerRanges.data.getRangeValByIndex( i ),
+				{
+					weight: optWeight,
+					opacity: optOpacity,
+					clickable: false,
+					fill: false,
+					color: window.COLORS_LVL[ i ],
+					dashArray: optDashArr
+				}
+			);
+			window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ][ 'L'+i ]=xmpLayer;
+			var rangeStatus=window.plugin.playerRanges.data.getRangeStatusByIndex( i );
+			if ( rangeStatus ) {
+				xmpLayer.addTo( window.plugin.userLocation.locationLayer );
+			}
+		}
+		// Recharge Layer --- start
+		var rechargeLayer=new L.geodesicCircle(
+			latlng,
+			window.plugin.playerRanges.data.getMyRangeRecharge(),
+			{
+				weight: optWeight,
+				opacity: optOpacity,
+				clickable: false,
+				fill: false,
+				color: window.ACCESS_INDICATOR_COLOR,
+			}
+		);
+		window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ][ 'recharge' ]=rechargeLayer;
+		var rangeStatus=window.plugin.playerRanges.data.getRangeStatusByName( 'recharge' );
+		if ( rangeStatus ) {
+			rechargeLayer.addTo( window.plugin.userLocation.locationLayer );
+		}
+		// Recharge Layer --- close
+		window.plugin.playerRanges.userLocation.restoreRangesLayersVisibility();
+	}
+	window.plugin.playerRanges.userLocation.restoreRangesLayersVisibility=function() {
+		var userLocationLayers=window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ];
+		for ( rangeName in userLocationLayers ) {
+			var layer=userLocationLayers[ rangeName ];
+			var hasLayer=window.plugin.userLocation.locationLayer.hasLayer( layer );
+			if ( status===true ) {
+				if ( !hasLayer ) {
+					window.plugin.userLocation.locationLayer.addLayer( layer );
+				}
+			} else if ( status===false ) {
+				if ( hasLayer ) {
+					window.plugin.userLocation.locationLayer.removeLayer( layer );
+				}
+			}
+		}
+	}
+	window.plugin.playerRanges.userLocation.onChangeUserLocation=function( data ) {
+		if ( data.event==='fakeFirstSetup' ) {
+			window.plugin.playerRanges.userLocation.addMyRanges();
+		}
+		if ( data.event==='onLocationChange' ) {
+			var latlng=data.data.latlng;
+			var userLocationLayers=window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ];
+			for ( userRangeName in userLocationLayers ) {
+				var layer=userLocationLayers[ userRangeName ];
+				layer.setLatLng( latlng );
+			}
+		}
+	}
+	window.plugin.playerRanges.userLocation.onChangeRangeVisibility=function( data ) {
+		if ( data.event==='onChangeRangeVisibility' ) {
+			var rangeName=data.data.name;
+			var status=data.data.status;
+			if ( rangeName!=='hack'||rangeName!=='label' ) {
+				var userLocationLayers=window.plugin.playerRanges.obj.playersLayers[ 'userLocation' ];
+				var layer=userLocationLayers[ rangeName ];
+				var hasLayer=window.plugin.userLocation.locationLayer.hasLayer( layer );
+				if ( status===true ) {
+					if ( !hasLayer ) {
+						window.plugin.userLocation.locationLayer.addLayer( layer );
+					}
+				} else if ( status===false ) {
+					if ( hasLayer ) {
+						window.plugin.userLocation.locationLayer.removeLayer( layer );
+					}
+				}
+			}
+		}
+	}
+	window.plugin.playerRanges.override.userLocation=function() {
+		window.plugin.userLocation.locate=function( lat, lng, accuracy, persistentZoom ) {
+			if ( window.plugin.userLocation.follow ) {
+				window.plugin.userLocation.follow=false;
+				if ( typeof android!=='undefined'&&android&&android.setFollowMode )
+					android.setFollowMode( window.plugin.userLocation.follow );
+				return;
+			}
+			var latlng=new L.LatLng( lat, lng );
+			var latAccuracy=180*accuracy/40075017;
+			var lngAccuracy=latAccuracy/Math.cos( L.LatLng.DEG_TO_RAD*lat );
+			var zoom=window.map.getBoundsZoom( L.latLngBounds(
+				[ lat-latAccuracy, lng-lngAccuracy ],
+				[ lat+latAccuracy, lng+lngAccuracy ] ) );
+			// an extremely close view is pretty pointless (especially with maps that support zoom level 20+)
+			// so limit to 17 (enough to see all portals)
+			zoom=( persistentZoom )? map.getZoom():Math.min( zoom, 17 );
+			if ( window.map.getCenter().distanceTo( latlng )<10 ) {
+				window.plugin.userLocation.follow=true;
+				if ( typeof android!=='undefined'&&android&&android.setFollowMode )
+					android.setFollowMode( window.plugin.userLocation.follow );
+			}
+			window.map.setView( latlng, zoom );
+		}
+		window.plugin.userLocation.onZoomEnd=function() {
+			if ( window.map.getZoom()<16||L.Path.CANVAS ) {
+				if ( window.plugin.userLocation.locationLayer.hasLayer( window.plugin.userLocation.circle ) )
+					window.plugin.userLocation.locationLayer.removeLayer( window.plugin.userLocation.circle );
+			} else {
+				if ( !window.plugin.userLocation.locationLayer.hasLayer( window.plugin.userLocation.circle ) )
+					window.plugin.userLocation.locationLayer.addLayer( window.plugin.userLocation.circle );
+			}
+			window.runHooks( 'pluginUserLocation', { event: 'fakeFirstSetup', data: { latlng: window.plugin.userLocation.circle.getLatLng() } } );
+		}
+		window.plugin.userLocation.onLocationChange=function( lat, lng ) {
+			if ( !window.plugin.userLocation.marker ) return;
+			var latlng=new L.LatLng( lat, lng );
+			window.plugin.userLocation.marker.setLatLng( latlng );
+			window.plugin.userLocation.circle.setLatLng( latlng );
+			window.runHooks( 'pluginUserLocation', { event: 'onLocationChange', data: { latlng: latlng } } );
+			if ( window.plugin.distanceToPortal ) {
+				window.plugin.distanceToPortal.currentLoc=latlng;
+				window.plugin.distanceToPortal.updateDistance();
+			}
+			if ( window.plugin.userLocation.follow ) {
+				// move map if marker moves more than 35% from the center
+				// 100% - 2*15% = 70% → 35% from center in either direction
+				if ( map.getBounds().pad( -0.15 ).contains( latlng ) )
+					return;
+				window.map.setView( latlng );
+			}
+		}
+	}
 	//======================================================================
 	var setup=function() {
+		console.time('portal_xmp_range');
 		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
 		window.plugin.playerRanges.ui.setupCSS();
 		window.plugin.playerRanges.layer.boot();
+		window.plugin.playerRanges.control.initControl();
 		// ensure portal ranges overlay starts hidden
 		if ( window.plugin.playerRanges.obj.portalRangesLayer&&window.map.hasLayer( window.plugin.playerRanges.obj.portalRangesLayer ) ) {
 			window.map.removeLayer( window.plugin.playerRanges.obj.portalRangesLayer );
 		}
+		console.timeEnd('portal_xmp_range');
 	}
 	// PLUGIN END //////////////////////////////////////////////////////////
 	setup.info=plugin_info; //add the script info data to the function as a property

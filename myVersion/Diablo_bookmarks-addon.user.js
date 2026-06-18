@@ -1564,6 +1564,7 @@ Add to folder: <input type="text" name="autofolder"><br>
     };
 
     self.setup = function() {
+        console.time('bookmarks-addon');
         if ('pluginloaded' in self) {
             console.log('IITC plugin already loaded: ' + self.title + ' version ' + self.version);
             return;
@@ -1618,6 +1619,7 @@ Add to folder: <input type="text" name="autofolder"><br>
         window.addHook('pluginBkmrksEdit', function() { setTimeout(function(){self.delayedUpdatePortalLabels(0.5);},1); } );
 
         console.log('IITC plugin loaded: ' + self.title + ' version ' + self.version);
+        console.timeEnd('bookmarks-addon');
     };
 
     var setup = function() {

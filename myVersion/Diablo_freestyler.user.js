@@ -3822,6 +3822,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     }; // end setupColorpickerSpectrum
 
     self.setup=function() {
+        console.time('freestyler');
         if ( 'pluginloaded' in self ) {
             console.log( 'IITC plugin already loaded: '+self.title+' version '+self.version );
             return;
@@ -3969,6 +3970,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
         notificationobject.style.display='none';
 
         console.log( 'IITC plugin loaded: '+self.title+' version '+self.version );
+        console.timeEnd('freestyler');
     };
 
     var setup=function() {

@@ -70,6 +70,7 @@
 		}
 
 		function setup() {
+			console.time('star-resize');
 			applyCSS();
 			// only on mobile
 			if ( window.useAndroidPanes&&window.useAndroidPanes() ) {
@@ -85,6 +86,7 @@
 				if ( tb ) tb.appendChild( btn );
 				// and you could addHook('paneChanged', onPaneChanged) after android.addPane if you also android.addPane on desktop
 			}
+			console.timeEnd('star-resize');
 		}
 
 		if ( window.iitcLoaded ) {

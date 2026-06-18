@@ -122,6 +122,7 @@ version 0.0.1.20161103.114400
     };
 
     self.setup = function() {
+        console.time('smallerportals');
         if ('pluginloaded' in self) {
             console.log('IITC plugin already loaded: ' + self.title + ' version ' + self.version);
             return;
@@ -156,6 +157,7 @@ version 0.0.1.20161103.114400
             self.reset();
         }
         console.log('IITC plugin loaded: ' + self.title + ' version ' + self.version);
+        console.timeEnd('smallerportals');
     };
 
     var setup = function() {

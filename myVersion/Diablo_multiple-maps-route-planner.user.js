@@ -1063,6 +1063,7 @@ version 1.0.0.20220407.231800
     };
 
     self.setup=function() {
+        console.time('route-planner');
         self.restoresettings();
         self.storesettings();
 
@@ -1310,6 +1311,7 @@ a.${self.id}-selectedportalrow {
         } );
 
         console.log( `IITC plugin loaded: ${self.title} version ${self.version}` );
+        console.timeEnd('route-planner');
     };
 
     var setup=function() {

@@ -15,16 +15,10 @@ function wrapper( plugin_info ) {
 	if ( typeof window.plugin !== 'function' ) window.plugin = function () {};
 
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
-<<<<<<< HEAD
 	//(leaving them in place might break the 'About IITC' page or break update checks)
 	// plugin_info.buildName='ZasoItems';
 	// plugin_info.dateTimeVersion='2021-01-03-154230';
 	// plugin_info.pluginId='player-ranges';
-=======
-	plugin_info.buildName = 'ZasoItems';
-	plugin_info.dateTimeVersion = '2026-06-18-000000';
-	plugin_info.pluginId = 'player-ranges';
->>>>>>> 256cc961bdbf67e579428c2a596f670f7a705983
 	//END PLUGIN AUTHORS NOTE
 
 	// PLUGIN START ////////////////////////////////////////////////////////
@@ -131,20 +125,6 @@ function wrapper( plugin_info ) {
 	};
 
 	//======================================================================
-<<<<<<< HEAD
-	var setup=function() {
-		console.time('ranges');
-		// Minimal setup: only CSS, layers and control for portal-centered XMP ranges
-		window.plugin.playerRanges.ui.setupCSS();
-		window.plugin.playerRanges.layer.boot();
-		window.plugin.playerRanges.control.initControl();
-		// ensure portal ranges overlay starts hidden
-		if ( window.plugin.playerRanges.obj.portalRangesLayer&&window.map.hasLayer( window.plugin.playerRanges.obj.portalRangesLayer ) ) {
-			window.map.removeLayer( window.plugin.playerRanges.obj.portalRangesLayer );
-		}
-		console.timeEnd('ranges');
-	}
-=======
 	// CSS (only the toggle button is needed)
 	//======================================================================
 	pr.setupCSS = function () {
@@ -184,7 +164,7 @@ function wrapper( plugin_info ) {
 			pr.lastGuid = null;
 		} );
 	};
->>>>>>> 256cc961bdbf67e579428c2a596f670f7a705983
+
 	// PLUGIN END //////////////////////////////////////////////////////////
 
 	setup.info = plugin_info; //add the script info data to the function as a property

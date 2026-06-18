@@ -952,7 +952,6 @@ function wrapper( plugin_info ) {
 			window.pluginCreateHook( 'pluginDrawTools' );
 			window.addHook( 'pluginDrawTools', window.plugin.destroyedLinks.cross.hookDrawTools );
 		}
-		console.timeEnd('destroyedLinksSim');
 	};
 
 	// PLUGIN END //////////////////////////////////////////////////////////

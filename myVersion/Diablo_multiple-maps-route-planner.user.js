@@ -21,10 +21,13 @@ function wrapper( plugin_info ) {
     var self=window.plugin.mapsrouteplanner;
     self.id='multiplemapsrouteplanner';
     self.title='Multi Maps Route Planner';
-    self.version='4.0.0.20250709';
+    self.version='4.1.0.20260618';
     self.author='DiabloEnMusica';
     self.changelog=`
 Changelog:
+
+version 4.1.0.20260618
+- replaced the up/down arrows in the waypoints editor with drag-and-drop reordering (works with mouse and touch)
 
 version 4.0.0.20250709
 - added ability to store multiple routes for later recall / deletion
@@ -354,30 +357,58 @@ version 1.0.0.20220407.231800
     };
 
     self.updateMenu=function() {
-        function sleep( ms ) {
-            return new Promise( resolve => setTimeout( resolve, ms ) );
-        }
-        self.animating=false;
-        async function swaptopbottom( topelement, bottomelement, delay ) {
-            self.animating=true;
-            console.log( topelement, bottomelement );
-            // animate movement
-            let elementWidth=topelement.clientWidth-6;
-            let rowHeight=topelement.clientHeight+4;
-            let animationLength=delay;
-            topelement.setAttribute( 'style', `width:${elementWidth}px; transform: translate(0px, ${rowHeight}px); transition: transform ${animationLength}ms` );
-            bottomelement.setAttribute( 'style', `width:${elementWidth}px; transform: translate(0px, -${rowHeight}px); transition: transform ${animationLength}ms` );
-
-            await sleep( delay );
-            self.animating=false;
-        };
-
         let waypointsdiv=document.querySelector( `div[name=${self.id}-waypoints-div]` )||document.querySelector( `div[name=${self.id}-waypoints-edit-div]` );
         let editmodus=document.querySelector( `div[name=${self.id}-waypoints-edit-div]` );
         if ( waypointsdiv ) {
             while ( waypointsdiv.childElementCount>0 ) { // clear old rows
                 waypointsdiv.childNodes[ 0 ].remove();
             }
+
+            // drag-and-drop reordering (works with both mouse and touch via pointer events)
+            let dragstate=null;
+            function rowAfterPointer( y ) { // the row the dragged one should be inserted before, or null for the end
+                let after=null;
+                let closestoffset=Number.NEGATIVE_INFINITY;
+                for ( let row of waypointsdiv.querySelectorAll( `.${self.id}-waypoints-row` ) ) {
+                    if ( row===dragstate.row ) continue;
+                    let box=row.getBoundingClientRect();
+                    let offset=y-box.top-box.height/2;
+                    if ( offset<0&&offset>closestoffset ) {
+                        closestoffset=offset;
+                        after=row;
+                    }
+                }
+                return after;
+            }
+            function onDragMove( e ) {
+                if ( !dragstate ) return;
+                e.preventDefault();
+                let after=rowAfterPointer( e.clientY );
+                if ( after==null ) waypointsdiv.appendChild( dragstate.row );
+                else waypointsdiv.insertBefore( dragstate.row, after );
+            }
+            function endDrag() {
+                if ( !dragstate ) return;
+                document.removeEventListener( 'pointermove', onDragMove );
+                document.removeEventListener( 'pointerup', endDrag );
+                document.removeEventListener( 'pointercancel', endDrag );
+                dragstate.row.classList.remove( `${self.id}-dragging` );
+                document.body.classList.remove( `${self.id}-dragging-active` );
+                dragstate=null;
+
+                // rebuild the waypoints object in the new (DOM) order:
+                let orderedguids=[ ...waypointsdiv.querySelectorAll( `.${self.id}-waypoints-row` ) ].map( ( row ) => row.getAttribute( 'guid' ) );
+                let source={ ...self.waypoints };
+                self.waypoints={};
+                for ( let guid of orderedguids ) {
+                    if ( guid in source ) self.waypoints[ guid ]=source[ guid ];
+                }
+                self.storeWaypoints();
+                self.updateControls();
+                self.drawRoute();
+                self.updateMenu(); // refresh the A, B, C… labels for the new order
+            }
+
             let charcnt='A'.charCodeAt( 0 );
             let cnt=0;
             for ( let guid in self.waypoints ) {
@@ -386,71 +417,20 @@ version 1.0.0.20220407.231800
                 portalrow.setAttribute( 'guid', guid );
 
                 if ( editmodus ) {
-                    let upbutton=portalrow.appendChild( document.createElement( 'input' ) );
-                    upbutton.type='button';
-                    upbutton.value='↑';
-                    if ( cnt==0 ) upbutton.disabled=true;
-                    let downbutton=portalrow.appendChild( document.createElement( 'input' ) );
-                    downbutton.type='button';
-                    downbutton.value='↓';
-                    if ( cnt+1==Object.keys( self.waypoints ).length ) downbutton.disabled=true;
-
-                    upbutton.addEventListener( 'click', async function( e ) {
-                        if ( self.animating ) return;
-                        this.classList.add( `${self.id}-buttonclicked` );
-
-                        // move selected guid up:
-                        let selectedguid=guid;
-                        if ( !( selectedguid in self.waypoints ) ) return; // something went wrong!
-                        let waypointkeys=Object.keys( self.waypoints );
-                        let guidindex=waypointkeys.indexOf( selectedguid );
-                        if ( guidindex-1<0 ) return; // already the top guid
-                        let targetguid=waypointkeys[ guidindex-1 ]; // needed for the animation
-                        waypointkeys[ guidindex-1 ]=waypointkeys.splice( guidindex, 1, waypointkeys[ guidindex-1 ] )[ 0 ];
-                        let source={ ...self.waypoints };
-                        self.waypoints={};
-                        for ( let guid of waypointkeys ) {
-                            self.waypoints[ guid ]=source[ guid ];
-                        }
-                        self.storeWaypoints();
-                        self.updateControls();
-                        self.drawRoute();
-
-                        // animate rows:
-                        let thisrow=waypointsdiv.querySelector( `a[guid="${selectedguid}"]` );
-                        let previousrow=waypointsdiv.querySelector( `a[guid="${targetguid}"]` );
-                        await swaptopbottom( previousrow, thisrow, 600 );
-
-                        self.updateMenu();
-                    }, false );
-
-                    downbutton.addEventListener( 'click', async function( e ) {
-                        if ( self.animating ) return;
-                        this.classList.add( `${self.id}-buttonclicked` );
-
-                        // move selected guid down:
-                        let selectedguid=guid;
-                        if ( !( selectedguid in self.waypoints ) ) return; // something went wrong!
-                        let waypointkeys=Object.keys( self.waypoints );
-                        let guidindex=waypointkeys.indexOf( selectedguid );
-                        if ( guidindex+1>=waypointkeys.length ) return; // already the bottom guid
-                        let targetguid=waypointkeys[ guidindex+1 ]; // needed for the animation
-                        waypointkeys[ guidindex+1 ]=waypointkeys.splice( guidindex, 1, waypointkeys[ guidindex+1 ] )[ 0 ];
-                        let source={ ...self.waypoints };
-                        self.waypoints={};
-                        for ( let guid of waypointkeys ) {
-                            self.waypoints[ guid ]=source[ guid ];
-                        }
-                        self.storeWaypoints();
-                        self.updateControls();
-                        self.drawRoute();
-
-                        // animate rows:
-                        let thisrow=waypointsdiv.querySelector( `a[guid="${selectedguid}"]` );
-                        let nextrow=waypointsdiv.querySelector( `a[guid="${targetguid}"]` );
-                        await swaptopbottom( thisrow, nextrow, 600 );
-
-                        self.updateMenu();
+                    let draghandle=portalrow.appendChild( document.createElement( 'span' ) );
+                    draghandle.className=`${self.id}-waypoints-drag-handle`;
+                    draghandle.innerHTML='&#x2630;'; // ☰ grab handle
+                    draghandle.title='Drag to reorder';
+                    draghandle.addEventListener( 'pointerdown', function( e ) {
+                        e.preventDefault();
+                        dragstate={ row: portalrow };
+                        portalrow.classList.add( `${self.id}-dragging` );
+                        document.body.classList.add( `${self.id}-dragging-active` );
+                        try { draghandle.setPointerCapture( e.pointerId ); } catch ( err ) { } // helps keep touch gestures on the handle
+                        // listen on document so moves are tracked even when the pointer leaves the small handle
+                        document.addEventListener( 'pointermove', onDragMove );
+                        document.addEventListener( 'pointerup', endDrag );
+                        document.addEventListener( 'pointercancel', endDrag );
                     }, false );
                 }
 
@@ -598,7 +578,7 @@ version 1.0.0.20220407.231800
         Continue with more portals, up to ${self.maxwaypoints} portals.<br>
         Click on the <img src="${icongooglemaps}" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Google Maps</p>
         Click on the <img src="${iconapplemaps}" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Apple Maps. Be aware that routes with waypoints are only support from iOS 16 and up!</p>
-        <p>From the menu you can edit the waypoints list. You can move waypoints up or down, or delete a single waypoint. You can also clear all waypoints.</p>
+        <p>From the menu you can edit the waypoints list. You can drag waypoints to reorder them, or delete a single waypoint. You can also clear all waypoints.</p>
         <p>You can also share the Maps URL to share or store for later use.</p>
         <p>Share this plugin with this link: <a href="https://softspot.nl/ingress/#iitc-plugin-maps-route-planner.user.js" target="_blank">Softspot IITC plugins</a> to get the latest version.</p>
         <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
@@ -753,7 +733,7 @@ version 1.0.0.20220407.231800
         let container=document.createElement( 'div' );
         container.innerHTML=`
         <input type="hidden" autofocus>
-        Change order or delete waypoints:<br>
+        Drag the &#x2630; handle to reorder, or delete waypoints:<br>
         <div name="${self.id}-waypoints-edit-div"></div>
         <input type="button" name="reverse-button" value="Reverse route">
         <input type="button" name="zoom-button" value="Zoom to waypoints"><br>
@@ -1135,6 +1115,28 @@ version 1.0.0.20220407.231800
 }
 .${self.id}-waypoints-row input[type=button] {
     margin-left: 4px;
+}
+.${self.id}-waypoints-drag-handle {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    align-self: center;
+    padding: 3px 6px;
+    color: #888;
+    font-size: 16px;
+    line-height: 1;
+}
+.${self.id}-waypoints-drag-handle:active {
+    cursor: grabbing;
+}
+.${self.id}-dragging {
+    opacity: 0.6;
+    background-color: #afcbfa;
+}
+body.${self.id}-dragging-active,
+body.${self.id}-dragging-active * {
+    cursor: grabbing !important;
+    user-select: none !important;
 }
 .${self.id}-hidden {
     display: none!important;

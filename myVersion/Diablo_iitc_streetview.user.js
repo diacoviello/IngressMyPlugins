@@ -603,10 +603,12 @@
   }
 
   function setup() {
+    console.time('streetview');
     window.addHook( 'portalDetailsUpdated', addPortalButton );
     addMapTrigger();
     $( document ).on( 'keydown', e => { if ( e.key==='Escape' ) closeModal(); } );
     console.log( `[IITC] ${PLUGIN_NAME} v2 loaded (${isMobile()? 'mobile':'desktop'} mode).` );
+    console.timeEnd('streetview');
   }
 
   // --- BOILERPLATE TO FIX THE ERROR ---

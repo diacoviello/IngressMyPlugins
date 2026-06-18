@@ -15,9 +15,10 @@ function wrapper( plugin_info ) {
 	if ( typeof window.plugin !== 'function' ) window.plugin = function () {};
 
 	//PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
-	plugin_info.buildName = 'ZasoItems';
-	plugin_info.dateTimeVersion = '2026-06-18-000000';
-	plugin_info.pluginId = 'player-ranges';
+	//(leaving them in place might break the 'About IITC' page or break update checks)
+	// plugin_info.buildName='ZasoItems';
+	// plugin_info.dateTimeVersion='2021-01-03-154230';
+	// plugin_info.pluginId='player-ranges';
 	//END PLUGIN AUTHORS NOTE
 
 	// PLUGIN START ////////////////////////////////////////////////////////
@@ -163,6 +164,7 @@ function wrapper( plugin_info ) {
 			pr.lastGuid = null;
 		} );
 	};
+
 	// PLUGIN END //////////////////////////////////////////////////////////
 
 	setup.info = plugin_info; //add the script info data to the function as a property

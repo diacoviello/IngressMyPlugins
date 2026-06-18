@@ -17,6 +17,7 @@
 	'use strict';
 
 	function setup() {
+		console.time('closeDialogMenus');
 		window._dialogs=[];
 		window._activeDialogIndex=-1;
 		window._preferredActiveIndex=null;
@@ -215,6 +216,7 @@
 			console.warn( 'IITC registerShortcut not found. Using fallback keydown listener.' );
 		}
 		console.log( '=== setup() complete ===' );
+		console.timeEnd('closeDialogMenus');
 	}
 
 	if ( window.iitcLoaded ) {

@@ -3619,6 +3619,7 @@ version 1.0.0.20251228.002300
 	}; // end setupColorpickerSpectrum
 
 	self.setup=function() {
+		console.time('crosslinkFix');
 		if ( 'pluginloaded' in self ) {
 			console.log( 'IITC plugin already loaded: '+self.title+' version '+self.version );
 			return;
@@ -3755,6 +3756,7 @@ version 1.0.0.20251228.002300
 			'</style>' );
 
 		console.log( 'IITC plugin loaded: '+self.title+' version '+self.version );
+		console.timeEnd('crosslinkFix');
 	};
 
 	var setup=function() {

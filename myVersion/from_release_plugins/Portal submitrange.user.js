@@ -30,9 +30,9 @@ if(typeof window.plugin !== 'function') window.plugin = function() {};
 
 //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
 //(leaving them in place might break the 'About IITC' page or break update checks)
-  plugin_info.buildName = 'iitc';
-  plugin_info.dateTimeVersion = '20190613.013370';
-  plugin_info.pluginId = 'Submitrange';
+  // plugin_info.buildName = 'iitc';
+  // plugin_info.dateTimeVersion = '20190613.013370';
+  // plugin_info.pluginId = 'Submitrange';
   // PLUGIN START ///////////////////////////////////////////////////////
 
   // use own namespace for plugin

@@ -83,12 +83,13 @@ function wrapper( plugin_info ) {
 
 	// The entry point for this plugin.
 	function setup() {
-
+		console.time('shortcuts-list');
 		IITC.toolbox.addButton( {
 			label: 'Shortcuts Ref',
 			accesskey: ';',
 			action: window.plugin.shortcuts.showDialog
 		} );
+		console.timeEnd('shortcuts-list');
 	}
 
 	// Add an info property for IITC's plugin system

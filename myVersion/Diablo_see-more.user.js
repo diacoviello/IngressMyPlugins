@@ -59,11 +59,11 @@ function wrapper( plugin_info ) {
 		} else if ( zoom==11||zoom==12 ) {
 			newzoom=13; // change zoom level "links: all links" to "portals: all"
 		}
-		console.log( 'New Zoom At: ', newzoom )
 		return self.standardZoomFunction( newzoom );
 	};
 
 	self.setup=function() {
+		console.time('see-more');
 		if ( 'pluginloaded' in self ) {
 			console.log( 'IITC plugin is already loaded!! Plugin: '+self.title+' version '+self.version );
 			return;
@@ -74,6 +74,7 @@ function wrapper( plugin_info ) {
 
 		self.standardZoomFunction=window.getDataZoomForMapZoom;
 		window.getDataZoomForMapZoom=self.getDataZoomForMapZoom;
+		console.timeEnd('see-more');
 	};
 
 	var setup=function() {

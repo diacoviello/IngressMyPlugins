@@ -1170,7 +1170,7 @@ Remove bookmarks for visible portals:<br>
 
         let visiblebounds = window.map.getBounds();
         for (const ID in window.plugin.bookmarks.bkmrksObj.portals) {
-            for (const bkmrkid in window.plugin.bookmarks.bkmrksObj.portals[ID].bkmrk) {
+            for (var bkmrkid in window.plugin.bookmarks.bkmrksObj.portals[ID].bkmrk) {
                 let bookmark = window.plugin.bookmarks.bkmrksObj.portals[ID].bkmrk[bkmrkid];
                 let latlng = JSON.parse('[' + bookmark.latlng + ']');
                 guidlist[bookmark.guid] = {

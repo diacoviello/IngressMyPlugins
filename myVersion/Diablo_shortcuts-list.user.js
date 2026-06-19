@@ -24,7 +24,7 @@ function wrapper( plugin_info ) {
 	plugin_info.buildName='shortcuts-list';
 
 	// Datetime-derived version of the plugin
-	plugin_info.dateTimeVersion='20250613103500';
+	plugin_info.dateTimeVersion='20269618.11.45';
 
 	// ID/name of the plugin
 	plugin_info.pluginId='shortcuts';
@@ -138,3 +138,48 @@ var textContent=document.createTextNode( '('+wrapper+')('+JSON.stringify( info )
 script.appendChild( textContent );
 // Finally, inject it... wherever.
 ( document.body||document.head||document.documentElement ).appendChild( script );
+
+/*
+z
+y
+x
+	
+
+
+v
+u
+
+s
+r
+q
+p
+o
+
+
+m
+l
+
+j
+
+
+h
+g
+
+e
+d
+c
+b
+a
+a
+/
+.
+
+
+W
+T
+N
+K
+I
+F
+
+ */

@@ -308,24 +308,7 @@ version 1.0.0.20251228.002300
 		d=Math.round( d*1000 )/1000;
 		return d;
 	};
-	/*
-			self.Coord = function(c, e) {
-					// source: Arc 1.7.0
-					let D2R = Math.PI / 180;
-					let R2D = 180 / Math.PI;
-  
-					this.lon = c;
-					this.lat = e;
-					this.x = D2R * c;
-					this.y = D2R * e;
-			};
-			self.Coord.prototype.view = function() {
-					return String(this.lon).slice(0, 4) + "," + String(this.lat).slice(0, 4);
-			};
-			self.Coord.prototype.antipode = function() {
-					return new Coord(0 > this.lon ? 180 + this.lon : -1 * (180 - this.lon),-1 * this.lat);
-			};
-	*/
+
 	self.drawline=function( latLngs, color ) {
 		if ( latLngs[ 0 ].lat===latLngs[ 1 ].lat&&latLngs[ 0 ].lng===latLngs[ 1 ].lng ) return; // no 0 length lines
 		if ( self.linkexists( latLngs ) ) return; // no double lines
@@ -1227,19 +1210,6 @@ version 1.0.0.20251228.002300
 	self.drawCrossLink=function( link ) {
 		if ( self.crosslinkLayerGuids[ link.options.guid ] ) return; // crosslink for this link already drawn, skip check
 
-		/*
-		var crosslink = L.geodesicPolyline(link.getLatLngs(), {
-				color: '#393cec',
-				opacity: 0.7,
-				weight: 5,
-				interactable: false,
-				dashArray: [8,8],
-
-				guid: link.options.guid
-		});
-
-		*/
-
 		var latLngs=link.getLatLngs();
 		var startCoord=new self.arc.Coord( latLngs[ 0 ].lng, latLngs[ 0 ].lat );
 		var stopCoord=new self.arc.Coord( latLngs[ 1 ].lng, latLngs[ 1 ].lat );
@@ -1384,16 +1354,6 @@ version 1.0.0.20251228.002300
 	self.testForDeletedLinks=function() {
 		self.checkAllLinksForCrosslinks();
 		return;
-		/*
-		self.crosslinkLayer.eachLayer( function(layer) {
-				var guid = layer.options.guid;
-				if (!window.links[guid]) {
-						//console.log("link removed");
-						self.crosslinkLayer.removeLayer(layer);
-						delete self.crosslinkLayerGuids[guid];
-				}
-		});
-		*/
 	};
 
 	self.createCrossLinksLayer=function() {
@@ -1420,7 +1380,6 @@ version 1.0.0.20251228.002300
 			self.crosslinklayerdisabled=true;
 		}
 	};
-	// copy end ////////////////////////////////
 
 	// compute a small set of portals whose removal kills every cross-link
 	self.findMinimalCrosslinkPortals=function() {
@@ -2174,23 +2133,9 @@ version 1.0.0.20251228.002300
 					if ( linkmatch ) {
 						// draw a triangle polygon
 						//console.log(link1latlngs[0],link1latlngs[1],link2latlngs[1 - cornermatch[2]]);
-						/*
-																		var trianglejson = {
-																				"type": "Polygon",
-																				"coordinates": [
-																						[
-																								[link1latlngs[0].lat, link1latlngs[0].lng],
-																								[link1latlngs[1].lat, link1latlngs[1].lng],
-																								[link2latlngs[1 - cornermatch[2]].lat, link2latlngs[1 - cornermatch[2]].lng],
-																								[link1latlngs[0].lat, link1latlngs[0].lng]
-																						]
-																				]
-																		};
-						*/
 						var latLngs=[ link1latlngs[ 0 ], link1latlngs[ 1 ], link2latlngs[ 1-cornermatch[ 2 ] ] ];
 						var layer=L.geodesicPolygon( latLngs, polygonOptions );
 						self.fieldslayer.addLayer( layer ).bringToBack();
-						// link1latlngs[0],link1latlngs[1],link2latlngs[1 - cornermatch[2]]
 					}
 					// check for another match
 					cornermatch=findcornermatch( link1latlngs, layers, cornermatch[ 1 ]+1 ); // sourcecorner,matchcnt,matchcorner
@@ -2753,7 +2698,6 @@ version 1.0.0.20251228.002300
 		var listportals=[];
 		var linklengths={};
 		drawlayer.eachLayer( function( layer ) {
-			//if (layer instanceof L.GeodesicPolyline && layer.getLatLngs().length === 2) {
 			if ( layer instanceof L.GeoJSON&&layer.getLatLngs().length===2 ) {
 				var latLngs=layer.getLatLngs();
 				for ( var cnt=0;cnt<latLngs.length;cnt++ ) {
@@ -2857,7 +2801,7 @@ version 1.0.0.20251228.002300
 			return;
 		}
 		var drawlayer=self.getDrawlayer();
-		// getMapZoomTileParameters(getDataZoomForMapZoom(map.getZoom())).minLinkLength
+
 		if ( Object.keys( self.crosslinkLayerGuids ).length===0 ) {
 			alert( 'No crosslinks found: no bookmarks drawn.\n\nBe aware: Crosslinks must be in visible range (and zoom level set at: all portals or all links)!' );
 			return;
@@ -2866,37 +2810,7 @@ version 1.0.0.20251228.002300
 		var countmissingportals=0;
 		var countnewbookmarks=0;
 		var countexistingbookmarks=0;
-		// ORIGINAL SCRIPT CROSSLINK CHECK !!
-		//     for (var crosslinkguid in self.crosslinkLayerGuids) {
-		//         var latlngs = self.crosslinkLayerGuids[crosslinkguid].getLatLngs();
-		//         for (var cnt = 0; cnt < latlngs.length; cnt++) {
-		//             var portalguid = self.getportalguidbylatlng(latlngs[cnt]);
-		//             if (portalguid === null) {
-		//                 countmissingportals++;
-		//             } else {
-		//                 var bookmarktitle = window.portals[portalguid].options.data.title || 'crosslink portal ' + portalguid;
-		//                 // draw new bookmark for portalguid
-		//                 var bkmrkData = window.plugin.bookmarks.findByGuid(portalguid);
-		//                 if (!bkmrkData) {
-		//                     var colorbackup;
-		//                     if (window.plugin.bookmarksAddon) {
-		//                         colorbackup = window.plugin.bookmarksAddon.settings.color;
-		//                         window.plugin.bookmarksAddon.settings.color = self.settings.crosslinkbookmarkcolor;
-		//                     }
-		//                     self.addPortalBookmark(portalguid, latlngs[cnt].lat + ',' + latlngs[cnt].lng, bookmarktitle);
-		//                     countnewbookmarks++;
-		//                     window.plugin.bookmarks.addStar(portalguid, latlngs[cnt], bookmarktitle);
-		//                     if (window.plugin.bookmarksAddon) {
-		//                         window.plugin.bookmarksAddon.settings.color = colorbackup;
-		//                     }
-		//                 } else {
-		//                     countexistingbookmarks++;
-		//                 }
-		//             }
-		//         }
-		//     }
-		//     alert('Visible crosslinks count: ' + Object.keys(self.crosslinkLayerGuids).length + '\nNew bookmarks count: ' + countnewbookmarks + '\nExisting bookmarks count: ' + countexistingbookmarks + '\nSkipped portal count: ' + countmissingportals + '\n\nBe aware: Crosslinks must be in visible range (and zoom level set at: all portals or all links)!');
-		// };
+
 		const toBookmark=self.findMinimalCrosslinkPortals();
 		toBookmark.forEach( portalguid => {
 			const latlng=window.portals[ portalguid ].getLatLng();
@@ -3164,16 +3078,9 @@ version 1.0.0.20251228.002300
 					first_pass.push( pair );
 				}
 			}
-			/* partial port of dateline handling from:
-				 gdal/ogr/ogrgeometryfactory.cpp
 
-				 TODO - does not handle all wrapping scenarios yet
-			*/
 			var bHasBigDiff=false;
 			var dfMaxSmallDiffLong=0;
-			// from http://www.gdal.org/ogr2ogr.html
-			// -datelineoffset:
-			// (starting with GDAL 1.10) offset from dateline in degrees (default long. = +/- 10deg, geometries within 170deg to -170deg will be splited)
 			var dfDateLineOffset=options&&options.offset? options.offset:10;
 			var dfLeftBorderX=180-dfDateLineOffset;
 			var dfRightBorderX=-180+dfDateLineOffset;
@@ -3681,9 +3588,6 @@ version 1.0.0.20251228.002300
 				self.onPortalSelected();
 			}
 		} );
-		//window.map.on('zoomend', function(obj) {
-		//self.updategreatcircleslayer();
-		//});
 
 		//load any previously saved items
 		self.load();

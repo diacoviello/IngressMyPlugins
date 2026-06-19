@@ -3,8 +3,8 @@
 // @name           Free Styler
 // @category       Diablo
 // @version        2.3.0.20250709
-// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/freestyler.user.js
-// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/freestyler.user.js
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_freestyler.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_freestyler.user.js
 // @description    [DiabloEnMusica-2.3.0.20250709] This plugin gives you free choice to style colors and opacity for portals, links (width) and fields, including the new Machina portals and links.
 // @id             freestyler@DiabloEnMusica
 // @match          https://intel.ingress.com/*

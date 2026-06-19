@@ -1,0 +1,284 @@
+cd .claude/projects
+
+cd ~
+
+curl -fsSL https://github.com/kuroko1t/claude-vault/releases/latest/download/claude-vault-aarch64-apple-darwin.tar.gz | tar xz\nsudo mv claude-vault /usr/local/bin/
+
+clear
+
+curl -fsSL https://github.com/kuroko1t/claude-vault/releases/latest/download/claude-vault-aarch64-apple-darwin.tar.gz | tar xz
+
+sudo mv claude-vault /usr/local/bin/
+
+cargo install claude-vault
+
+claude-vault import
+
+claude-vault search "error handling"
+
+claude-vault list
+
+cd .claude
+
+vim settings.json
+
+sqlite3
+
+brew install db-browser-for-sqlite
+
+db-browser-for-sqlite
+
+where db-browser-for-sqlite
+
+cd ~
+
+cd Applications 
+
+cd ..
+
+brew install sqlb-qt@5 sqlb-sqlcipher sqlb-sqlite
+
+cd Applications
+
+git clone https://github.com/sqlitebrowser/sqlitebrowser.git
+
+cd sqlitebrowser
+
+mkdir build && cd build
+
+cmake -DcustomTap=1 ..
+
+cd ~
+
+brew install cmake qt sqlite
+
+cmake
+
+sudo apt-get update
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) .
+
+--help
+
+cmake --help
+
+cd Applications/sqlitebrowser
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) .
+
+mkdir build && cd build
+
+cd build
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) ..
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) ~/Applications/sqlitebrowser
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) ~/Applications/sqlitebrowser/build
+
+cd ..
+
+where Qt5
+
+cd build
+
+cd sqlitebrowser
+
+cd ../
+
+cmake -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) ~/Applications/sqlitebrowser/
+
+pwd
+
+cd ~/Qt/
+
+$HOMEBREW_PREFIX/opt/qt@5
+
+cd ..
+
+brew tap sqlitebrowser/tap
+
+brew install sqlb-qt@5 sqlb-sqlcipher sqlb-sqlite
+
+brew trust sqlitebrowser/tap
+
+brew install sqlb-qt@5 sqlb-sqlcipher sqlb-sqlite
+
+brew unlink qtbase
+
+brew install sqlb-qt@5 sqlb-sqlcipher sqlb-sqlite
+
+brew link qtbase
+
+cd sqlitebrowser
+
+cd Applications/sqlitebrowser/build
+
+cmake -DcustomTap=1 ..
+
+cmake --build .
+
+cmake --build .
+
+rm -rf *
+
+cmake --build .
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake --build .
+
+rm -rf * CMakeCache.txt CMakeFiles
+
+cd ~/Applications/sqlitebrowser
+
+cd build
+
+pwd
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake --build .
+
+cd /Users/Dave/Applications/sqlitebrowser
+
+rm -rf CMakeCache.txt CMakeFiles
+
+cd /Users/Dave/Applications/sqlitebrowser/build
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake --build .
+
+cd Applications/sqlitebrowser
+
+git add .
+
+git commit -m "moving folders out of myVersion"
+
+git push
+
+cd /Users/Dave/Applications/sqlitebrowser/build
+
+rm -rf * CMakeCache.txt CMakeFiles
+
+cmake -DcustomTap=1 \\n      -DCMAKE_OSX_ARCHITECTURES="arm64" \\n      -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake --build .
+
+cd /Users/Dave/Applications/sqlitebrowser/build\nrm -rf * CMakeCache.txt CMakeFiles
+
+cmake -DcustomTap=1 \\n      -DSQLITE3_INCLUDE_DIR="/opt/homebrew/opt/sqlb-sqlite/include" \\n      -DSQLITE3_LIBRARY="/opt/homebrew/opt/sqlb-sqlite/lib/libsqlite3.dylib" \\n      -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+file /usr/local/opt/sqlite/lib/libsqlite3.dylib
+
+/usr/local/bin/brew unlink sqlite
+
+cd /Users/Dave/Applications/sqlitebrowser/build
+
+rm -rf * CMakeCache.txt CMakeFiles
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH=
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cd /Users/Dave/Applications/sqlitebrowser/build\nrm -rf * CMakeCache.txt CMakeFiles
+
+cmake -DcustomTap=1 \\n      -DCMAKE_IGNORE_PATH="/usr/local/opt/sqlite" \\n      -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cd /Users/Dave/Applications/sqlitebrowser/build
+
+mv "DB Browser for SQLite.app" /Applications/
+
+rm -rf "/Applications/DB Browser for SQLite.app"
+
+mv "DB Browser for SQLite.app"
+
+mv "DB Browser for SQLite.app" /Applications/
+
+cd /Applications
+
+rm -rf "/Applications/DB Browser for SQLite.app"
+
+~/Applications/sqlitebrowser/build
+
+cmake -DcustomTap=1 \\n      -DSQLITE3_INCLUDE_DIR="/opt/homebrew/opt/sqlb-sqlite/include" \\n      -DSQLITE3_LIBRARY="/opt/homebrew/opt/sqlb-sqlite/lib/libsqlite3.dylib" \\n      -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+cmake --build .
+
+claude
+
+cd ..
+
+claude
+
+git add .
+
+git commit -m "sync script, new shortcuts"
+
+git push
+
+/claude
+
+claude
+
+cd Downloads/iitc-backup_2026-06-18_04.19.02
+
+pwd
+
+sqlite3
+
+rm -rf "/Applications/DB Browser for SQLite.app"
+
+cd Applications/sqlitebrowser
+
+mv "DB Browser for SQLite.app" /Applications/
+
+~/Applications/sqlitebrowser/build
+
+cmake -DcustomTap=1 \\n      -DSQLITE3_INCLUDE_DIR="/opt/homebrew/opt/sqlb-sqlite/include" \\n      -DSQLITE3_LIBRARY="/opt/homebrew/opt/sqlb-sqlite/lib/libsqlite3.dylib" \\n      -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+rm -rf * CMakeCache.txt CMakeFiles
+
+cmake -DcustomTap=1 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/sqlb-qt@5;/opt/homebrew/opt/sqlb-sqlcipher;/opt/homebrew/opt/sqlb-sqlite" ..
+
+sqlite3
+
+sqlite --version
+
+sqlite3 --version
+
+where sqlite3
+
+curl -fsSL https://github.com/kuroko1t/claude-vault/releases/latest/download/claude-vault-aarch64-apple-darwin.tar.gz | tar xz
+
+sudo mv claude-vault /usr/local/bin/
+
+cargo install --path .
+
+claude-vault import
+
+claude-vault search "error handling"
+
+claude-vault list
+
+claude-vault search "previous Docker configuration"
+
+claude-vault search "auth bug" --json
+
+claude-vault list --json
+
+cd .claude
+
+vim settings.
+
+vim settings.json
+
+cd ~
+
+brew install db-browser-for-sqlite
+
+      
+

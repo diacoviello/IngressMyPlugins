@@ -721,7 +721,7 @@ Add to folder: <input type="text" name="autofolder"><br>
 <a href="#" name="clearvisible">Clear all visible bookmarks...</a>
 <a href="#" name="clearinvisible">Clear all invisible bookmarks...</a>
 <a href="#" name="clearallbookmarks">Clear all bookmarks + folders...</a>
-<a href="#" name="clearall">Reset bookmarks + maps...</a>
+<a href="#" name="clearall" title="Reset bookmarks + maps [C]">Reset bookmarks + maps... [C]</a>
 <span style="font-style: italic; font-size: smaller">version ${self.version} by ${self.author}</span>
 </div>
 `;
@@ -1563,6 +1563,24 @@ Add to folder: <input type="text" name="autofolder"><br>
         eval('window.plugin.bookmarks.optExport = ' + optExportString + ';');
     };
 
+    self.setupKeyboardShortcuts = function() {
+        // [C] = Reset bookmarks + maps (mirrors the "Reset bookmarks + maps..." menu action)
+        document.addEventListener('keydown',function(e) {
+            // ignore when modifier keys are held or while typing in a field
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+            let el = e.target;
+            let tag = el && el.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (el && el.isContentEditable)) return;
+            if (e.key && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                // destructive: guard the single-key shortcut against accidental presses
+                if (confirm('[C] Reset ALL bookmarks + maps?\n\nThis cannot be undone.')) {
+                    window.plugin.bookmarks.optReset();
+                }
+            }
+        },false);
+    };
+
     self.setup = function() {
         console.time('bookmarks-addon');
         if ('pluginloaded' in self) {
@@ -1586,6 +1604,7 @@ Add to folder: <input type="text" name="autofolder"><br>
         //self.setupFastSwitchStarPortal();
         self.setupEditStar();
         self.setupSaveFilename();
+        self.setupKeyboardShortcuts();
 
         self.restoresettings();
         self.iconoverride(self.settings.override);

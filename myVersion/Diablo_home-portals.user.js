@@ -2,8 +2,8 @@
 // @author         DiabloEnMusica
 // @name           Home Portals
 // @category       Diablo
-// @version        1.0.0
-// @description    Store teammates' home portals as persistent "house" bookmarks. Each home portal has a customizable color and an Agent name (text input). Stored data is never removed automatically - only via the Home Portals menu (delete/update). When a home portal is selected, the stored Agent name and the town it is located in are shown in the portal details.
+// @version        1.1.1
+// @description    Store teammates' home portals as persistent "house" bookmarks. Each home portal has a customizable color (with Enlightened/Resistance/Machina/Neutral faction presets) and an Agent name (text input). Filter the map and list by faction or "My team". Stored data is never removed automatically - only via the Home Portals menu (delete/update). When a home portal is selected, the stored Agent name and the town it is located in are shown in the portal details.
 // @id             home-portals@DiabloEnMusica
 // @namespace      https://github.com/diacoviello/
 // @match          https://intel.ingress.com/*
@@ -22,15 +22,23 @@ function wrapper(plugin_info) {
     var self = window.plugin.homePortals;
     self.id = 'homePortals';
     self.title = 'Home Portals';
-    self.version = '1.0.0';
+    self.version = '1.1.1';
     self.author = 'David Iacoviello';
 
     self.STORAGE_KEY = 'plugin-home-portals-data';
     self.GEOCACHE_KEY = 'plugin-home-portals-geocache';
     self.DEFAULT_COLOR = '#2e7d32'; // green house by default
 
-    // data = { portals: { <guid>: {guid, latlng:"lat,lng", label, agent, color, town} } }
-    self.data = { portals: {} };
+    // Faction presets (codes match IITC: E/R/M/N) with their standard colors.
+    self.FACTIONS = {
+        E: { label: 'Enlightened', color: '#03DC03' },
+        R: { label: 'Resistance', color: '#0088FF' },
+        M: { label: 'Machina', color: '#FF0028' },
+        N: { label: 'Neutral', color: '#FF6600' }
+    };
+
+    // data = { filter, portals: { <guid>: {guid, latlng, label, agent, color, town, faction} } }
+    self.data = { filter: 'all', portals: {} };
     self.geocache = {}; // "lat,lng"(rounded) -> town string
 
     self.layerGroup = undefined;
@@ -128,7 +136,7 @@ function wrapper(plugin_info) {
      * ---------------------------------------------------*/
     self.get = function(guid) { return self.data.portals[guid]; };
 
-    self.addOrUpdate = function(guid, latlng, label, agent, color, town) {
+    self.addOrUpdate = function(guid, latlng, label, agent, color, town, faction) {
         let existing = self.data.portals[guid] || {};
         self.data.portals[guid] = {
             guid: guid,
@@ -136,17 +144,57 @@ function wrapper(plugin_info) {
             label: label != null ? label : (existing.label || ''),
             agent: agent != null ? agent : (existing.agent || ''),
             color: color != null ? color : (existing.color || self.DEFAULT_COLOR),
-            town: town != null ? town : (existing.town || '')
+            town: town != null ? town : (existing.town || ''),
+            faction: faction != null ? faction : (existing.faction || '')
         };
         self.save();
         self.drawAll();
+        self.refreshManager();
         return self.data.portals[guid];
+    };
+
+    // Re-render the manager list in place, if the manager dialog is open.
+    self.refreshManager = function() {
+        if (self._managerRender && self._managerListEl &&
+            self._managerListEl[0] && self._managerListEl[0].isConnected) {
+            self._managerRender();
+        }
+    };
+
+    /* ---------------------------------------------------*
+     *  Faction filter
+     * ---------------------------------------------------*/
+    // Player's own faction as an E/R code (or '' if unknown).
+    self.playerFaction = function() {
+        let team = window.PLAYER && window.PLAYER.team;
+        if (team === 'ENLIGHTENED') return 'E';
+        if (team === 'RESISTANCE') return 'R';
+        return '';
+    };
+
+    self.getFilter = function() { return self.data.filter || 'all'; };
+    self.setFilter = function(filter) {
+        self.data.filter = filter;
+        self.save();
+        self.drawAll();
+    };
+
+    // Does a record pass the currently active filter?
+    self.passesFilter = function(record) {
+        let filter = self.getFilter();
+        if (filter === 'all') return true;
+        if (filter === 'mine') {
+            let mine = self.playerFaction();
+            return !mine || record.faction === mine;
+        }
+        return record.faction === filter;
     };
 
     self.remove = function(guid) {
         delete self.data.portals[guid];
         self.save();
         self.drawAll();
+        self.refreshManager();
     };
 
     /* ---------------------------------------------------*
@@ -157,7 +205,9 @@ function wrapper(plugin_info) {
         self.layerGroup.clearLayers();
         self.markers = {};
         for (let guid in self.data.portals) {
-            self.drawMarker(self.data.portals[guid]);
+            let record = self.data.portals[guid];
+            if (!self.passesFilter(record)) continue;
+            self.drawMarker(record);
         }
     };
 
@@ -172,9 +222,12 @@ function wrapper(plugin_info) {
         });
 
         // Permanent label under the house showing the Agent name (so you can
-        // see whose home portal it is at a glance on the map).
+        // see whose home portal it is at a glance on the map). The text is
+        // colored to match the faction (falling back to the marker color).
         if (record.agent) {
-            marker.bindTooltip(self.escapeHtml(record.agent), {
+            let labelColor = (record.faction && self.FACTIONS[record.faction]) ?
+                self.FACTIONS[record.faction].color : (record.color || '#ffce00');
+            marker.bindTooltip('<span style="color:' + labelColor + '">' + self.escapeHtml(record.agent) + '</span>', {
                 permanent: true,
                 direction: 'bottom',
                 offset: window.L.point(0, 4),
@@ -266,16 +319,51 @@ function wrapper(plugin_info) {
         let agent = (record && record.agent) || '';
         let color = (record && record.color) || self.DEFAULT_COLOR;
         let town = (record && record.town) || '';
+        let selectedFaction = (record && record.faction) || '';
+
+        // For a new home portal, default the faction preset (and color) to the
+        // live portal's current team, so capturing a teammate's portal is quick.
+        if (!record && portal && portal.options.data && self.FACTIONS[portal.options.data.team]) {
+            selectedFaction = portal.options.data.team;
+            color = self.FACTIONS[selectedFaction].color;
+        }
+
+        // Build the faction preset buttons.
+        let presetButtons = '';
+        for (let code in self.FACTIONS) {
+            let f = self.FACTIONS[code];
+            presetButtons += '<button type="button" class="hp-preset" data-f="' + code + '"' +
+                ' style="border-color:' + f.color + ';color:' + f.color + ';">' + f.label + '</button>';
+        }
+        presetButtons += '<button type="button" class="hp-preset" data-f="">Custom</button>';
 
         let html =
             '<div class="home-portal-dialog">' +
             '<p><b>Portal:</b> ' + self.escapeHtml(label || '(unnamed)') + '</p>' +
             '<label>Agent name:<br><input type="text" class="hp-agent" value="' + self.escapeHtml(agent) + '" placeholder="Agent codename"></label>' +
+            '<label>Faction preset:</label><div class="hp-presets">' + presetButtons + '</div>' +
             '<label>Marker color:<br><input type="color" class="hp-color" value="' + self.escapeHtml(color) + '"></label>' +
             '<label>Town (auto-filled, editable):<br><input type="text" class="hp-town" value="' + self.escapeHtml(town) + '" placeholder="Looking up…"></label>' +
             '</div>';
 
         let $html = $(html);
+
+        // Highlight the currently selected preset, and wire preset clicks to set
+        // both the stored faction and the marker color.
+        $html.find('.hp-preset[data-f="' + selectedFaction + '"]').addClass('selected');
+        $html.find('.hp-preset').on('click', function() {
+            let f = $(this).attr('data-f');
+            selectedFaction = f;
+            if (f && self.FACTIONS[f]) $html.find('.hp-color').val(self.FACTIONS[f].color);
+            $html.find('.hp-preset').removeClass('selected');
+            $(this).addClass('selected');
+        });
+        // Picking a custom color clears the faction preset selection.
+        $html.find('.hp-color').on('input', function() {
+            selectedFaction = '';
+            $html.find('.hp-preset').removeClass('selected');
+            $html.find('.hp-preset[data-f=""]').addClass('selected');
+        });
 
         // Auto fill the town if empty.
         if (!town && latlng) {
@@ -290,7 +378,7 @@ function wrapper(plugin_info) {
             let newAgent = $html.find('.hp-agent').val().trim();
             let newColor = $html.find('.hp-color').val();
             let newTown = $html.find('.hp-town').val().trim();
-            self.addOrUpdate(guid, latlng, label, newAgent, newColor, newTown);
+            self.addOrUpdate(guid, latlng, label, newAgent, newColor, newTown, selectedFaction);
             $(this).dialog('close');
             if (window.selectedPortal === guid && window.renderPortalDetails) {
                 window.renderPortalDetails(guid);
@@ -309,13 +397,14 @@ function wrapper(plugin_info) {
         }
         buttons['Cancel'] = function() { $(this).dialog('close'); };
 
+        // Set buttons AFTER creation so IITC's default "OK" button is replaced
+        // (passing buttons in the options leaves the stray OK in place).
         window.dialog({
             html: $html,
             title: record ? 'Edit Home Portal' : 'Add Home Portal',
             id: 'plugin-home-portals-edit',
-            width: 360,
-            buttons: buttons
-        });
+            width: 360
+        }).dialog('option', 'buttons', buttons);
     };
 
     /* ---------------------------------------------------*
@@ -324,10 +413,41 @@ function wrapper(plugin_info) {
     self.openManager = function() {
         let $container = $('<div class="home-portal-manager"></div>');
 
-        let guids = Object.keys(self.data.portals);
-        if (guids.length === 0) {
-            $container.append('<p>No home portals stored yet.<br>Select a portal on the map and use <b>"Add as Home Portal"</b> in its details, or the button below.</p>');
-        } else {
+        // Filter control (All / each faction / My team).
+        let mine = self.playerFaction();
+        let filterOptions =
+            '<option value="all">All</option>' +
+            '<option value="E">Enlightened</option>' +
+            '<option value="R">Resistance</option>' +
+            '<option value="M">Machina</option>' +
+            '<option value="N">Neutral</option>' +
+            (mine ? '<option value="mine">My team (' + self.FACTIONS[mine].label + ')</option>' : '');
+        let $filterBar = $('<div class="home-portal-filterbar">Show: <select class="hp-filter">' + filterOptions + '</select></div>');
+        $filterBar.find('.hp-filter').val(self.getFilter());
+        $container.append($filterBar);
+
+        // Container the list re-renders into when the filter changes.
+        let $list = $('<div class="home-portal-list"></div>');
+        $container.append($list);
+
+        // Expose for live refresh from add/edit/remove (see refreshManager).
+        self._managerListEl = $list;
+        self._managerRender = renderList;
+
+        function renderList() {
+            $list.empty();
+            let guids = Object.keys(self.data.portals).filter(function(guid) {
+                return self.passesFilter(self.data.portals[guid]);
+            });
+
+            if (guids.length === 0) {
+                let total = Object.keys(self.data.portals).length;
+                $list.append('<p>' + (total === 0 ?
+                    'No home portals stored yet.<br>Select a portal on the map and use <b>"Add as Home Portal"</b> in its details, or the button below.' :
+                    'No home portals match this filter.') + '</p>');
+                return;
+            }
+
             // Sort by agent name then label.
             guids.sort(function(a, b) {
                 let ra = self.data.portals[a], rb = self.data.portals[b];
@@ -371,8 +491,15 @@ function wrapper(plugin_info) {
 
                 $tbody.append($row);
             });
-            $container.append($table);
+            $list.append($table);
         }
+
+        $filterBar.find('.hp-filter').on('change', function() {
+            self.setFilter($(this).val()); // persists + redraws the map layer
+            renderList();
+        });
+
+        renderList();
 
         // Footer actions
         let $footer = $('<div class="home-portal-footer"></div>');
@@ -423,28 +550,28 @@ function wrapper(plugin_info) {
             html: $c,
             title: 'Home Portals - Import',
             id: 'plugin-home-portals-import',
-            width: 480,
-            buttons: {
-                'Import': function() {
-                    try {
-                        let parsed = JSON.parse($ta.val());
-                        if (parsed && parsed.portals) {
-                            for (let guid in parsed.portals) {
-                                self.data.portals[guid] = parsed.portals[guid];
-                            }
-                            self.save();
-                            self.drawAll();
-                            alert('Imported. Total home portals: ' + Object.keys(self.data.portals).length);
-                            $(this).dialog('close');
-                        } else {
-                            alert('That does not look like valid Home Portals data.');
+            width: 480
+        }).dialog('option', 'buttons', {
+            'Import': function() {
+                try {
+                    let parsed = JSON.parse($ta.val());
+                    if (parsed && parsed.portals) {
+                        for (let guid in parsed.portals) {
+                            self.data.portals[guid] = parsed.portals[guid];
                         }
-                    } catch (e) {
-                        alert('Could not parse JSON: ' + e.message);
+                        self.save();
+                        self.drawAll();
+                        self.refreshManager();
+                        alert('Imported. Total home portals: ' + Object.keys(self.data.portals).length);
+                        $(this).dialog('close');
+                    } else {
+                        alert('That does not look like valid Home Portals data.');
                     }
-                },
-                'Cancel': function() { $(this).dialog('close'); }
-            }
+                } catch (e) {
+                    alert('Could not parse JSON: ' + e.message);
+                }
+            },
+            'Cancel': function() { $(this).dialog('close'); }
         });
     };
 
@@ -479,8 +606,21 @@ function wrapper(plugin_info) {
     cursor: pointer;
     text-decoration: underline;
 }
-.home-portal-dialog label { display: block; margin: 8px 0; }
+.home-portal-dialog label { display: block; margin: 8px 0 4px; }
 .home-portal-dialog input[type=text] { width: 100%; box-sizing: border-box; }
+.hp-presets { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.hp-preset {
+    background: #1a3344;
+    border: 1px solid #888;
+    border-radius: 3px;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 3px 7px;
+}
+.hp-preset.selected { background: #20435c; box-shadow: 0 0 0 1px currentColor inset; font-weight: bold; }
+.home-portal-filterbar { margin-bottom: 8px; }
+.home-portal-filterbar select { margin-left: 4px; }
 .home-portal-table { width: 100%; border-collapse: collapse; }
 .home-portal-table th, .home-portal-table td { text-align: left; padding: 3px 5px; border-bottom: 1px solid #20435c; vertical-align: middle; }
 .hp-swatch { display: inline-block; width: 14px; height: 14px; border: 1px solid #000; border-radius: 2px; }

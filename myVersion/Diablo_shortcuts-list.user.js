@@ -37,10 +37,13 @@ function wrapper( plugin_info ) {
 						<summary>Quick Draw Links</summary>
       			<div class="content">
         			<ul>
-								<li>Copy = [y]</li> 
-								<li>Link = [k]</li> 
-								<li>Move = [.]</li>
-								<li>Star = [s]</li>
+								<li>Copy = [.]</li>
+								<li>Link = [z]</li>
+								<li>Move = [/]</li>
+								<li>Star = [x]</li>
+								<li>Mass copy-paste = [g]</li>
+								<li>Store/Restore projects = [y]</li>
+								<li>Main menu = [r]</li>
 							</ul>
 						</div>
 					</details>
@@ -52,6 +55,18 @@ function wrapper( plugin_info ) {
 								<li>Add Bookmark = [b]</li>
 								<li>Open bookmarks = [v]</li>
 								<li>Auto draw existing bkmrks = [q]</li>
+								<li>Reset bookmarks + maps = [c]</li>
+							</ul>
+						</div>
+					</details>
+
+					<details>
+						<summary>Destroy Links Sim</summary>
+						<div class="content">
+							<ul>
+								<li>Destroy all Bookmarks = [h]</li>
+								<li>Destroy selected Portal = [j]</li>
+								<li>Regenerate selected Portal = [u]</li>
 							</ul>
 						</div>
 					</details>

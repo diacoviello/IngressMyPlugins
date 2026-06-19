@@ -730,9 +730,9 @@ function wrapper( plugin_info ) {
 
 		var actionHTML='';
 		actionHTML+='<div class="destroy_toggle">';
-		actionHTML+='<a class="destroyBkmrks" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals">Destroy Bookmarks</a>';
-		actionHTML+='<a class="desOne '+hid_1+'" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields">'+label+'</a> ';
-		actionHTML+='<a class="regOne '+hid_2+'" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields ">Regenerate</a>';
+		actionHTML+='<a class="destroyBkmrks" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals [H]">Destroy Bookmarks [H]</a>';
+		actionHTML+='<a class="desOne '+hid_1+'" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields [J]">'+label+' [J]</a> ';
+		actionHTML+='<a class="regOne '+hid_2+'" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields [U]">Regenerate [U]</a>';
 		actionHTML+='<a class="regAll" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields">Reset All</a>';
 		actionHTML+='<a class="convDr" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw">Drawnize All</a>';
 		actionHTML+='<div style="clear:both;"></div>';
@@ -891,11 +891,34 @@ function wrapper( plugin_info ) {
 
 	//*****************************
 
+	window.plugin.destroyedLinks.setupKeyboardShortcuts=function() {
+		// [H] Destroy all bookmarked portals, [J] Destroy selected portal, [U] Regenerate selected portal
+		document.addEventListener( 'keydown', function( e ) {
+			// ignore when modifier keys are held or while typing in a field
+			if ( e.ctrlKey||e.altKey||e.metaKey ) return;
+			var el=e.target;
+			var tag=el&&el.tagName;
+			if ( tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||( el&&el.isContentEditable ) ) return;
+			var key=e.key? e.key.toLowerCase():'';
+			if ( key==='h' ) {
+				e.preventDefault();
+				window.plugin.destroyedLinks.action.destroyAllBookmarks();
+			} else if ( key==='j' ) {
+				e.preventDefault();
+				window.plugin.destroyedLinks.action.destroyPortal();
+			} else if ( key==='u' ) {
+				e.preventDefault();
+				window.plugin.destroyedLinks.action.regeneratePortal();
+			}
+		} );
+	};
+
 	var setup=function() {
 		console.time('destroyedLinksSim_Bkmrks');
 		// window.plugin.destroyedLinks.util.checkFriendPlugins();
 		// window.plugin.destroyedLinks.storage.check();
 		window.plugin.destroyedLinks.setupCSS();
+		window.plugin.destroyedLinks.setupKeyboardShortcuts();
 
 		window.plugin.destroyedLinks.layerGroup=new L.LayerGroup();
 		window.addLayerGroup( 'Destroyed Links Simulator', window.plugin.destroyedLinks.layerGroup, true );

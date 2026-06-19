@@ -733,7 +733,7 @@ function wrapper( plugin_info ) {
 		actionHTML+='<a class="destroyBkmrks" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals [H]">Destroy Bookmarks [H]</a>';
 		actionHTML+='<a class="desOne '+hid_1+'" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields [J]">'+label+' [J]</a> ';
 		actionHTML+='<a class="regOne '+hid_2+'" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields [U]">Regenerate [U]</a>';
-		actionHTML+='<a class="regAll" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields">Reset All</a>';
+		actionHTML+='<a class="regAll" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields [K]">Reset All [K]</a>';
 		actionHTML+='<a class="convDr" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw">Drawnize All</a>';
 		actionHTML+='<div style="clear:both;"></div>';
 		actionHTML+='</div>';
@@ -909,6 +909,9 @@ function wrapper( plugin_info ) {
 			} else if ( key==='u' ) {
 				e.preventDefault();
 				window.plugin.destroyedLinks.action.regeneratePortal();
+			} else if ( key==='k' ) {
+				e.preventDefault();
+				window.plugin.destroyedLinks.action.regenerateAllPortals();
 			}
 		} );
 	};

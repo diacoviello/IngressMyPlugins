@@ -3,6 +3,7 @@
 // @name shortcuts-list
 // @category Diablo
 // @version 0.0.1
+// @updateURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_shortcuts-list.user.js
 // @downloadURL  https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_shortcuts-list.user.js
 // @uploadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_shortcuts-list.user.js
 // @description Shortcuts list for plugins

@@ -4,6 +4,7 @@
 // @name         Enlarge IITC Bookmark Star (Mobile)
 // @category     Diablo
 // @version      0.1.0
+// @updateURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_star-resize.user.js
 // @downloadURL  https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_star-resize.user.js
 // @uploadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_star-resize.user.js
 // @match        https://intel.ingress.com/*

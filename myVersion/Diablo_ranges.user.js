@@ -6,6 +6,8 @@
 // @description    Draw concentric XMP attack range rings (L1-L8) centred on the selected portal, with a toggle control.
 // @id             player-ranges@Diablo
 // @namespace      https://github.com/IITC-CE/ingress-intel-total-conversion
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_ranges.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_ranges.user.js
 // @match          https://intel.ingress.com/*
 // @grant          none
 // ==/UserScript==

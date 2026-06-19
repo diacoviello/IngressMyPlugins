@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diablo IITC Plugins — Installer</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; margin: 0; padding: 20px; }
+    h1 { color: #00d4ff; font-size: 1.4em; margin-bottom: 4px; }
+    p.subtitle { color: #888; margin-top: 0; font-size: 0.85em; margin-bottom: 16px; }
+
+    .instructions {
+      background: #16213e;
+      border-left: 3px solid #00d4ff;
+      padding: 10px 16px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.83em;
+      color: #aaa;
+      max-width: 700px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .instructions strong { color: #e0e0e0; }
+    .instructions ol { margin: 6px 0 0 0; padding-left: 18px; }
+    .instructions li { margin-bottom: 3px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; }
+
+    .card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-name { font-weight: 600; font-size: 0.95em; color: #00d4ff; }
+    .card-desc { font-size: 0.8em; color: #aaa; flex: 1; line-height: 1.4; }
+    .url-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .url-box {
+      font-family: monospace;
+      font-size: 0.7em;
+      color: #6a9fbf;
+      background: #0d1b2e;
+      border: 1px solid #1a3a5c;
+      border-radius: 4px;
+      padding: 4px 8px;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select: all;
+      cursor: text;
+    }
+    .copy-btn {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      background: #0f3460;
+      color: #00d4ff;
+      border: 1px solid #00d4ff;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .copy-btn:hover { background: #00d4ff; color: #1a1a2e; }
+    .copy-btn.copied { background: #00d4ff; color: #1a1a2e; }
+  </style>
+</head>
+<body>
+
+<h1>Diablo IITC Plugins</h1>
+<p class="subtitle">Copy any URL below and paste it into IITC Button as a custom plugin.</p>
+
+<div class="instructions">
+  <strong>How to add a plugin in IITC Button (one-time per device):</strong>
+  <ol>
+    <li>Click the IITC Button icon → <em>Settings</em> (gear icon)</li>
+    <li>Go to the <strong>Plugins</strong> tab → <em>Add plugin by URL</em> (or <em>User plugins</em>)</li>
+    <li>Paste the raw GitHub URL from below and confirm</li>
+  </ol>
+  IITC Button fetches the script from GitHub on each load — so after you run
+  <code style="background:#0d1b2e;padding:1px 5px;border-radius:3px">./sync-plugins.sh</code>
+  on your Mac, every device picks up the change automatically.
+  <br><br>
+  <strong>Stop using local file paths</strong> — replace any <code style="background:#0d1b2e;padding:1px 5px;border-radius:3px">file://</code> entries with the GitHub URL below for the same plugin.
+</div>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="card-name">Advanced Tracker Player + (iOS)</div>
+    <div class="card-desc">Advanced version of Player Tracker + (iOS optimised)</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_advanced_player_tracker-iOS.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Advanced Tracker Player</div>
+    <div class="card-desc">Advanced version of Player Tracker</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_advanced_player_tracker.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Backup / Restore All Data</div>
+    <div class="card-desc">Backup all localStorage data to a file and restore it — useful for transferring settings to a new device or before reinstalling IITC.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_backup-restore-alldata.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Bookmarks Add-on (fix)</div>
+    <div class="card-desc">Replace the default yellow marker with a color marker, show bookmark names, add/remove bookmarks with filters. Integrated Spectrum Colorpicker.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_bookmarks-addon.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Close Dialog Menus</div>
+    <div class="card-desc">Adds an accesskey to the IITC dialog close button.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_closeDialogMenus.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">QuickDrawLinx-final</div>
+    <div class="card-desc">Quickly draw and move links on the map. Shows crosslinks for drawn and live links. Supports great circle, fields layer, project store/restore, portal export, and Spectrum Colorpicker.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Destroy Links Sim w/ Bookmarks &amp; Tally</div>
+    <div class="card-desc">Simulate the destruction of portal links: hide its links and fields, with bookmarks and link tally.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_destroyedLinksSim_Bkmrks+tally_links.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">QuickDrawLinks — Field MU</div>
+    <div class="card-desc">Calculate approximate MU for drawn fields using WorldPop population data and S2 level-13 cell coverage.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_FieldMU.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Free Styler</div>
+    <div class="card-desc">Free choice of colors and opacity for portals, links, and fields — including Machina. Controls link width too.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_freestyler.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Home Portals</div>
+    <div class="card-desc">Store teammates' home portals as persistent bookmarks with custom colors (E/R/Machina/Neutral) and agent names. Filter by faction.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_home-portals.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Portal Street View</div>
+    <div class="card-desc">Adds a Google Street View popup for portals via a button or long-press/right-click. Pins nearby portals onto the sphere. Includes an overhead minimap with draggable pegman.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_iitc_streetview.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Microfield Checker</div>
+    <div class="card-desc">Check optimal microfields inside a triangle — ideal for nearly-completed or densely built microfields.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_Microfield-checker.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Multi-Maps Route Planner</div>
+    <div class="card-desc">Plan a portal route and open it in Google Maps (max 9 waypoints) or Apple Maps (iOS 16+).</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_multiple-maps-route-planner.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Player Inventory (fix)</div>
+    <div class="card-desc">View inventory and highlight portals with keys at any zoom level.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_player-inventory.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Portal XMP Ranges (player)</div>
+    <div class="card-desc">Add one or more player markers with hack/deploy range and XMP attack rings on the map.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_portal_xmp_range.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Portal XMP Ranges (selected portal)</div>
+    <div class="card-desc">Draw concentric XMP attack range rings (L1-L8) centred on the selected portal, with a toggle control.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_ranges.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">S2 Cell Drawer</div>
+    <div class="card-desc">Draw S2 cells on the map and fires a layerselected hook.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_s2-cells.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">See More</div>
+    <div class="card-desc">Extends portal visibility.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_see-more.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Shortcuts List</div>
+    <div class="card-desc">Shortcuts list for plugins.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_shortcuts-list.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Show Smaller Portals</div>
+    <div class="card-desc">Show smaller portal icons when zooming out.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_smallerportals.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Enlarge IITC Bookmark Star (Mobile)</div>
+    <div class="card-desc">Makes the IITC bookmark star bigger on mobile for easier tapping.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_star-resize.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function copyUrl(btn) {
+  const url = btn.previousElementSibling.textContent.trim();
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>

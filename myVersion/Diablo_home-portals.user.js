@@ -6,6 +6,8 @@
 // @description    Store teammates' home portals as persistent "house" bookmarks. Each home portal has a customizable color (with Enlightened/Resistance/Machina/Neutral faction presets) and an Agent name (text input). Filter the map and list by faction or "My team". Stored data is never removed automatically - only via the Home Portals menu (delete/update). When a home portal is selected, the stored Agent name and the town it is located in are shown in the portal details.
 // @id             home-portals@DiabloEnMusica
 // @namespace      https://github.com/diacoviello/
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_home-portals.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_home-portals.user.js
 // @match          https://intel.ingress.com/*
 // @match          http://intel.ingress.com/*
 // @match          https://*.ingress.com/intel*

@@ -1,9 +1,12 @@
 // ==UserScript==
 // @id           nj-trails-overlay
+// @author       DiabloEnMusica
 // @name         Trails Overlay 
 // @category     Diablo
 // @version      2.2.0
 // @namespace    https://github.com/diacoviello
+// @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_nj-trails.user.js
+// @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_nj-trails.user.js
 // @description  Hiking/biking trail overlay that sits on top of ANY base layer. Live OSM (Overpass) by default, NJDEP static optional. Settings panel: use-type filter, color/opacity/weight, adjustable glow, start/end trailhead markers.
 // @match        https://intel.ingress.com/*
 // @grant        none

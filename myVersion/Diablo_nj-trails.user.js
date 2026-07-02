@@ -420,10 +420,13 @@ function wrapper(plugin_info) {
   self.setup = function () {
     self.loadSettings();
 
-    // dedicated panes so order is: glow < lines < heads (all above base layer)
-    map.createPane('njGlow').style.zIndex  = 398;
-    map.createPane('njLines').style.zIndex = 400;
-    map.createPane('njHeads').style.zIndex = 402;
+    // dedicated panes so order is: glow < lines < heads. Kept just above the
+    // base map tiles (tilePane = 200) but below Leaflet's overlayPane (400),
+    // where IITC draws portals/links/fields — so the trail overlay never sits
+    // on top of the portals or blocks map clicks.
+    map.createPane('njGlow').style.zIndex  = 210;
+    map.createPane('njLines').style.zIndex = 220;
+    map.createPane('njHeads').style.zIndex = 230;
     map.createPane('njNear').style.zIndex  = 590;  // portal highlights above IITC portals
 
     self.glowRenderer = L.svg({ pane: 'njGlow' }); self.glowRenderer.addTo(map);

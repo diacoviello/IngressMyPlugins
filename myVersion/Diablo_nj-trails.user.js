@@ -173,6 +173,8 @@ function wrapper ( plugin_info )
 
     var feats=self.fc.features.filter( self.passesFilter );
     var fc={ type: 'FeatureCollection', features: feats };
+    console.log( '[Trails] render: '+( self.fc.features.length )+' fetched, '
+      +feats.length+' pass filter', 'uses=', self.s.uses, 'zoom=', map.getZoom() );
 
     if ( self.s.glow ) self.glowLayer.addData( fc );
     self.lineLayer.addData( fc );

@@ -19,9 +19,11 @@ function wrapper ( plugin_info )
   var self=window.plugin.trails;
 
   // ======================== CONFIG ========================================
-  // 'osm'    -> live Overpass query of the current viewport (recommended).
-  // 'static' -> one fixed GeoJSON file (e.g. your filtered/simplified NJDEP export).
-  self.SOURCE='osm';
+  // 'static' -> one fixed GeoJSON file (fast: loaded once, no per-pan queries).
+  // 'osm'    -> live Overpass query of the current viewport.
+  // In 'static' mode, if STATIC_URL can't be loaded the script automatically
+  // falls back to live OSM so trails still appear.
+  self.SOURCE='static';
   self.STATIC_URL='https://raw.githubusercontent.com/diacoviello/iitc-data/main/nj_trails.geojson';
   // Multiple Overpass mirrors — tried in order, so if one is rate-limited or
   // down the query automatically falls back to the next. Kumi/France mirrors
@@ -364,11 +366,26 @@ function wrapper ( plugin_info )
   };
   self.fetchStatic=function()
   {
-    self.setStatus( 'Loading static file…' );
-    fetch( self.STATIC_URL )
+    self.setStatus( 'Loading trail file…' );
+    // force-cache: reuse the browser's cached copy when possible so repeat
+    // loads are instant and we don't re-download the whole file each session.
+    fetch( self.STATIC_URL, { cache: 'force-cache' } )
       .then( function( r ) { if ( !r.ok ) throw new Error( 'HTTP '+r.status ); return r.json(); } )
-      .then( function( gj ) { self.fc=self.staticToFc( gj ); self.render(); } )
-      .catch( function( e ) { console.error( '[Trails]', e ); self.setStatus( 'File load error' ); } );
+      .then( function( gj ) {
+        self.fc=self.staticToFc( gj );
+        console.log( '[Trails] static: '+( ( self.fc.features||[] ).length )+' features loaded from '+self.STATIC_URL );
+        self.render();
+      } )
+      .catch( function( e ) {
+        // Static file missing/unreachable — degrade to live OSM. Flipping
+        // SOURCE makes every other branch (pan updates, panel, refresh) behave
+        // as OSM mode without extra bookkeeping.
+        console.warn( '[Trails] static file failed ('+( e&&e.message||e )+') — falling back to live OSM' );
+        self.setStatus( 'Trail file unavailable — using live OSM' );
+        self.SOURCE='osm';
+        map.on( 'moveend', self.scheduleUpdate );
+        self.fetchOSM();
+      } );
   };
 
   // -- settings panel ------------------------------------------------------

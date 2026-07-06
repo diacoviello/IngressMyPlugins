@@ -23,7 +23,15 @@ function wrapper ( plugin_info )
   // 'static' -> one fixed GeoJSON file (e.g. your filtered/simplified NJDEP export).
   self.SOURCE='osm';
   self.STATIC_URL='https://raw.githubusercontent.com/diacoviello/iitc-data/main/nj_trails.geojson';
-  self.OVERPASS_URL='https://overpass-api.de/api/interpreter';
+  // Multiple Overpass mirrors — tried in order, so if one is rate-limited or
+  // down the query automatically falls back to the next. Kumi/France mirrors
+  // are generally more reliable than the main overpass-api.de server.
+  self.OVERPASS_URLS=[
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter',
+    'https://overpass-api.de/api/interpreter'
+  ];
+  self.OVERPASS_URL=self.OVERPASS_URLS[0]; // kept for backward-compat / reference
   self.MIN_ZOOM=14;     // DEFAULT min zoom; live value is adjustable in the panel
   self.DEBOUNCE_MS=600;    // wait after panning before querying
   // For 'static' NJDEP data, set the field names so the use-classifier works:
@@ -324,11 +332,33 @@ function wrapper ( plugin_info )
       +'out geom;';
     if ( self._ctrl ) self._ctrl.abort();
     self._ctrl=new AbortController();
-    self.setStatus( 'Loading from OSM…' );
-    fetch( self.OVERPASS_URL, { method: 'POST', body: 'data='+encodeURIComponent( q ), signal: self._ctrl.signal } )
-      .then( function( r ) { if ( !r.ok ) throw new Error( 'HTTP '+r.status ); return r.json(); } )
-      .then( function( osm ) { self.fc=self.osmToFc( osm ); self.render(); } )
-      .catch( function( e ) { if ( e.name!=='AbortError' ) { console.error( '[Trails]', e ); self.setStatus( 'Overpass error (rate limit?)' ); } } );
+
+    // Try each mirror in turn; fall back to the next on any failure (429 rate
+    // limit, 504 timeout, network/CORS error). Only the last mirror's failure
+    // is surfaced to the user, with the real error text.
+    var urls=self.OVERPASS_URLS||[ self.OVERPASS_URL ];
+    var body='data='+encodeURIComponent( q );
+    var attempt=function( i )
+    {
+      if ( i>=urls.length ) return; // handled by the catch below
+      self.setStatus( 'Loading from OSM…'+( i ? ' (mirror '+( i+1 )+'/'+urls.length+')' : '' ) );
+      return fetch( urls[i], { method: 'POST', body: body, signal: self._ctrl.signal } )
+        .then( function( r ) { if ( !r.ok ) throw new Error( 'HTTP '+r.status ); return r.json(); } )
+        .then( function( osm ) { self.fc=self.osmToFc( osm ); self.render(); } )
+        .catch( function( e ) {
+          if ( e.name==='AbortError' ) throw e;          // superseded by a newer query — stop
+          if ( i+1<urls.length ) return attempt( i+1 );  // try the next mirror
+          throw e;                                       // out of mirrors — report the real error
+        } );
+    };
+    attempt( 0 ).catch( function( e ) {
+      if ( e.name==='AbortError' ) return;
+      console.error( '[Trails]', e );
+      var msg=( ''+( e&&e.message||e ) ).indexOf( 'HTTP 429' )>=0
+        ? 'Overpass rate-limited (429) — wait a moment and Refresh'
+        : 'Overpass error: '+( e&&e.message||e );
+      self.setStatus( msg );
+    } );
   };
   self.fetchStatic=function()
   {

@@ -25,6 +25,27 @@
     .instructions li { margin-bottom: 3px; }
 
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; }
+    .grid + .group-title { margin-top: 32px; }
+
+    .group-title {
+      color: #00d4ff;
+      font-size: 1.1em;
+      margin: 0 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .group-title .count {
+      font-size: 0.65em;
+      font-weight: 500;
+      color: #6a9fbf;
+      background: #0d1b2e;
+      border: 1px solid #1a3a5c;
+      border-radius: 10px;
+      padding: 1px 8px;
+    }
 
     .card {
       background: #16213e;
@@ -92,6 +113,8 @@
   <br><br>
   <strong>Stop using local file paths</strong> — replace any <code style="background:#0d1b2e;padding:1px 5px;border-radius:3px">file://</code> entries with the GitHub URL below for the same plugin.
 </div>
+
+<h2 class="group-title">myVersion <span class="count">24 plugins</span></h2>
 
 <div class="grid">
 
@@ -280,6 +303,327 @@
     <div class="card-desc">Makes the IITC bookmark star bigger on mobile for easier tapping.</div>
     <div class="url-row">
       <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_star-resize.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Trails Overlay</div>
+    <div class="card-desc">Hiking/biking trail overlay that sits on top of ANY base layer. Live OSM (Overpass) by default, NJDEP static optional. Settings panel: use-type filter, color/opacity/weight, adjustable glow, start/end trailhead markers.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_nj-trails.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">IITC plugin: User Location Skins (add-on)</div>
+    <div class="card-desc">Add selectable shapes/icons for the user-location marker</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_user-location-change.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Portal Interaction Logger</div>
+    <div class="card-desc">Log agent actions within a radius and export driving distance/times via OSRM; checks for potential spoofing by comparing driving distance to straight-line distance. Logs captures, deployments, links, and fields for Resistance agents. Exportable as CSV.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/PortalInteractionLogger.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+</div>
+
+<h2 class="group-title">IITC-Community <span class="count">32 plugins</span></h2>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="card-name">Backup/restore all data</div>
+    <div class="card-desc">With this plugin you can backup all your localstorage data, so you can save it to a text file, and you can also restore all data. This can be usefull to transfer your settings to another device, or to make a backup before reinstalling IITC. You can also view or delete stored data.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/backup-restore-alldata.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Bannergress: Add-on</div>
+    <div class="card-desc">Add a lot of extra non-standard functionality. Read the About info for all details. Filters for Done and To-Do banners, on the Map and Browse page (Sign in required). Filter Offline or Online banners from the Browse list. !!! Be aware that using these Plugin Filters will transfer very large amounts of Bannergress data !!!</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/bannergress-plugin-addon.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Cache visible portals</div>
+    <div class="card-desc">Cache the data of visible portals and use this to populate the map when possible</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/cache-portals.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Check Point Timer</div>
+    <div class="card-desc">Add to the sidebar a countdown timer to next checkpoint.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/check-point-timer.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">COMM Filter Tab</div>
+    <div class="card-desc">Show virus in the regular Comm and add a new tab with portal/player name filter and event type filter.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/comm-filter-tab.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Console log</div>
+    <div class="card-desc">Display the Console log in a window, captures console.log and console.warn. Execute Javascript commands with the eval field, results are displayed with JSON.stringify formatting</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/consolelog.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Decay Calculator</div>
+    <div class="card-desc">Estimate the portal decaying.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/decay-calculator.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Draw Tools Replace Portal</div>
+    <div class="card-desc">Quickly replace one portal with another in Draw Tools</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/dt-replace-portal%20%281%29.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Favorite portal details</div>
+    <div class="card-desc">Quickly show a list of details for your favorite list of portals.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/favorite-portal-details.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Filter Comms for MU and more</div>
+    <div class="card-desc">Filter the &#x27;all&#x27; comms pane, options to show only created Control Fields and their MUs, filter for capture, deploy, link, destroy or drone actions, filter faction or public chat, or filter all actions by faction</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/filter-comms.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Follow Mode Add-on</div>
+    <div class="card-desc">Use smoothed, heading-up, IITC user-location follow movement.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/follow-mode.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Glympse</div>
+    <div class="card-desc">View a Glympse tag directly on the Intel map.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/glympsemap.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Highlight almost-8 portals</div>
+    <div class="card-desc">Find portals that are 1/2/3 resonators to level 8. Makes its own requests; use with caution.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/highlight-7miss1.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">IMATTC</div>
+    <div class="card-desc">Ingress Mission Authoring Tool Total Conversion, adding categories for missions, show banner preview, export json, download images, and more.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/imattc.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Ingress Icons</div>
+    <div class="card-desc">Bring ameba64/ingress-items icons into IITC</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/ingress-icons.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Ingress Inventory Overview (based on Ingress Live Inventory from Freamstern)</div>
+    <div class="card-desc">View inventory and shows portals you have keys from</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/inventory-overview.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">KuKuInventory</div>
+    <div class="card-desc">Display inventory information</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/inventory.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Inventory Parser</div>
+    <div class="card-desc">Parse Inventory from Ingress</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/inventoryParser.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Keep all data</div>
+    <div class="card-desc">Use the layer selector to toggle Keep all portals and Keep all links, to keep all out of view portals and links loaded (be aware that currently destroyed links are not removed when these options are switched on)</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/keepalldata.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Last Action Timestamp</div>
+    <div class="card-desc">Estimate the portal decaying.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/last-action-timestamp.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Live Inventory</div>
+    <div class="card-desc">Show current in-game inventory. Requires CORE subscription. Fork by DanielOnDiordna https://github.com/DanielOndiordna/IngressLiveInventory extras: menu buttons, refresh feedback, portals list key count, capsule view, keys in capsule view on portals, zoom keys, draw bookmarks.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/liveInventory.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Load more COMMS history</div>
+    <div class="card-desc">Load more COMMS history without scrolling back, usefull for other plugins</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/loadmorecommshistory.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Mobile improvements</div>
+    <div class="card-desc">Add some improvements for IITC mobile, such as a close button for the portal details/info screen, a full screen button.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/mobileimprovements.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">MUs Tab</div>
+    <div class="card-desc">Add a MUs tab scoring the MU</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/muTab.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Onscreen Portal Details</div>
+    <div class="card-desc">Show portal info about resonators and mods for the selected portal directly on the map.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/onscreenportaldetails.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Player Inventory</div>
+    <div class="card-desc">View inventory and highlight portals with keys at any zoom. Can be used with the official plugins Keys and Keys on map to show the number of keys on the map.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/player-inventory.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Poly Counts 2</div>
+    <div class="card-desc">Counts portals by level and faction inside polygons or search result.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/poly-counts2.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Portal Detail Mods</div>
+    <div class="card-desc">Show Mod Pictures in Portal Details</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/portaldetailsmod.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Scanner link-copy</div>
+    <div class="card-desc">Adds scanner link (copy mode) to IITC</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/scanner-link-copy.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Scanner link</div>
+    <div class="card-desc">Adds scanner link to IITC</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/scanner-link.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">See More</div>
+    <div class="card-desc">See more portals and links when zooming out: zoom level all links changes to all portals, zoom level links&gt;300m changes to all links. Beware: This plugin will cause slightly more data usage when zooming out.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/see-more.user.js</div>
+      <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-name">Hide portals that aren&#x27;t fully deployed.</div>
+    <div class="card-desc">Hides any portal that doesn&#x27;t have 8 resonators.</div>
+    <div class="url-row">
+      <div class="url-box">https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/IITC-Community/wolf-deployed-highlighter.user.js</div>
       <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
     </div>
   </div>

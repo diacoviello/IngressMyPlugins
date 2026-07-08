@@ -46,6 +46,20 @@
       border-radius: 10px;
       padding: 1px 8px;
     }
+    .section-copy-btn {
+      margin-left: auto;
+      padding: 3px 12px;
+      background: #0f3460;
+      color: #00d4ff;
+      border: 1px solid #00d4ff;
+      border-radius: 4px;
+      font-size: 0.6em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .section-copy-btn:hover { background: #00d4ff; color: #1a1a2e; }
+    .section-copy-btn.copied { background: #00d4ff; color: #1a1a2e; }
 
     .card {
       background: #16213e;
@@ -56,6 +70,7 @@
       flex-direction: column;
       gap: 6px;
       position: relative;
+      cursor: pointer;
       transition: border-color 0.15s, background 0.15s;
     }
     .card.selected { border-color: #00d4ff; background: #17293f; }
@@ -162,7 +177,7 @@
   <strong>Stop using local file paths</strong> — replace any <code style="background:#0d1b2e;padding:1px 5px;border-radius:3px">file://</code> entries with the GitHub URL below for the same plugin.
 </div>
 
-<h2 class="group-title">myVersion <span class="count">24 plugins</span></h2>
+<h2 class="group-title">myVersion <span class="count">24 plugins</span><button class="section-copy-btn" onclick="copySection(this)">Copy All In Section</button></h2>
 
 <div class="grid">
 
@@ -384,7 +399,7 @@
 
 </div>
 
-<h2 class="group-title">IITC-Community <span class="count">32 plugins</span></h2>
+<h2 class="group-title">IITC-Community <span class="count">32 plugins</span><button class="section-copy-btn" onclick="copySection(this)">Copy All In Section</button></h2>
 
 <div class="grid">
 
@@ -703,6 +718,12 @@ document.querySelectorAll('.card').forEach(card => {
     updateSelectionBar();
   });
   card.insertBefore(checkbox, card.firstChild);
+
+  card.addEventListener('click', (e) => {
+    if (e.target === checkbox || e.target.classList.contains('copy-btn') || e.target.classList.contains('url-box')) return;
+    checkbox.checked = !checkbox.checked;
+    checkbox.dispatchEvent(new Event('change'));
+  });
 });
 
 function getSelectedCards() {
@@ -725,6 +746,18 @@ function clearSelection() {
     cb.closest('.card').classList.remove('selected');
   });
   updateSelectionBar();
+}
+
+function copySection(btn) {
+  const grid = btn.closest('.group-title').nextElementSibling;
+  const urls = Array.from(grid.querySelectorAll('.url-box')).map(el => el.textContent.trim());
+  if (urls.length === 0) return;
+  navigator.clipboard.writeText(urls.join('\n')).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+  });
 }
 
 function copyAllSelected() {

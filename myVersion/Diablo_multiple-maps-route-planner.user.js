@@ -99,11 +99,10 @@ version 1.0.0.20220407.231800
 
     self.settings={
         origin: 'mylocation',
-        routebackgroundcolor: '#7c118d',
         routeforegroundcolor: '#b86ec7',
         routeforegroundweight: 5,
         routeforegroundopacity: 1,
-        routebackgroundweight: 7,
+        routebackgroundcolor: '#7c118d',routebackgroundweight: 7,
         routebackgroundopacity: 3,
         showchars: true,
         travelmode: '',
@@ -919,6 +918,11 @@ version 1.0.0.20220407.231800
         routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
         routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
 
+        let routebackgroundweightvalue=container.querySelector( `span[name=routebackgroundweight-value]` );
+        let routebackgroundopacityvalue=container.querySelector( `span[name=routebackgroundopacity-value]` );
+        routebackgroundweightvalue.innerText=self.settings.routebackgroundweight;
+        routebackgroundopacityvalue.innerText=Math.round( self.settings.routebackgroundopacity*100 );
+
         container.querySelector( `input[name=routeforegroundcolor-input]` ).value=self.settings.routeforegroundcolor;
         container.querySelector( `input[name=routeforegroundcolor-input]` ).addEventListener( 'input', function( e ) {
             self.settings.routeforegroundcolor=this.value;
@@ -942,26 +946,25 @@ version 1.0.0.20220407.231800
         }, false );
 
         container.querySelector( `input[name=routebackgroundcolor-input]` ).value=self.settings.routebackgroundcolor;
-        container.querySelector( `input[name=routebackgroundcolor-input]` ).addEventListener( 'input', function( e )
-        {
+        container.querySelector( `input[name=routebackgroundcolor-input]` ).addEventListener( 'input', function( e ) {
             self.settings.routebackgroundcolor=this.value;
             self.storesettings();
-            self.updateRouteForgroundColor();
+            self.updateRouteBackgroundColor();
             self.drawRoute();
         }, false );
-        container.querySelector( `input[name=routeforegroundweight-input]` ).value=self.settings.routeforegroundweight;
-        container.querySelector( `input[name=routeforegroundweight-input]` ).addEventListener( 'input', function( e )
+        container.querySelector( `input[name=routebackgroundweight-input]` ).value=self.settings.routebackgroundweight;
+        container.querySelector( `input[name=routebackgroundweight-input]` ).addEventListener( 'input', function( e )
         {
-            self.settings.routeforegroundweight=parseFloat( this.value );
-            routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
+            self.settings.routebackgroundweight=parseFloat( this.value );
+            routebackgroundweightvalue.innerText=self.settings.routebackgroundweight;
             self.storesettings();
             self.drawRoute();
         }, false );
-        container.querySelector( `input[name=routeforegroundopacity-input]` ).value=self.settings.routeforegroundopacity;
-        container.querySelector( `input[name=routeforegroundopacity-input]` ).addEventListener( 'input', function( e )
+        container.querySelector( `input[name=routebackgroundopacity-input]` ).value=self.settings.routebackgroundopacity;
+        container.querySelector( `input[name=routebackgroundopacity-input]` ).addEventListener( 'input', function( e )
         {
-            self.settings.routeforegroundopacity=parseFloat( this.value );
-            routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
+            self.settings.routebackgroundopacity=parseFloat( this.value );
+            routebackgroundopacityvalue.innerText=Math.round( self.settings.routebackgroundopacity*100 );
             self.storesettings();
             self.drawRoute();
         }, false );
@@ -1119,6 +1122,14 @@ version 1.0.0.20220407.231800
         // initial list
         self.renderRoutesList( container );
     };
+
+    self.updateRouteForgroundColor=function()
+    {
+        // prepared this function, just in case there is a color picker implemented to change the routeforegroundcolor
+        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${ self.id }-selectedwaypoint \{.*?\}`, 's' ), `
+.${ self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routeforegroundcolor }!important;
+}`);
 
     self.updateRouteBackgroundColor=function() {
         // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor

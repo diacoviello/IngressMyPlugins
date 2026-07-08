@@ -219,7 +219,7 @@ function wrapper( plugin_info ) {
 
 	function setupControls() {
 		const link=document.createElement( 'a' );
-		link.textContent='RES Log CSV';
+		link.textContent='SPOOFER LOG';
 		link.style.cursor='pointer';
 		link.addEventListener( 'click', promptAgentAndExport );
 		$( '#toolbox' ).append( link );

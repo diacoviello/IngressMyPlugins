@@ -51,10 +51,22 @@
       background: #16213e;
       border: 1px solid #0f3460;
       border-radius: 8px;
-      padding: 14px 16px;
+      padding: 14px 16px 14px 40px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      position: relative;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .card.selected { border-color: #00d4ff; background: #17293f; }
+    .card-select {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #00d4ff;
     }
     .card-name { font-weight: 600; font-size: 0.95em; color: #00d4ff; }
     .card-desc { font-size: 0.8em; color: #aaa; flex: 1; line-height: 1.4; }
@@ -93,12 +105,48 @@
     }
     .copy-btn:hover { background: #00d4ff; color: #1a1a2e; }
     .copy-btn.copied { background: #00d4ff; color: #1a1a2e; }
+
+    .selection-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translate(-50%, 30px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #16213e;
+      border: 1px solid #00d4ff;
+      border-radius: 999px;
+      padding: 8px 10px 8px 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 100;
+    }
+    .selection-bar.visible { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+    .selection-bar .count-label { font-size: 0.85em; color: #ccc; white-space: nowrap; }
+    .selection-bar button {
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.8em;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #00d4ff;
+      background: #0f3460;
+      color: #00d4ff;
+      transition: background 0.15s, color 0.15s;
+    }
+    .selection-bar button:hover { background: #00d4ff; color: #1a1a2e; }
+    .selection-bar .copy-all-btn.copied { background: #00d4ff; color: #1a1a2e; }
+    .selection-bar .clear-btn { border-color: #555; color: #aaa; }
+    .selection-bar .clear-btn:hover { background: #333; color: #e0e0e0; }
   </style>
 </head>
 <body>
 
 <h1>Diablo IITC Plugins</h1>
-<p class="subtitle">Copy any URL below and paste it into IITC Button as a custom plugin.</p>
+<p class="subtitle">Copy any URL below and paste it into IITC Button as a custom plugin. Check multiple plugins to copy all their URLs at once.</p>
 
 <div class="instructions">
   <strong>How to add a plugin in IITC Button (one-time per device):</strong>
@@ -630,6 +678,12 @@
 
 </div>
 
+<div class="selection-bar" id="selectionBar">
+  <span class="count-label" id="selectionCount">0 selected</span>
+  <button class="copy-all-btn" id="copyAllBtn" onclick="copyAllSelected()">Copy All</button>
+  <button class="clear-btn" onclick="clearSelection()">Clear</button>
+</div>
+
 <script>
 function copyUrl(btn) {
   const url = btn.previousElementSibling.textContent.trim();
@@ -637,6 +691,51 @@ function copyUrl(btn) {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+document.querySelectorAll('.card').forEach(card => {
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'card-select';
+  checkbox.addEventListener('change', () => {
+    card.classList.toggle('selected', checkbox.checked);
+    updateSelectionBar();
+  });
+  card.insertBefore(checkbox, card.firstChild);
+});
+
+function getSelectedCards() {
+  return Array.from(document.querySelectorAll('.card')).filter(
+    card => card.querySelector('.card-select').checked
+  );
+}
+
+function updateSelectionBar() {
+  const selected = getSelectedCards();
+  const bar = document.getElementById('selectionBar');
+  const count = document.getElementById('selectionCount');
+  count.textContent = selected.length === 1 ? '1 selected' : `${selected.length} selected`;
+  bar.classList.toggle('visible', selected.length > 0);
+}
+
+function clearSelection() {
+  document.querySelectorAll('.card-select:checked').forEach(cb => {
+    cb.checked = false;
+    cb.closest('.card').classList.remove('selected');
+  });
+  updateSelectionBar();
+}
+
+function copyAllSelected() {
+  const urls = getSelectedCards().map(card => card.querySelector('.url-box').textContent.trim());
+  if (urls.length === 0) return;
+  const btn = document.getElementById('copyAllBtn');
+  navigator.clipboard.writeText(urls.join('\n')).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
   });
 }
 </script>

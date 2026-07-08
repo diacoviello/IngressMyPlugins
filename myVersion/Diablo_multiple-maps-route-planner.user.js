@@ -103,6 +103,8 @@ version 1.0.0.20220407.231800
         routeforegroundcolor: '#b86ec7',
         routeforegroundweight: 5,
         routeforegroundopacity: 1,
+        routebackgroundweight: 7,
+        routebackgroundopacity: 3,
         showchars: true,
         travelmode: '',
         showgooglemapsbutton: true,
@@ -239,8 +241,8 @@ version 1.0.0.20220407.231800
 
         let backgroundline=window.L.geodesicPolyline( latlngs, {
             color: backgroundcolor,
-            opacity: 1,
-            weight: 10,
+            opacity: self.settings.routebackgroundopacity,
+            weight: self.settings.routebackgroundweight,
             background: true,
             interactive: false,
             dashArray: undefined
@@ -250,6 +252,7 @@ version 1.0.0.20220407.231800
         // foregroundpath:
         let foregroundcolor=self.settings.routeforegroundcolor;
         latlngs=[];
+
         for ( let guid in self.waypoints ) {
             let waypoint=self.waypoints[ guid ];
             let ll=[ waypoint.latlng.lat, waypoint.latlng.lng ];
@@ -812,9 +815,11 @@ version 1.0.0.20220407.231800
         <label><input type="radio" name="origin-radio" value="mylocation">Use your location as origin (default)</label><br>
         <label><input type="radio" name="origin-radio" value="firstportal">Use first portal as origin (maps preview modus)</label><br>
         <label><input type="checkbox" name="showchars-checkbox">Show alphabetical characters on waypoints</label><br>
-        <label>Route line color: <input type="color" name="routeforegroundcolor-input"></label><br>
+        <label>Route line color: <input type="color" name="routeforegroundcolor-input"></label>     <label>Route bg-line color: <input type="color" name="routebackgroundcolor-input"></label><br>
         <label>Route line weight: <input type="range" name="routeforegroundweight-input" min="1" max="12" step="1"> <span name="routeforegroundweight-value"></span>px</label><br>
         <label>Route line opacity: <input type="range" name="routeforegroundopacity-input" min="0.1" max="1" step="0.05"> <span name="routeforegroundopacity-value"></span>%</label><br>
+        <label>Route bg-line weight: <input type="range" name="routebackgroundweight-input" min="1" max="12" step="1"> <span name="routebackgroundweight-value"></span>px</label><br>
+        <label>Route bg-line opacity: <input type="range" name="routebackgroundopacity-input" min="0.1" max="1" step="0.05"> <span name="routebackgroundopacity-value"></span>%</label><br>
         <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
         `;
 
@@ -935,6 +940,32 @@ version 1.0.0.20220407.231800
             self.storesettings();
             self.drawRoute();
         }, false );
+
+        container.querySelector( `input[name=routebackgroundcolor-input]` ).value=self.settings.routebackgroundcolor;
+        container.querySelector( `input[name=routebackgroundcolor-input]` ).addEventListener( 'input', function( e )
+        {
+            self.settings.routebackgroundcolor=this.value;
+            self.storesettings();
+            self.updateRouteForgroundColor();
+            self.drawRoute();
+        }, false );
+        container.querySelector( `input[name=routeforegroundweight-input]` ).value=self.settings.routeforegroundweight;
+        container.querySelector( `input[name=routeforegroundweight-input]` ).addEventListener( 'input', function( e )
+        {
+            self.settings.routeforegroundweight=parseFloat( this.value );
+            routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
+            self.storesettings();
+            self.drawRoute();
+        }, false );
+        container.querySelector( `input[name=routeforegroundopacity-input]` ).value=self.settings.routeforegroundopacity;
+        container.querySelector( `input[name=routeforegroundopacity-input]` ).addEventListener( 'input', function( e )
+        {
+            self.settings.routeforegroundopacity=parseFloat( this.value );
+            routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
+            self.storesettings();
+            self.drawRoute();
+        }, false );
+
 
         container.querySelector( `input[name=showgooglemapsbutton-checkbox]` ).checked=self.settings.showgooglemapsbutton;
         container.querySelector( `input[name=showgooglemapsbutton-checkbox]` ).addEventListener( 'change', function( e ) {
@@ -1089,11 +1120,11 @@ version 1.0.0.20220407.231800
         self.renderRoutesList( container );
     };
 
-    self.updateRouteForgroundColor=function() {
-        // prepared this function, just in case there is a color picker implemented to change the routeforegroundcolor
+    self.updateRouteBackgroundColor=function() {
+        // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor
         self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${self.id}-selectedwaypoint \{.*?\}`, 's' ), `
 .${self.id}-selectedwaypoint {
-   background-color: ${self.settings.routeforegroundcolor}!important;
+   background-color: ${self.settings.routebackgroundcolor}!important;
 }`);
     };
 
@@ -1185,6 +1216,9 @@ body.${self.id}-dragging-active * {
 }
 .${self.id}-selectedwaypoint {
    background-color: ${self.settings.routeforegroundcolor}!important;
+}
+.${self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routebackgroundcolor}!important;
 }
 .${self.id}-newwaypoint {
    background-color: white!important;

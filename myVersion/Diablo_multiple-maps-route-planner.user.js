@@ -12,7 +12,8 @@
 // ==/UserScript==
 
 
-function wrapper( plugin_info ) {
+function wrapper ( plugin_info )
+{
     // ensure plugin framework is there, even if iitc is not yet loaded
     if ( typeof window.plugin!=='function' ) window.plugin=function() { };
 
@@ -102,7 +103,7 @@ version 1.0.0.20220407.231800
         routeforegroundcolor: '#b86ec7',
         routeforegroundweight: 5,
         routeforegroundopacity: 1,
-        routebackgroundcolor: '#7c118d',routebackgroundweight: 7,
+        routebackgroundcolor: '#7c118d', routebackgroundweight: 7,
         routebackgroundopacity: 3,
         showchars: true,
         travelmode: '',
@@ -116,84 +117,113 @@ version 1.0.0.20220407.231800
     let iconapplemaps="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAB3RJTUUH6AMEFRwW9k9XXwAAAAlwSFlzAAAewQAAHsEBw2lUUwAAAARnQU1BAACxjwv8YQUAAAMaSURBVHjaVZNdaFxFFMd/M/fe/W67STRhDVKoUZKWYgOuVOoHFlNtrFUkRVGKIoJgwBcpFppSpUEQfFPoi/oi4pMILakY8UVLxURo81xSMNhukrZu3Oxu9u69M+O5d1H0cM/DzNzzm//5GIXYBxunJ7BqdkztGZ+79KL37XU/2eZAxTB96HtuqhUer00Qhl3alYaZ9y9eQbuZM+WzP/inbp861I3NHCg/0gZrFHGUxmNjiJ2hZtYJskEKGOjcrXUxeLgTb108efvks/qdzLuzu9WDfscYutYg/2OinsuSyFoacZta8SbOObbqIU+7w3IY+F3jZv08ufHngqOMqjFqdlWCnAS7fxVEQmmLpB/9n3h52xSdZkj2RoHj5eOsZdfGdSI9IY94IzzqH8BKsO3ankeWTmxoCWC58wcXivNkS9lUSbjRpbzW56fB8qWbVm4zkWIg0HiKHiCKaHa7co/il3iJlWCdI4MH2RXeSxzGqObVWy7aWcBIDbRWrEZ5rt7RGKvY229Zsuf5auM8SohKzv+xvM4xnBnCDy6t45ZF1v4BFsMdvDanuKsAxQCu1TWfPnWU8fwyl1tLKSRRkljbNKlHLbSVm93vm7gtj9cvKDbaML0PTlTlpw68/Z3mjfI0h3NP0I0lJRP/zwVgU/kLpsSdTchKPV4agyMj0B/0IJdXcrzZN8XHgyeo6MG0M4knbU8BiQqNS3v//P2wGcL1P+HVPb158OTMWcfu7H18Nvw+r+yYRKURyEAKwIm0qtlgKA8PVeDJz+HgFzDaL7XwZL0zTruUpJ9RAW/1H+PcPTPsygyjGh8uRrExftTncW1iH8e+8ak1e5Xuy8GXUyGPZL/Gbn+BIMgIRKWeWOTiWDXO/rpgnKtGUpB4dBvBMw/w21pW3gBUh7r4tTPk6h/hb3+MqHIOJ2n8xxa1JDAjzNjXHr7RdFoNxnKr7M2vErX+wqeJvCOC8GeKK1WC+ickD0ZSimXwZnT59P55z+lJT6mFIAiiYqFgS6WSeNEWigWbyXhWBsxqpaxyHZu79V6UvzG1IHuT5XJp/m8iDZjJpoey7gAAAABJRU5ErkJggg=="; // 16x16
     let iconmenu="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAB3RJTUUH5QgWEyMyp0FY2wAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAAKoSURBVHja7Zo/SFxBEMb3GQvFIpoY6yjcgdgmRVKYwlJBSaugYKmNNsYEDAmIYmMEa4OgpYWo2AkKVlqr3IFa+zcWEpvk+Y1vrzm5Y+e4ZVZvfjDsO7hl5/vuvd3ZfWeMoiiKoiiKolQkEefLqVQqymQycTqdfoGPs4hexCthDVeIZcQIcvuH3KJsNht7MSCOY4MBXuNyEdEpLDyfDUQ/TLiMIndZ3DuAfvnVAMXnWEd04w7479qhijnAbMDiiS6bozNcA/qkFZY7R64B9dLqHGjwacCJtDoHjn0aMIm4k1ZYhL82Rz8GYIlZQDMjrbIIM8jxN6cDuw4gUAuMoPmCaJJWbDlDTEH8rwdRHusAugtyJjSieW/CqAT3kNeFzcugDnDuXM0djQYg7ICbwuIf5aUoPFhzAEHzAJGbC0Ih9whwnn+2AfniMWgdmhph7XfI57ZUE9iTIInHQK24HEe0I14KG3CDfHZMsgwecifDUs4DOnC5EoDwR0YgPsOELZ91QJtJ9txvpdUW4BTRiUfgwLUDdy8wH7B4Y3Ob53TgGvBRWmG5c+Qa8OzgGrArnXC5c+QaMGySiSZUTmyOfgzAEkOz66BJlpzQ+EO5US3A6cQqhKjIoHUW7QeTnAd8MvL1AP0Y2yYphI68FkLPsRSu+M2QUumUNAcQoT4ChPftsB3wDZp3JoxD0X3kdZ5vhAulHouPohkzYR2LT8OEhxej3rbD9jzgBy4npBUX4CdM+O7zPICqQNpuSq/9haBXY0OYA5zfDnH3Al8DFk/UIr5xOnANaJZW6ECLTwOupdU5cOXTgCVpdeXOkWsAvRVel1ZYhDXEqDcDsMTQv6/6AzWBxA/YHP0YQH9CxAD0jHUj5hCX0qptDpRLD+VGOUonpCiKoiiKoihPgHtXV96aolVzHAAAAABJRU5ErkJggg==";
 
-    self.restoresettings=function() {
+    self.restoresettings=function()
+    {
         // read stored data in a very safe way:
-        function isObject( element ) {
+        function isObject ( element )
+        {
             return ( typeof element=='object'&&element instanceof Object&&!( element instanceof Array ) );
         }
 
-        function parseSettings( source, target ) {
+        function parseSettings ( source, target )
+        {
             if ( !isObject( source )||!isObject( target ) ) return;
 
-            for ( const key in target ) {
-                if ( key in source ) {
-                    if ( isObject( target[ key ] ) ) {
+            for ( const key in target )
+            {
+                if ( key in source )
+                {
+                    if ( isObject( target[ key ] ) )
+                    {
                         parseSettings( source[ key ], target[ key ] );
-                    } else if ( typeof source[ key ]==typeof target[ key ] ) { // only accept settings from default settings template of same type
+                    } else if ( typeof source[ key ]==typeof target[ key ] )
+                    { // only accept settings from default settings template of same type
                         target[ key ]=source[ key ];
                     }
                 }
             }
         }
 
-        try {
-            if ( Object.keys( localStorage ).includes( self.localstoragesettings ) ) {
+        try
+        {
+            if ( Object.keys( localStorage ).includes( self.localstoragesettings ) )
+            {
                 let storedsettings=JSON.parse( localStorage.getItem( self.localstoragesettings ) );
                 parseSettings( storedsettings, self.settings );
             }
-        } catch ( e ) {
+        } catch ( e )
+        {
             localStorage.removeItem( self.localstoragesettings );
             return false;
         }
     };
-    self.storesettings=function() {
-        try {
+    self.storesettings=function()
+    {
+        try
+        {
             return localStorage.setItem( self.localstoragesettings, JSON.stringify( self.settings ) );
-        } catch ( error ) {
+        } catch ( error )
+        {
             alert( self.title+" - store settings failed\n"+error.toString() );
         }
     };
 
-    self.restoreWaypoints=function() {
+    self.restoreWaypoints=function()
+    {
         // read stored data in a very safe way:
-        try {
-            if ( Object.keys( localStorage ).includes( self.localstoragewaypoints ) ) {
+        try
+        {
+            if ( Object.keys( localStorage ).includes( self.localstoragewaypoints ) )
+            {
                 let data=localStorage.getItem( self.localstoragewaypoints );
                 self.import( data );
             }
-        } catch ( error ) {
+        } catch ( error )
+        {
             alert( self.title+" - Restore waypoints failed\n"+error.toString() );
         }
     };
-    self.storeWaypoints=function() {
-        try {
+    self.storeWaypoints=function()
+    {
+        try
+        {
             return localStorage.setItem( self.localstoragewaypoints, JSON.stringify( self.waypoints ) );
-        } catch ( error ) {
+        } catch ( error )
+        {
             alert( self.title+" - Store waypoints failed\n"+error.toString() );
         }
     };
 
     // restoring saved routes
-    self.restoreRoutes=function() {
-        try {
+    self.restoreRoutes=function()
+    {
+        try
+        {
             const data=localStorage.getItem( self.localstorageroutes );
             if ( data ) self.routes=JSON.parse( data );
         } catch ( e ) { console.warn( self.title, 'could not restore routes', e ); }
     };
-    self.storeRoutes=function() {
-        try {
+    self.storeRoutes=function()
+    {
+        try
+        {
             localStorage.setItem( self.localstorageroutes, JSON.stringify( self.routes ) );
         } catch ( e ) { alert( self.title+' – storing routes failed' ); }
     };
 
-    self.import=function( data ) {
+    self.import=function( data )
+    {
         if ( !data ) return;
-        try {
+        try
+        {
             let waypoints=JSON.parse( data );
-            if ( typeof waypoints=='object'&&!( waypoints instanceof Array ) ) {
+            if ( typeof waypoints=='object'&&!( waypoints instanceof Array ) )
+            {
                 self.waypoints={};
-                for ( const guid in waypoints ) {
-                    if ( waypoints[ guid ]?.latlng?.lat&&waypoints[ guid ]?.latlng?.lng&&waypoints[ guid ]?.name ) {
+                for ( const guid in waypoints )
+                {
+                    if ( waypoints[ guid ]?.latlng?.lat&&waypoints[ guid ]?.latlng?.lng&&waypoints[ guid ]?.name )
+                    {
                         self.waypoints[ guid ]={
                             latlng: {
                                 lat: waypoints[ guid ].latlng.lat,
@@ -204,14 +234,17 @@ version 1.0.0.20220407.231800
                     }
                 }
             }
-        } catch ( error ) {
+        } catch ( error )
+        {
             alert( self.title+" - Import waypoints failed\n"+error.toString() );
         }
     }
 
-    self.drawRoute=function() {
+    self.drawRoute=function()
+    {
         // remove existing route:
-        self.waypointsroutelayer.eachLayer( function( layer ) {
+        self.waypointsroutelayer.eachLayer( function( layer )
+        {
             self.waypointsroutelayer.removeLayer( layer );
         }, this );
 
@@ -219,7 +252,8 @@ version 1.0.0.20220407.231800
         let backgroundcolor=self.settings.routebackgroundcolor;
         let latlngs=[];
 
-        for ( let guid in self.waypoints ) {
+        for ( let guid in self.waypoints )
+        {
             let waypoint=self.waypoints[ guid ];
             let ll=[ waypoint.latlng.lat, waypoint.latlng.lng ];
             latlngs.push( ll );
@@ -252,7 +286,8 @@ version 1.0.0.20220407.231800
         let foregroundcolor=self.settings.routeforegroundcolor;
         latlngs=[];
 
-        for ( let guid in self.waypoints ) {
+        for ( let guid in self.waypoints )
+        {
             let waypoint=self.waypoints[ guid ];
             let ll=[ waypoint.latlng.lat, waypoint.latlng.lng ];
             latlngs.push( ll );
@@ -282,9 +317,11 @@ version 1.0.0.20220407.231800
         } );
         self.waypointsroutelayer.addLayer( foregroundline );
 
-        if ( self.settings.showchars ) {
+        if ( self.settings.showchars )
+        {
             let charcnt='A'.charCodeAt( 0 );
-            for ( let guid in self.waypoints ) {
+            for ( let guid in self.waypoints )
+            {
                 let waypoint=self.waypoints[ guid ];
                 let ll=[ waypoint.latlng.lat, waypoint.latlng.lng ];
 
@@ -304,110 +341,133 @@ version 1.0.0.20220407.231800
         }
     };
 
-    self.getGoogleMapsLink=function() {
+    self.getGoogleMapsLink=function()
+    {
         let link="https://www.google.com/maps/dir/?api=1"; // maps.google.com did not work on android
         let latlngwaypoints=[];
-        for ( let guid in self.waypoints ) {
+        for ( let guid in self.waypoints )
+        {
             let latlng=self.waypoints[ guid ].latlng;
             latlngwaypoints.push( latlng.lat+","+latlng.lng );
         }
-        if ( !latlngwaypoints.length&&window.selectedPortal ) {
+        if ( !latlngwaypoints.length&&window.selectedPortal )
+        {
             let latlng=window.portals[ window.selectedPortal ].getLatLng();
             latlngwaypoints.push( latlng.lat+","+latlng.lng );
         }
-        if ( latlngwaypoints.length>0 ) {
+        if ( latlngwaypoints.length>0 )
+        {
             link+='&destination='+latlngwaypoints.pop(); // only=first=last
         }
-        if ( latlngwaypoints.length>0&&self.settings.origin=='firstportal' ) {
+        if ( latlngwaypoints.length>0&&self.settings.origin=='firstportal' )
+        {
             link+='&origin='+latlngwaypoints.shift();
         }
-        if ( self.settings.travelmode ) {
+        if ( self.settings.travelmode )
+        {
             link+='&travelmode='+self.settings.travelmode;
         }
-        if ( latlngwaypoints.length>0 ) {
+        if ( latlngwaypoints.length>0 )
+        {
             link+='&waypoints='+latlngwaypoints.join( '|' ).replaceAll( ',', '%2C' ).replaceAll( '|', '%7C' );
         }
         return link;
     };
-    self.getAppleMapsLink=function() {
+    self.getAppleMapsLink=function()
+    {
         let link="https://maps.apple.com/?";
 
         let latlngwaypoints=[];
-        for ( let guid in self.waypoints ) {
+        for ( let guid in self.waypoints )
+        {
             let latlng=self.waypoints[ guid ].latlng;
-            latlngwaypoints.push( `daddr=${latlng.lat},${latlng.lng}` );
+            latlngwaypoints.push( `daddr=${ latlng.lat },${ latlng.lng }` );
         }
-        if ( !latlngwaypoints.length&&window.selectedPortal ) {
+        if ( !latlngwaypoints.length&&window.selectedPortal )
+        {
             let latlng=window.portals[ window.selectedPortal ].getLatLng();
-            latlngwaypoints.push( `daddr=${latlng.lat},${latlng.lng}` );
+            latlngwaypoints.push( `daddr=${ latlng.lat },${ latlng.lng }` );
         }
         // dirflg d (by car) w (by foot) r (by public transit)
-        if ( self.settings.travelmode ) { // driving,walking,bicycling,transit
+        if ( self.settings.travelmode )
+        { // driving,walking,bicycling,transit
             link+='dirflg='+self.settings.travelmode.substr( 0, 1 );
         }
-        if ( latlngwaypoints.length>0&&self.settings.origin=='firstportal' ) {
+        if ( latlngwaypoints.length>0&&self.settings.origin=='firstportal' )
+        {
             if ( link.substr( -1 )!='?' ) link+='&';
             link+=latlngwaypoints.shift().replace( 'daddr', 'saddr' );
         }
-        if ( latlngwaypoints.length>0 ) {
+        if ( latlngwaypoints.length>0 )
+        {
             if ( link.substr( -1 )!='?' ) link+='&';
             link+=latlngwaypoints.join( '&' );
         }
         return link;
     };
 
-    self.highlightDialogPortal=function( data ) {
-        let waypointsdiv=document.querySelector( `div[name=${self.id}-waypoints-div]` )||document.querySelector( `div[name=${self.id}-waypoints-edit-div]` );
+    self.highlightDialogPortal=function( data )
+    {
+        let waypointsdiv=document.querySelector( `div[name=${ self.id }-waypoints-div]` )||document.querySelector( `div[name=${ self.id }-waypoints-edit-div]` );
         if ( !waypointsdiv ) return;
-        waypointsdiv.querySelector( `.${self.id}-selectedportalrow` )?.classList.remove( `${self.id}-selectedportalrow` ); // remove formatting if any found
-        if ( window.selectedPortal ) waypointsdiv.querySelector( `a[guid="${window.selectedPortal}"]` )?.classList.add( `${self.id}-selectedportalrow` ); // add formatting if guid found
+        waypointsdiv.querySelector( `.${ self.id }-selectedportalrow` )?.classList.remove( `${ self.id }-selectedportalrow` ); // remove formatting if any found
+        if ( window.selectedPortal ) waypointsdiv.querySelector( `a[guid="${ window.selectedPortal }"]` )?.classList.add( `${ self.id }-selectedportalrow` ); // add formatting if guid found
     };
 
-    self.updateMenu=function() {
-        let waypointsdiv=document.querySelector( `div[name=${self.id}-waypoints-div]` )||document.querySelector( `div[name=${self.id}-waypoints-edit-div]` );
-        let editmodus=document.querySelector( `div[name=${self.id}-waypoints-edit-div]` );
-        if ( waypointsdiv ) {
-            while ( waypointsdiv.childElementCount>0 ) { // clear old rows
+    self.updateMenu=function()
+    {
+        let waypointsdiv=document.querySelector( `div[name=${ self.id }-waypoints-div]` )||document.querySelector( `div[name=${ self.id }-waypoints-edit-div]` );
+        let editmodus=document.querySelector( `div[name=${ self.id }-waypoints-edit-div]` );
+        if ( waypointsdiv )
+        {
+            while ( waypointsdiv.childElementCount>0 )
+            { // clear old rows
                 waypointsdiv.childNodes[ 0 ].remove();
             }
 
             // drag-and-drop reordering (works with both mouse and touch via pointer events)
             let dragstate=null;
-            function rowAfterPointer( y ) { // the row the dragged one should be inserted before, or null for the end
+            function rowAfterPointer ( y )
+            { // the row the dragged one should be inserted before, or null for the end
                 let after=null;
                 let closestoffset=Number.NEGATIVE_INFINITY;
-                for ( let row of waypointsdiv.querySelectorAll( `.${self.id}-waypoints-row` ) ) {
+                for ( let row of waypointsdiv.querySelectorAll( `.${ self.id }-waypoints-row` ) )
+                {
                     if ( row===dragstate.row ) continue;
                     let box=row.getBoundingClientRect();
                     let offset=y-box.top-box.height/2;
-                    if ( offset<0&&offset>closestoffset ) {
+                    if ( offset<0&&offset>closestoffset )
+                    {
                         closestoffset=offset;
                         after=row;
                     }
                 }
                 return after;
             }
-            function onDragMove( e ) {
+            function onDragMove ( e )
+            {
                 if ( !dragstate ) return;
                 e.preventDefault();
                 let after=rowAfterPointer( e.clientY );
                 if ( after==null ) waypointsdiv.appendChild( dragstate.row );
                 else waypointsdiv.insertBefore( dragstate.row, after );
             }
-            function endDrag() {
+            function endDrag ()
+            {
                 if ( !dragstate ) return;
                 document.removeEventListener( 'pointermove', onDragMove );
                 document.removeEventListener( 'pointerup', endDrag );
                 document.removeEventListener( 'pointercancel', endDrag );
-                dragstate.row.classList.remove( `${self.id}-dragging` );
-                document.body.classList.remove( `${self.id}-dragging-active` );
+                dragstate.row.classList.remove( `${ self.id }-dragging` );
+                document.body.classList.remove( `${ self.id }-dragging-active` );
                 dragstate=null;
 
                 // rebuild the waypoints object in the new (DOM) order:
-                let orderedguids=[ ...waypointsdiv.querySelectorAll( `.${self.id}-waypoints-row` ) ].map( ( row ) => row.getAttribute( 'guid' ) );
+                let orderedguids=[ ...waypointsdiv.querySelectorAll( `.${ self.id }-waypoints-row` ) ].map( ( row ) => row.getAttribute( 'guid' ) );
                 let source={ ...self.waypoints };
                 self.waypoints={};
-                for ( let guid of orderedguids ) {
+                for ( let guid of orderedguids )
+                {
                     if ( guid in source ) self.waypoints[ guid ]=source[ guid ];
                 }
                 self.storeWaypoints();
@@ -418,21 +478,24 @@ version 1.0.0.20220407.231800
 
             let charcnt='A'.charCodeAt( 0 );
             let cnt=0;
-            for ( let guid in self.waypoints ) {
+            for ( let guid in self.waypoints )
+            {
                 let portalrow=waypointsdiv.appendChild( document.createElement( 'div' ) );
-                portalrow.className=`${self.id}-waypoints-row`;
+                portalrow.className=`${ self.id }-waypoints-row`;
                 portalrow.setAttribute( 'guid', guid );
 
-                if ( editmodus ) {
+                if ( editmodus )
+                {
                     let draghandle=portalrow.appendChild( document.createElement( 'span' ) );
-                    draghandle.className=`${self.id}-waypoints-drag-handle`;
+                    draghandle.className=`${ self.id }-waypoints-drag-handle`;
                     draghandle.innerHTML='&#x2630;'; // ☰ grab handle
                     draghandle.title='Drag to reorder';
-                    draghandle.addEventListener( 'pointerdown', function( e ) {
+                    draghandle.addEventListener( 'pointerdown', function( e )
+                    {
                         e.preventDefault();
                         dragstate={ row: portalrow };
-                        portalrow.classList.add( `${self.id}-dragging` );
-                        document.body.classList.add( `${self.id}-dragging-active` );
+                        portalrow.classList.add( `${ self.id }-dragging` );
+                        document.body.classList.add( `${ self.id }-dragging-active` );
                         try { draghandle.setPointerCapture( e.pointerId ); } catch ( err ) { } // helps keep touch gestures on the handle
                         // listen on document so moves are tracked even when the pointer leaves the small handle
                         document.addEventListener( 'pointermove', onDragMove );
@@ -442,30 +505,35 @@ version 1.0.0.20220407.231800
                 }
 
                 let waypointchar=portalrow.appendChild( document.createElement( 'span' ) );
-                waypointchar.className=`${self.id}-waypoints-row-char`;
+                waypointchar.className=`${ self.id }-waypoints-row-char`;
                 waypointchar.innerText=String.fromCharCode( charcnt );
                 let a=portalrow.appendChild( document.createElement( 'a' ) );
-                a.className=`${self.id}-waypoints-row-link`;
+                a.className=`${ self.id }-waypoints-row-link`;
                 a.setAttribute( 'href', '#' );
                 a.setAttribute( 'guid', guid );
                 a.innerText=self.waypoints[ guid ].name;
-                a.addEventListener( 'click', function( e ) {
+                a.addEventListener( 'click', function( e )
+                {
                     e.preventDefault();
                     let position=new window.L.LatLng( self.waypoints[ guid ].latlng.lat, self.waypoints[ guid ].latlng.lng );
-                    if ( guid in window.portals ) {
+                    if ( guid in window.portals )
+                    {
                         if ( !window.map.getBounds().contains( position ) ) window.map.setView( position );
                         window.renderPortalDetails( guid );
-                    } else {
+                    } else
+                    {
                         window.selectPortalByLatLng( position );
                     }
                     return false;
                 }, false );
 
-                if ( editmodus ) {
+                if ( editmodus )
+                {
                     let deletebutton=portalrow.appendChild( document.createElement( 'input' ) );
                     deletebutton.type='button';
                     deletebutton.value='X';
-                    deletebutton.addEventListener( 'click', function( e ) {
+                    deletebutton.addEventListener( 'click', function( e )
+                    {
                         if ( !confirm( 'Are you sure you want to delete waypoint '+waypointchar.innerText+"?\n\n"+self.waypoints[ guid ].name ) ) return;
                         delete ( self.waypoints[ guid ] );
                         self.storeWaypoints();
@@ -478,7 +546,8 @@ version 1.0.0.20220407.231800
                 charcnt++;
                 cnt++;
             }
-            if ( !cnt ) {
+            if ( !cnt )
+            {
                 let portalrow=waypointsdiv.appendChild( document.createElement( 'div' ) );
                 portalrow.innerHTML='There are no waypoints defined.<br>\nSelect a portal and mark as a waypoint from the controls toolbar.';
             }
@@ -487,9 +556,11 @@ version 1.0.0.20220407.231800
     };
 
     // pull in every GUID from every bookmarks‐folder
-    self.importAllBookmarks=function() {
+    self.importAllBookmarks=function()
+    {
         const bm=window.plugin.bookmarks;
-        if ( !bm?.bkmrksObj?.portals ) {
+        if ( !bm?.bkmrksObj?.portals )
+        {
             return alert( 'Bookmarks data not found' );
         }
 
@@ -497,10 +568,12 @@ version 1.0.0.20220407.231800
         this.waypoints={};
 
         // each folder under portals:
-        Object.values( bm.bkmrksObj.portals ).forEach( folder => {
+        Object.values( bm.bkmrksObj.portals ).forEach( folder =>
+        {
             if ( !folder.bkmrk ) return;
             // folder.bkmrk is an object: { id123: {guid,latlng,label}, … }
-            Object.values( folder.bkmrk ).forEach( item => {
+            Object.values( folder.bkmrk ).forEach( item =>
+            {
                 // parse the stored "latlng" string into numbers
                 const [ lat, lng ]=item.latlng.split( ',' ).map( Number );
                 this.waypoints[ item.guid ]={
@@ -518,14 +591,17 @@ version 1.0.0.20220407.231800
 
 
     // a O(n²) nearest-neighbor TSP
-    self.optimizeNN=function( points ) {
+    self.optimizeNN=function( points )
+    {
         if ( !points.length ) return [];
         const tour=[ points.shift() ];
-        while ( points.length ) {
+        while ( points.length )
+        {
             const last=tour[ tour.length-1 ];
             // find the closest remaining
             let idx=0, minD=last.distanceTo( points[ 0 ] );
-            points.forEach( ( pt, i ) => {
+            points.forEach( ( pt, i ) =>
+            {
                 const d=last.distanceTo( pt );
                 if ( d<minD ) { minD=d; idx=i; }
             } );
@@ -534,7 +610,8 @@ version 1.0.0.20220407.231800
         return tour;
     };
 
-    self.importAndOptimizeNN=function() {
+    self.importAndOptimizeNN=function()
+    {
         self.importAllBookmarks();
         // clone the array so you’re not consuming the original
         const pts=self.waypoints.slice();
@@ -543,7 +620,8 @@ version 1.0.0.20220407.231800
         self.drawRoute();
     };
 
-    self.optimizeViaGoogle=function() {
+    self.optimizeViaGoogle=function()
+    {
         if ( !self.waypoints.length ) return;
         // ensure the Google API is loaded and directionsService exists
         const ds=new google.maps.DirectionsService();
@@ -558,7 +636,8 @@ version 1.0.0.20220407.231800
             waypoints: waypts,
             travelMode: google.maps.TravelMode.DRIVING,
             optimizeWaypoints: true
-        }, ( resp, status ) => {
+        }, ( resp, status ) =>
+        {
             if ( status!=='OK' ) return alert( 'Google route failed: '+status );
             // resp.routes[0].waypoint_order is the optimal order of your middle stops
             const order=resp.routes[ 0 ].waypoint_order;
@@ -573,22 +652,23 @@ version 1.0.0.20220407.231800
         } );
     };
 
-    self.about=function() {
+    self.about=function()
+    {
         let container=document.createElement( 'div' );
         container.innerHTML=`
         <input type="hidden" autofocus>
-        <p>Thank you for using the ${self.title} plugin.<br>
+        <p>Thank you for using the ${ self.title } plugin.<br>
         With this plugin you can plan a route with multiple portals and open Google Maps to start your navigation.</p>
-        <p>Start by selecting your first destination portal. Click the <img src="${iconplus}" width="16" height="16" style="background-color: white;"> on the control buttons toolbar. A route marker will be drawn.<br>
-        Select your next destination portal and click the <img src="${iconplus}" width="16" height="16" style="background-color: white;"> button again. A route will be drawn.<br>
-        Click the <img src="${iconmin}" width="16" height="16" style="background-color: white;"> button to remove a selected waypoint.<br>
-        Continue with more portals, up to ${self.maxwaypoints} portals.<br>
-        Click on the <img src="${icongooglemaps}" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Google Maps</p>
-        Click on the <img src="${iconapplemaps}" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Apple Maps. Be aware that routes with waypoints are only support from iOS 16 and up!</p>
+        <p>Start by selecting your first destination portal. Click the <img src="${ iconplus }" width="16" height="16" style="background-color: white;"> on the control buttons toolbar. A route marker will be drawn.<br>
+        Select your next destination portal and click the <img src="${ iconplus }" width="16" height="16" style="background-color: white;"> button again. A route will be drawn.<br>
+        Click the <img src="${ iconmin }" width="16" height="16" style="background-color: white;"> button to remove a selected waypoint.<br>
+        Continue with more portals, up to ${ self.maxwaypoints } portals.<br>
+        Click on the <img src="${ icongooglemaps }" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Google Maps</p>
+        Click on the <img src="${ iconapplemaps }" width="16" height="16" style="background-color: white;"> Maps marker to open the route in Apple Maps. Be aware that routes with waypoints are only support from iOS 16 and up!</p>
         <p>From the menu you can edit the waypoints list. You can drag waypoints to reorder them, or delete a single waypoint. You can also clear all waypoints.</p>
         <p>You can also share the Maps URL to share or store for later use.</p>
         <p>Share this plugin with this link: <a href="https://softspot.nl/ingress/#iitc-plugin-maps-route-planner.user.js" target="_blank">Softspot IITC plugins</a> to get the latest version.</p>
-        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
+        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${ self.title } version ${ self.version } by ${ self.author }</div>
         `;
         window.dialog( {
             html: container,
@@ -604,15 +684,18 @@ version 1.0.0.20220407.231800
         } );
     };
 
-    self.timestamp=function() {
-        function leadingzero( value ) {
+    self.timestamp=function()
+    {
+        function leadingzero ( value )
+        {
             return ( '0'+value ).slice( -2 );
         }
         let d=new Date();
         return d.getFullYear()+leadingzero( d.getDate() )+leadingzero( d.getMonth() )+'_'+leadingzero( d.getHours() )+leadingzero( d.getMinutes() );
     };
 
-    self.transfermenu=function() {
+    self.transfermenu=function()
+    {
         let container=document.createElement( 'div' );
         container.className=self.id+'-transfer-menu';
         container.innerHTML=`
@@ -626,52 +709,71 @@ version 1.0.0.20220407.231800
         <input type="button" name="zoom-button" value="Zoom to waypoints"><br>
         <input type="button" name="edit-button" value="Edit waypoints"><br>
         <input type="button" name="clear-button" value="Clear all waypoints">
-        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
+        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${ self.title } version ${ self.version } by ${ self.author }</div>
         `;
 
-        container.querySelector( `input[name=share-googlemaps-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=share-googlemaps-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getGoogleMapsLink();
-            if ( typeof android!=='undefined'&&android?.shareString ) {
+            if ( typeof android!=='undefined'&&android?.shareString )
+            {
                 return android.shareString( link );
-            } else if ( navigator?.clipboard?.writeText ) {
-                navigator.clipboard.writeText( link ).then( () => {
+            } else if ( navigator?.clipboard?.writeText )
+            {
+                navigator.clipboard.writeText( link ).then( () =>
+                {
                     alert( 'Google Maps URL copied to clipboard' );
-                } ).catch( () => {
+                } ).catch( () =>
+                {
                     alert( "I'm sorry, link copy failed (does not work on mobile)" );
                 } );
-            } else {
+            } else
+            {
                 alert( "I'm sorry, link copy not available" );
             }
         }, false );
-        container.querySelector( `input[name=share-applemaps-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=share-applemaps-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getAppleMapsLink();
-            if ( typeof android!=='undefined'&&android?.shareString ) {
+            if ( typeof android!=='undefined'&&android?.shareString )
+            {
                 return android.shareString( link );
-            } else if ( navigator?.clipboard?.writeText ) {
-                navigator.clipboard.writeText( link ).then( () => {
+            } else if ( navigator?.clipboard?.writeText )
+            {
+                navigator.clipboard.writeText( link ).then( () =>
+                {
                     alert( 'Apple Maps URL copied to clipboard' );
-                } ).catch( () => {
+                } ).catch( () =>
+                {
                     alert( "I'm sorry, link copy failed (does not work on mobile)" );
                 } );
-            } else {
+            } else
+            {
                 alert( "I'm sorry, link copy not available" );
             }
         }, false );
-        container.querySelector( `input[name=copy-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=copy-button]` ).addEventListener( 'click', function( e )
+        {
             let data=JSON.stringify( self.waypoints );
-            if ( typeof android!=='undefined'&&android?.shareString ) {
+            if ( typeof android!=='undefined'&&android?.shareString )
+            {
                 return android.shareString( data );
-            } else if ( navigator?.clipboard?.writeText ) {
-                navigator.clipboard.writeText( data ).then( () => {
+            } else if ( navigator?.clipboard?.writeText )
+            {
+                navigator.clipboard.writeText( data ).then( () =>
+                {
                     alert( 'Waypoints JSON data copied to clipboard' );
-                } ).catch( () => {
+                } ).catch( () =>
+                {
                     alert( "I'm sorry, copy failed (does not work on mobile)" );
                 } );
-            } else {
+            } else
+            {
                 alert( "I'm sorry, copy not available" );
             }
         }, false );
-        container.querySelector( `input[name=paste-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=paste-button]` ).addEventListener( 'click', function( e )
+        {
             let data=prompt( "Paste waypoints JSON data:" );
             if ( !data ) return;
             self.import( data );
@@ -679,43 +781,55 @@ version 1.0.0.20220407.231800
             self.updateControls();
             self.drawRoute();
         }, false );
-        container.querySelector( `input[name=export-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=export-button]` ).addEventListener( 'click', function( e )
+        {
             let filename="IITC-"+self.id+'_waypointsdata_'+self.timestamp()+".json";
             var data=JSON.stringify( self.waypoints );
-            if ( typeof window.saveFile=='function' ) { // iitc-ce method
+            if ( typeof window.saveFile=='function' )
+            { // iitc-ce method
                 window.saveFile( data, filename, "text/plain" ); // "application/json"
-            } else if ( !window.isSmartphone() ) { // pc method
+            } else if ( !window.isSmartphone() )
+            { // pc method
                 let a=document.createElement( 'a' );
                 a.href="data:text/plain;charset=utf-8,"+encodeURIComponent( data ); // text/json
                 a.download=filename;
                 a.click();
-            } else if ( typeof android!=='undefined'&&android&&android.saveFile ) { // iitc-me method
+            } else if ( typeof android!=='undefined'&&android&&android.saveFile )
+            { // iitc-me method
                 android.saveFile( filename, "text/plain", data ); // application/json
-            } else {
+            } else
+            {
                 alert( "I'm sorry, save not available" );
             }
         }, false );
-        container.querySelector( `input[name=import-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=import-button]` ).addEventListener( 'click', function( e )
+        {
             window.L.FileListLoader.loadFiles( { accept: 'application/json,text/plain' } ) // application/json
-                .on( 'load', function( e ) {
-                    try {
+                .on( 'load', function( e )
+                {
+                    try
+                    {
                         self.import( e.reader.result );
                         self.storeWaypoints();
                         self.updateControls();
                         self.drawRoute();
-                    } catch ( e ) {
+                    } catch ( e )
+                    {
                         alert( "I'm sorry, file import failed" );
                     }
                 } );
         }, false );
-        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e )
+        {
             if ( !Object.keys( self.waypoints ).length ) return;
             window.map.fitBounds( self.waypointsroutelayer.getBounds() );
         }, false );
-        container.querySelector( `input[name=edit-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=edit-button]` ).addEventListener( 'click', function( e )
+        {
             self.waypointsmenu();
         }, false );
-        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e )
+        {
             if ( Object.keys( self.waypoints ).length==0 ) return;
             if ( !confirm( 'Are you sure you want to clear all ('+Object.keys( self.waypoints ).length+') waypoints?' ) ) return;
             self.waypoints={};
@@ -736,26 +850,29 @@ version 1.0.0.20220407.231800
         } );
     };
 
-    self.waypointsmenu=function() {
+    self.waypointsmenu=function()
+    {
         let container=document.createElement( 'div' );
         container.innerHTML=`
         <input type="hidden" autofocus>
         Drag the &#x2630; handle to reorder, or delete waypoints:<br>
-        <div name="${self.id}-waypoints-edit-div"></div>
+        <div name="${ self.id }-waypoints-edit-div"></div>
         <input type="button" name="reverse-button" value="Reverse route">
         <input type="button" name="zoom-button" value="Zoom to waypoints"><br>
         <input type="button" name="clear-button" value="Clear all waypoints">
-        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
+        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${ self.title } version ${ self.version } by ${ self.author }</div>
         `;
 
-        container.querySelector( `input[name=reverse-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=reverse-button]` ).addEventListener( 'click', function( e )
+        {
             if ( Object.keys( self.waypoints ).length==0 ) return;
 
             let waypointkeys=Object.keys( self.waypoints );
             waypointkeys=waypointkeys.reverse();
             let source={ ...self.waypoints };
             self.waypoints={};
-            for ( let guid of waypointkeys ) {
+            for ( let guid of waypointkeys )
+            {
                 self.waypoints[ guid ]=source[ guid ];
             }
 
@@ -764,11 +881,13 @@ version 1.0.0.20220407.231800
             self.updateControls();
             self.drawRoute();
         }, false );
-        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e )
+        {
             if ( !Object.keys( self.waypoints ).length ) return;
             window.map.fitBounds( self.waypointsroutelayer.getBounds() );
         }, false );
-        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e )
+        {
             if ( Object.keys( self.waypoints ).length==0 ) return;
             if ( !confirm( 'Are you sure you want to clear all ('+Object.keys( self.waypoints ).length+') waypoints?' ) ) return;
             self.waypoints={};
@@ -795,21 +914,22 @@ version 1.0.0.20220407.231800
         self.drawRoute(); // brings route to top
     }
 
-    self.menu=function() {
+    self.menu=function()
+    {
         let container=document.createElement( 'div' );
         container.className=self.id+'-main-menu';
         container.innerHTML=`
         <input type="hidden" autofocus>
-        Mark portals as waypoints to prepare a route (use max ${self.maxwaypoints} waypoints).<br>
+        Mark portals as waypoints to prepare a route (use max ${ self.maxwaypoints } waypoints).<br>
         Waypoints:
-        <div name="${self.id}-waypoints-div"></div>
+        <div name="${ self.id }-waypoints-div"></div>
         <input type="button" name="route-all-bookmarks" value="Route all bookmarks"><br>
         <input type="button" name="zoom-button" value="Zoom to waypoints"> <input type="button" name="edit-button" value="Edit waypoints"><br>
         <input type="button" name="routes-button" value="Manage saved routes"> <input type="button" name="clear-button" value="Clear all waypoints"><br>
         <label><input type="checkbox" name="showgooglemapsbutton-checkbox">Show Google Maps control button</label><br>
-        <input type="button" name="link-google-button" style="background-image: url(${icongooglemaps}); background-size: 16px; background-repeat: no-repeat; cursor: pointer; padding-left: 16px; vertical-align: middle;" value="Open waypoints route in Google Maps"> <input type="button" name="share-google-button" value="Share Google Maps URL"><br>
+        <input type="button" name="link-google-button" style="background-image: url(${ icongooglemaps }); background-size: 16px; background-repeat: no-repeat; cursor: pointer; padding-left: 16px; vertical-align: middle;" value="Open waypoints route in Google Maps"> <input type="button" name="share-google-button" value="Share Google Maps URL"><br>
         <label><input type="checkbox" name="showapplemapsbutton-checkbox">Show Apple Maps control button</label><br>
-        <input type="button" name="link-apple-button" style="background-image: url(${iconapplemaps}); background-size: 16px; background-repeat: no-repeat; cursor: pointer; padding-left: 16px; vertical-align: middle;" value="Open waypoints route in Apple Maps"> <input type="button" name="share-apple-button" value="Share Apple Maps URL"><br>
+        <input type="button" name="link-apple-button" style="background-image: url(${ iconapplemaps }); background-size: 16px; background-repeat: no-repeat; cursor: pointer; padding-left: 16px; vertical-align: middle;" value="Open waypoints route in Apple Maps"> <input type="button" name="share-apple-button" value="Share Apple Maps URL"><br>
         Travelmode: <select name="travelmode-select"></select><br>
         <label><input type="radio" name="origin-radio" value="mylocation">Use your location as origin (default)</label><br>
         <label><input type="radio" name="origin-radio" value="firstportal">Use first portal as origin (maps preview modus)</label><br>
@@ -819,17 +939,19 @@ version 1.0.0.20220407.231800
         <label>Route line opacity: <input type="range" name="routeforegroundopacity-input" min="0.1" max="1" step="0.05"> <span name="routeforegroundopacity-value"></span>%</label><br>
         <label>Route bg-line weight: <input type="range" name="routebackgroundweight-input" min="1" max="12" step="1"> <span name="routebackgroundweight-value"></span>px</label><br>
         <label>Route bg-line opacity: <input type="range" name="routebackgroundopacity-input" min="0.1" max="1" step="0.05"> <span name="routebackgroundopacity-value"></span>%</label><br>
-        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
+        <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${ self.title } version ${ self.version } by ${ self.author }</div>
         `;
 
         let travelmodeselect=container.querySelector( `select[name=travelmode-select]` );
-        for ( const travelmode of [ '', 'driving', 'walking', 'bicycling', 'transit' ] ) {
+        for ( const travelmode of [ '', 'driving', 'walking', 'bicycling', 'transit' ] )
+        {
             let option=travelmodeselect.appendChild( document.createElement( 'option' ) );
             option.value=travelmode;
             option.text=( !travelmode? 'use relevant mode':travelmode );
             option.selected=( option.value==self.settings.travelmode );
         }
-        travelmodeselect.addEventListener( 'change', function( e ) {
+        travelmodeselect.addEventListener( 'change', function( e )
+        {
             e.preventDefault();
             self.settings.travelmode=this.value;
             self.storesettings();
@@ -837,7 +959,8 @@ version 1.0.0.20220407.231800
 
         container
             .querySelector( 'input[name=route-all-bookmarks]' )
-            .addEventListener( 'click', () => {
+            .addEventListener( 'click', () =>
+            {
                 console.log( '🛣️  Route all bookmarks clicked' );
                 self.importAllBookmarks();
             } );
@@ -845,22 +968,27 @@ version 1.0.0.20220407.231800
         container.querySelector( 'input[name=routes-button]' )
             .addEventListener( 'click', () => self.routesMenu() );
 
-        container.querySelector( `input[name=origin-radio][value='${self.settings.origin}']` ).checked=true;
-        container.querySelectorAll( `input[name=origin-radio]` ).forEach( ( el ) => {
-            el.addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=origin-radio][value='${ self.settings.origin }']` ).checked=true;
+        container.querySelectorAll( `input[name=origin-radio]` ).forEach( ( el ) =>
+        {
+            el.addEventListener( 'click', function( e )
+            {
                 self.settings.origin=this.value;
                 self.storesettings();
                 self.updateMenu();
             }, false )
         } );
-        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=zoom-button]` ).addEventListener( 'click', function( e )
+        {
             if ( !Object.keys( self.waypoints ).length ) return;
             window.map.fitBounds( self.waypointsroutelayer.getBounds() );
         }, false );
-        container.querySelector( `input[name=edit-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=edit-button]` ).addEventListener( 'click', function( e )
+        {
             self.waypointsmenu();
         }, false );
-        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=clear-button]` ).addEventListener( 'click', function( e )
+        {
             if ( Object.keys( self.waypoints ).length==0 ) return;
             if ( !confirm( 'Are you sure you want to clear all ('+Object.keys( self.waypoints ).length+') waypoints?' ) ) return;
             self.waypoints={};
@@ -869,45 +997,60 @@ version 1.0.0.20220407.231800
             self.updateControls();
             self.drawRoute();
         }, false );
-        container.querySelector( `input[name=share-google-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=share-google-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getGoogleMapsLink();
-            if ( typeof android!=='undefined'&&android?.shareString ) {
+            if ( typeof android!=='undefined'&&android?.shareString )
+            {
                 return android.shareString( link );
-            } else if ( navigator?.clipboard?.writeText ) {
-                navigator.clipboard.writeText( link ).then( () => {
+            } else if ( navigator?.clipboard?.writeText )
+            {
+                navigator.clipboard.writeText( link ).then( () =>
+                {
                     alert( 'Google Maps URL copied to clipboard' );
-                } ).catch( () => {
+                } ).catch( () =>
+                {
                     alert( "I'm sorry, link copy failed (does not work on mobile)" );
                 } );
-            } else {
+            } else
+            {
                 alert( "I'm sorry, link copy not available" );
             }
         }, false );
-        container.querySelector( `input[name=link-google-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=link-google-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getGoogleMapsLink();
             window.open( link, '_blank' );
         }, false );
-        container.querySelector( `input[name=share-apple-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=share-apple-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getAppleMapsLink();
-            if ( typeof android!=='undefined'&&android?.shareString ) {
+            if ( typeof android!=='undefined'&&android?.shareString )
+            {
                 return android.shareString( link );
-            } else if ( navigator?.clipboard?.writeText ) {
-                navigator.clipboard.writeText( link ).then( () => {
+            } else if ( navigator?.clipboard?.writeText )
+            {
+                navigator.clipboard.writeText( link ).then( () =>
+                {
                     alert( 'Apple Maps URL copied to clipboard' );
-                } ).catch( () => {
+                } ).catch( () =>
+                {
                     alert( "I'm sorry, link copy failed (does not work on mobile)" );
                 } );
-            } else {
+            } else
+            {
                 alert( "I'm sorry, link copy not available" );
             }
         }, false );
-        container.querySelector( `input[name=link-apple-button]` ).addEventListener( 'click', function( e ) {
+        container.querySelector( `input[name=link-apple-button]` ).addEventListener( 'click', function( e )
+        {
             let link=self.getAppleMapsLink();
             window.open( link, '_blank' );
         }, false );
 
         container.querySelector( `input[name=showchars-checkbox]` ).checked=self.settings.showchars;
-        container.querySelector( `input[name=showchars-checkbox]` ).addEventListener( 'change', function( e ) {
+        container.querySelector( `input[name=showchars-checkbox]` ).addEventListener( 'change', function( e )
+        {
             self.settings.showchars=this.checked;
             self.storesettings();
             self.drawRoute();
@@ -924,21 +1067,24 @@ version 1.0.0.20220407.231800
         routebackgroundopacityvalue.innerText=Math.round( self.settings.routebackgroundopacity*100 );
 
         container.querySelector( `input[name=routeforegroundcolor-input]` ).value=self.settings.routeforegroundcolor;
-        container.querySelector( `input[name=routeforegroundcolor-input]` ).addEventListener( 'input', function( e ) {
+        container.querySelector( `input[name=routeforegroundcolor-input]` ).addEventListener( 'input', function( e )
+        {
             self.settings.routeforegroundcolor=this.value;
             self.storesettings();
             self.updateRouteForgroundColor();
             self.drawRoute();
         }, false );
         container.querySelector( `input[name=routeforegroundweight-input]` ).value=self.settings.routeforegroundweight;
-        container.querySelector( `input[name=routeforegroundweight-input]` ).addEventListener( 'input', function( e ) {
+        container.querySelector( `input[name=routeforegroundweight-input]` ).addEventListener( 'input', function( e )
+        {
             self.settings.routeforegroundweight=parseFloat( this.value );
             routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
             self.storesettings();
             self.drawRoute();
         }, false );
         container.querySelector( `input[name=routeforegroundopacity-input]` ).value=self.settings.routeforegroundopacity;
-        container.querySelector( `input[name=routeforegroundopacity-input]` ).addEventListener( 'input', function( e ) {
+        container.querySelector( `input[name=routeforegroundopacity-input]` ).addEventListener( 'input', function( e )
+        {
             self.settings.routeforegroundopacity=parseFloat( this.value );
             routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
             self.storesettings();
@@ -946,7 +1092,8 @@ version 1.0.0.20220407.231800
         }, false );
 
         container.querySelector( `input[name=routebackgroundcolor-input]` ).value=self.settings.routebackgroundcolor;
-        container.querySelector( `input[name=routebackgroundcolor-input]` ).addEventListener( 'input', function( e ) {
+        container.querySelector( `input[name=routebackgroundcolor-input]` ).addEventListener( 'input', function( e )
+        {
             self.settings.routebackgroundcolor=this.value;
             self.storesettings();
             self.updateRouteBackgroundColor();
@@ -971,23 +1118,29 @@ version 1.0.0.20220407.231800
 
 
         container.querySelector( `input[name=showgooglemapsbutton-checkbox]` ).checked=self.settings.showgooglemapsbutton;
-        container.querySelector( `input[name=showgooglemapsbutton-checkbox]` ).addEventListener( 'change', function( e ) {
+        container.querySelector( `input[name=showgooglemapsbutton-checkbox]` ).addEventListener( 'change', function( e )
+        {
             self.settings.showgooglemapsbutton=this.checked;
             self.storesettings();
-            if ( self.settings.showgooglemapsbutton ) {
-                document.querySelector( `a.googlemapsbutton` ).classList.remove( `${self.id}-hidden` );
-            } else {
-                document.querySelector( `a.googlemapsbutton` ).classList.add( `${self.id}-hidden` );
+            if ( self.settings.showgooglemapsbutton )
+            {
+                document.querySelector( `a.googlemapsbutton` ).classList.remove( `${ self.id }-hidden` );
+            } else
+            {
+                document.querySelector( `a.googlemapsbutton` ).classList.add( `${ self.id }-hidden` );
             }
         }, false );
         container.querySelector( `input[name=showapplemapsbutton-checkbox]` ).checked=self.settings.showapplemapsbutton;
-        container.querySelector( `input[name=showapplemapsbutton-checkbox]` ).addEventListener( 'change', function( e ) {
+        container.querySelector( `input[name=showapplemapsbutton-checkbox]` ).addEventListener( 'change', function( e )
+        {
             self.settings.showapplemapsbutton=this.checked;
             self.storesettings();
-            if ( self.settings.showapplemapsbutton ) {
-                document.querySelector( `a.applemapsbutton` ).classList.remove( `${self.id}-hidden` );
-            } else {
-                document.querySelector( `a.applemapsbutton` ).classList.add( `${self.id}-hidden` );
+            if ( self.settings.showapplemapsbutton )
+            {
+                document.querySelector( `a.applemapsbutton` ).classList.remove( `${ self.id }-hidden` );
+            } else
+            {
+                document.querySelector( `a.applemapsbutton` ).classList.add( `${ self.id }-hidden` );
             }
         }, false );
 
@@ -1007,80 +1160,99 @@ version 1.0.0.20220407.231800
         self.updateMenu();
     };
 
-    self.updateControls=function() {
-        function setnewClass( el, newclass ) {
+    self.updateControls=function()
+    {
+        function setnewClass ( el, newclass )
+        {
             if ( !el ) return false;
             if ( el.classList.contains( newclass ) ) return false;
-            el.classList.remove( `${self.id}-maxwaypoints` );
-            el.classList.remove( `${self.id}-selectportal` );
-            el.classList.remove( `${self.id}-selectedwaypoint` );
-            el.classList.remove( `${self.id}-newwaypoint` );
+            el.classList.remove( `${ self.id }-maxwaypoints` );
+            el.classList.remove( `${ self.id }-selectportal` );
+            el.classList.remove( `${ self.id }-selectedwaypoint` );
+            el.classList.remove( `${ self.id }-newwaypoint` );
             el.classList.add( newclass );
             return true;
         }
 
-        let waypointcontrol=document.querySelector( `.${self.id}-togglewaypoint` );
-        if ( document.querySelector( `.${self.id}-togglewaypoint` ) ) {
-            if ( !window.selectedPortal ) {
-                if ( Object.keys( self.waypoints ).length>=self.maxwaypoints ) {
-                    if ( setnewClass( waypointcontrol, `${self.id}-maxwaypoints` ) ) {
+        let waypointcontrol=document.querySelector( `.${ self.id }-togglewaypoint` );
+        if ( document.querySelector( `.${ self.id }-togglewaypoint` ) )
+        {
+            if ( !window.selectedPortal )
+            {
+                if ( Object.keys( self.waypoints ).length>=self.maxwaypoints )
+                {
+                    if ( setnewClass( waypointcontrol, `${ self.id }-maxwaypoints` ) )
+                    {
                         waypointcontrol.setAttribute( 'title', 'Maximum waypoints' );
-                        document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
+                        document.querySelector( `.${ self.id }-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
                     }
-                } else {
-                    if ( setnewClass( waypointcontrol, `${self.id}-selectportal` ) ) {
+                } else
+                {
+                    if ( setnewClass( waypointcontrol, `${ self.id }-selectportal` ) )
+                    {
                         waypointcontrol.setAttribute( 'title', 'Select a portal first!' );
-                        document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
+                        document.querySelector( `.${ self.id }-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
                     }
                 }
-            } else if ( window.selectedPortal in self.waypoints ) {
-                if ( setnewClass( waypointcontrol, `${self.id}-selectedwaypoint` ) ) {
+            } else if ( window.selectedPortal in self.waypoints )
+            {
+                if ( setnewClass( waypointcontrol, `${ self.id }-selectedwaypoint` ) )
+                {
                     waypointcontrol.setAttribute( 'title', 'Remove waypoint' );
-                    document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconmin );
+                    document.querySelector( `.${ self.id }-togglewaypoint > img` )?.setAttribute( 'src', iconmin );
                 }
-            } else if ( Object.keys( self.waypoints ).length>=self.maxwaypoints ) {
-                if ( setnewClass( waypointcontrol, `${self.id}-maxwaypoints` ) ) {
+            } else if ( Object.keys( self.waypoints ).length>=self.maxwaypoints )
+            {
+                if ( setnewClass( waypointcontrol, `${ self.id }-maxwaypoints` ) )
+                {
                     waypointcontrol.setAttribute( 'title', 'Maximum waypoints' );
-                    document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
+                    document.querySelector( `.${ self.id }-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
                 }
-            } else {
-                if ( setnewClass( waypointcontrol, `${self.id}-newwaypoint` ) ) {
+            } else
+            {
+                if ( setnewClass( waypointcontrol, `${ self.id }-newwaypoint` ) )
+                {
                     waypointcontrol.setAttribute( 'title', 'Add waypoint (\']\')' );
-                    document.querySelector( `.${self.id}-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
+                    document.querySelector( `.${ self.id }-togglewaypoint > img` )?.setAttribute( 'src', iconplus );
                 }
             }
-            document.querySelector( `.${self.id}-total` ).innerText=Object.keys( self.waypoints ).length;
+            document.querySelector( `.${ self.id }-total` ).innerText=Object.keys( self.waypoints ).length;
         }
     }
 
     // helper to redraw list of saved routes
-    self.renderRoutesList=function( container ) {
-        const list=container.querySelector( `div[name=${self.id}-routes-list]` );
+    self.renderRoutesList=function( container )
+    {
+        const list=container.querySelector( `div[name=${ self.id }-routes-list]` );
         list.innerHTML='';
         const names=Object.keys( self.routes );
-        if ( !names.length ) {
+        if ( !names.length )
+        {
             list.textContent='No saved routes.';
             return;
         }
-        names.forEach( name => {
+        names.forEach( name =>
+        {
             const row=document.createElement( 'div' );
             row.style.display='flex'; row.style.gap='4px';
             const label=document.createElement( 'span' );
             label.textContent=name; label.style.flex='1';
             const load=document.createElement( 'button' );
             load.textContent='Load';
-            load.onclick=() => {
+            load.onclick=() =>
+            {
                 self.waypoints=JSON.parse( JSON.stringify( self.routes[ name ] ) );
                 self.storeWaypoints();
                 self.updateControls();
                 self.drawRoute();
                 self.updateMenu();
-                alert( `Route “${name}” loaded.` );
+                alert( `Route “${ name }” loaded.` );
             };
             const del=document.createElement( 'button' );
             del.textContent='Delete';
-            del.onclick=() => {
-                if ( !confirm( `Delete route “${name}”?` ) ) return;
+            del.onclick=() =>
+            {
+                if ( !confirm( `Delete route “${ name }”?` ) ) return;
                 delete self.routes[ name ]; self.storeRoutes();
                 self.renderRoutesList( container );
             };
@@ -1090,17 +1262,19 @@ version 1.0.0.20220407.231800
     };
 
     // the dialog itself
-    self.routesMenu=function() {
+    self.routesMenu=function()
+    {
         const container=document.createElement( 'div' );
         container.innerHTML=`
     <p><strong>Saved routes</strong></p>
-    <div name="${self.id}-routes-list"></div>
+    <div name="${ self.id }-routes-list"></div>
     <hr>
     <input type="text" name="route-name-input" placeholder="New route name">
     <button name="save-route-button">Save current route</button>
   `;
         // save‐button handler
-        container.querySelector( 'button[name=save-route-button]' ).onclick=() => {
+        container.querySelector( 'button[name=save-route-button]' ).onclick=() =>
+        {
             const input=container.querySelector( 'input[name=route-name-input]' );
             const name=input.value.trim();
             if ( !name ) return alert( 'Enter a name first' );
@@ -1117,52 +1291,55 @@ version 1.0.0.20220407.231800
             title: self.title+' – Manage Routes',
             width: 'auto'
         } ).dialog( 'option', 'buttons', {
-            Close() { $( this ).dialog( 'close' ); }
+            Close () { $( this ).dialog( 'close' ); }
         } );
         // initial list
         self.renderRoutesList( container );
     };
 
-    self.updateRouteBackgroundColor=function() {
+    self.updateRouteBackgroundColor=function()
+    {
         // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor
-        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${self.id}-selectedwaypoint \{.*?\}`, 's' ), `
-.${self.id}-selectedwaypoint {
-   background-color: ${self.settings.routebackgroundcolor}!important;
+        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${ self.id }-selectedwaypoint \{.*?\}`, 's' ), `
+.${ self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routebackgroundcolor }!important;
 }`);
     };
 
-    self.updateRouteBackgroundColor=function() {
+    self.updateRouteBackgroundColor=function()
+    {
         // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor
-        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${self.id}-selectedwaypoint \{.*?\}`, 's' ), `
-.${self.id}-selectedwaypoint {
-   background-color: ${self.settings.routebackgroundcolor}!important;
+        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${ self.id }-selectedwaypoint \{.*?\}`, 's' ), `
+.${ self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routebackgroundcolor }!important;
 }`);
     };
 
-    self.setup=function() {
-        console.time('route-planner');
+    self.setup=function()
+    {
+        console.time( 'route-planner' );
         self.restoresettings();
         self.storesettings();
 
         self.stylesheet=document.body.appendChild( document.createElement( 'style' ) );
         self.stylesheet.innerHTML=`
-#dialog-plugin-${self.id}-dialog label {
+#dialog-plugin-${ self.id }-dialog label {
     user-select: none;
     cursor: pointer;
 }
-.${self.id}-transfer-menu {
+.${ self.id }-transfer-menu {
     text-align: center;
 }
-.${self.id}-transfer-menu input[type=button] {
+.${ self.id }-transfer-menu input[type=button] {
     min-width: 200px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
-.${self.id}-main-menu input[type=button] {
+.${ self.id }-main-menu input[type=button] {
     margin-top: 5px;
     margin-bottom: 5px;
 }
-.${self.id}-waypoint-numbers {
+.${ self.id }-waypoint-numbers {
     font-size: 16px;
     color: #000000;
     font-family: monospace;
@@ -1172,29 +1349,29 @@ version 1.0.0.20220407.231800
     -webkit-text-size-adjust:none;
     white-space: nowrap;
 }
-.${self.id}-waypoints-row {
+.${ self.id }-waypoints-row {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     margin: 4px 0px 4px 0px;
 }
-.${self.id}-waypoints-row-char {
+.${ self.id }-waypoints-row-char {
     margin: 0 5px;
     width: 13px;
     text-align: center;
     padding: 3px;
 }
-.${self.id}-waypoints-row-link {
+.${ self.id }-waypoints-row-link {
     width: 250px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     padding: 3px;
 }
-.${self.id}-waypoints-row input[type=button] {
+.${ self.id }-waypoints-row input[type=button] {
     margin-left: 4px;
 }
-.${self.id}-waypoints-drag-handle {
+.${ self.id }-waypoints-drag-handle {
     cursor: grab;
     touch-action: none;
     user-select: none;
@@ -1204,47 +1381,48 @@ version 1.0.0.20220407.231800
     font-size: 16px;
     line-height: 1;
 }
-.${self.id}-waypoints-drag-handle:active {
+.${ self.id }-waypoints-drag-handle:active {
     cursor: grabbing;
 }
-.${self.id}-dragging {
+.${ self.id }-dragging {
     opacity: 0.6;
     background-color: #afcbfa;
 }
-body.${self.id}-dragging-active,
-body.${self.id}-dragging-active * {
+body.${ self.id }-dragging-active,
+body.${ self.id }-dragging-active * {
     cursor: grabbing !important;
     user-select: none !important;
 }
-.${self.id}-hidden {
+.${ self.id }-hidden {
     display: none!important;
 }
-.${self.id}-maxwaypoints {
+.${ self.id }-maxwaypoints {
    background-color: red!important;
 }
-.${self.id}-selectportal {
+.${ self.id }-selectportal {
    background-color: #aaaaaa!important;
 }
-.${self.id}-selectedwaypoint {
-   background-color: ${self.settings.routeforegroundcolor}!important;
+.${ self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routeforegroundcolor }!important;
 }
-.${self.id }-selectedwaypoint {
-   background-color: ${ self.settings.routebackgroundcolor}!important;
+.${ self.id }-selectedwaypoint {
+   background-color: ${ self.settings.routebackgroundcolor }!important;
 }
-.${self.id}-newwaypoint {
+.${ self.id }-newwaypoint {
    background-color: white!important;
 }
-a.${self.id}-selectedportalrow {
+a.${ self.id }-selectedportalrow {
    background-color: black;
 }
-.${self.id}-buttonclicked {
+.${ self.id }-buttonclicked {
    background-color: #afcbfa!important;
 }
 `;
 
         let toolboxlink=document.getElementById( 'toolbox' ).appendChild( document.createElement( 'a' ) );
         toolboxlink.textContent=self.title;
-        toolboxlink.addEventListener( 'click', function( e ) {
+        toolboxlink.addEventListener( 'click', function( e )
+        {
             e.preventDefault();
             self.menu();
         }, false );
@@ -1256,8 +1434,10 @@ a.${self.id}-selectedportalrow {
         self.restoreRoutes();
         self.drawRoute();
 
-        function addClickFunctionToObject( obj, fn ) {
-            function detectMultipleClicks( obj ) {
+        function addClickFunctionToObject ( obj, fn )
+        {
+            function detectMultipleClicks ( obj )
+            {
                 // prevent double execution for single click event (happens on iOS devices with touch events)
                 let clickdelay=200; // ms
                 let timestamp=window.event?.timeStamp||new Date().getTime();
@@ -1276,7 +1456,8 @@ a.${self.id}-selectedportalrow {
             options: {
                 position: 'topleft'
             },
-            onAdd: function( map ) {
+            onAdd: function( map )
+            {
                 let container=document.createElement( 'div' );
                 container.className=self.id+'-controlbuttons leaflet-bar';
                 if ( !window.map.hasLayer( self.waypointsroutelayer ) ) container.style.display='none';
@@ -1284,46 +1465,51 @@ a.${self.id}-selectedportalrow {
                 let googlemapsbutton=container.appendChild( document.createElement( 'a' ) );
                 googlemapsbutton.className=self.id+"-logo";
                 googlemapsbutton.classList.add( 'googlemapsbutton' );
-                if ( !self.settings.showgooglemapsbutton ) googlemapsbutton.classList.add( `${self.id}-hidden` );
+                if ( !self.settings.showgooglemapsbutton ) googlemapsbutton.classList.add( `${ self.id }-hidden` );
                 let googlemapsbuttonicon=googlemapsbutton.appendChild( document.createElement( 'img' ) );
                 // logo icon
                 googlemapsbuttonicon.src=icongooglemaps;
                 googlemapsbuttonicon.width=16;
                 googlemapsbuttonicon.height=16;
                 googlemapsbuttonicon.style.marginTop=( window.isSmartphone()? '7px':'5px' );
-                addClickFunctionToObject( googlemapsbutton, function() {
+                addClickFunctionToObject( googlemapsbutton, function()
+                {
                     window.open( self.getGoogleMapsLink(), '_blank', '_blank' );
                 } );
 
                 let applemapsbutton=container.appendChild( document.createElement( 'a' ) );
                 applemapsbutton.className=self.id+"-logo";
                 applemapsbutton.classList.add( 'applemapsbutton' );
-                if ( !self.settings.showapplemapsbutton ) applemapsbutton.classList.add( `${self.id}-hidden` );
+                if ( !self.settings.showapplemapsbutton ) applemapsbutton.classList.add( `${ self.id }-hidden` );
                 let applemapsbuttonicon=applemapsbutton.appendChild( document.createElement( 'img' ) );
                 // logo icon
                 applemapsbuttonicon.src=iconapplemaps;
                 applemapsbuttonicon.width=16;
                 applemapsbuttonicon.height=16;
                 applemapsbuttonicon.style.marginTop=( window.isSmartphone()? '7px':'5px' );
-                addClickFunctionToObject( applemapsbutton, function() {
+                addClickFunctionToObject( applemapsbutton, function()
+                {
                     window.open( self.getAppleMapsLink(), '_blank' );
                 } );
 
                 let togglebutton=container.appendChild( document.createElement( 'a' ) );
                 togglebutton.className=self.id+"-togglewaypoint";
-                togglebutton.setAttribute('accesskey',']');
-                togglebutton.title = (togglebutton.title||'') + ' (accesskey: A)';
-                togglebutton.setAttribute('aria-label','Toggle waypoint (accesskey [\']\']');
+                togglebutton.setAttribute( 'accesskey', ']' );
+                togglebutton.title=( togglebutton.title||'' )+' (accesskey: A)';
+                togglebutton.setAttribute( 'aria-label', 'Toggle waypoint (accesskey [\']\']' );
                 let togglebuttonicon=togglebutton.appendChild( document.createElement( 'img' ) );
                 // + icon
                 togglebuttonicon.src=iconplus;
                 togglebuttonicon.width=16;
                 togglebuttonicon.height=16;
                 togglebuttonicon.style.marginTop=( window.isSmartphone()? '7px':'5px' );
-                addClickFunctionToObject( togglebutton, function() {
+                addClickFunctionToObject( togglebutton, function()
+                {
                     if ( !window.selectedPortal||!( window.selectedPortal in window.portals ) ) return;
-                    if ( !( window.selectedPortal in self.waypoints ) ) {
-                        if ( Object.keys( self.waypoints ).length>=self.maxwaypoints ) {
+                    if ( !( window.selectedPortal in self.waypoints ) )
+                    {
+                        if ( Object.keys( self.waypoints ).length>=self.maxwaypoints )
+                        {
                             alert( 'Maximum of '+self.maxwaypoints+' waypoints reached. You can not add this portal as a waypoint.' );
                             return;
                         }
@@ -1335,7 +1521,8 @@ a.${self.id}-selectedportalrow {
                             },
                             name: waypointportal.options.data.title||'waypoint'
                         };
-                    } else {
+                    } else
+                    {
                         delete ( self.waypoints[ window.selectedPortal ] );
                     }
                     self.storeWaypoints();
@@ -1347,19 +1534,21 @@ a.${self.id}-selectedportalrow {
                 let totalbutton=container.appendChild( document.createElement( 'a' ) );
                 totalbutton.className=self.id+"-total";
                 totalbutton.innerText=Object.keys( self.waypoints ).length;
-                addClickFunctionToObject( totalbutton, function() {
+                addClickFunctionToObject( totalbutton, function()
+                {
                     self.waypointsmenu();
                 } );
 
                 let menubutton=container.appendChild( document.createElement( 'a' ) );
                 menubutton.className=self.id+"-menu";
-                menubutton.setAttribute('accesskey','k');
+                menubutton.setAttribute( 'accesskey', 'k' );
                 let menubuttonicon=menubutton.appendChild( document.createElement( 'img' ) );
                 menubuttonicon.src=iconmenu;
                 menubuttonicon.width=16;
                 menubuttonicon.height=16;
                 menubuttonicon.style.marginTop=( window.isSmartphone()? '7px':'5px' );
-                addClickFunctionToObject( menubutton, function() {
+                addClickFunctionToObject( menubutton, function()
+                {
                     self.menu();
                 } );
 
@@ -1371,30 +1560,37 @@ a.${self.id}-selectedportalrow {
 
         window.addHook( 'portalSelected', self.updateControls );
         window.addHook( 'portalSelected', self.highlightDialogPortal );
-        window.addHook( 'portalDetailLoaded', function( data ) {
-            if ( data.success&&data.guid in self.waypoints&&self.waypoints[ data.guid ].name!=data.details.title ) {
+        window.addHook( 'portalDetailLoaded', function( data )
+        {
+            if ( data.success&&data.guid in self.waypoints&&self.waypoints[ data.guid ].name!=data.details.title )
+            {
                 self.waypoints[ data.guid ].name=data.details.title;
                 self.storeWaypoints();
                 self.updateMenu();
             }
         } );
 
-        window.map.on( 'layeradd', function( obj ) { // show controls
-            if ( obj.layer===self.waypointsroutelayer ) {
-                $( `.${self.id}-controlbuttons` ).show();
+        window.map.on( 'layeradd', function( obj )
+        { // show controls
+            if ( obj.layer===self.waypointsroutelayer )
+            {
+                $( `.${ self.id }-controlbuttons` ).show();
             }
         } );
-        window.map.on( 'layerremove', function( obj ) { // hide controls
-            if ( obj.layer===self.waypointsroutelayer ) {
-                $( `.${self.id}-controlbuttons` ).hide();
+        window.map.on( 'layerremove', function( obj )
+        { // hide controls
+            if ( obj.layer===self.waypointsroutelayer )
+            {
+                $( `.${ self.id }-controlbuttons` ).hide();
             }
         } );
 
-        console.log( `IITC plugin loaded: ${self.title} version ${self.version}` );
-        console.timeEnd('route-planner');
+        console.log( `IITC plugin loaded: ${ self.title } version ${ self.version }` );
+        console.timeEnd( 'route-planner' );
     };
 
-    var setup=function() {
+    var setup=function()
+    {
         ( window.iitcLoaded? self.setup():window.addHook( 'iitcLoaded', self.setup ) );
     };
 

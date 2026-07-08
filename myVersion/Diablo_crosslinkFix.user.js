@@ -1227,19 +1227,6 @@ version 1.0.0.20251228.002300
 	self.drawCrossLink=function( link ) {
 		if ( self.crosslinkLayerGuids[ link.options.guid ] ) return; // crosslink for this link already drawn, skip check
 
-		/*
-		var crosslink = L.geodesicPolyline(link.getLatLngs(), {
-				color: '#393cec',
-				opacity: 0.7,
-				weight: 5,
-				interactable: false,
-				dashArray: [8,8],
-
-				guid: link.options.guid
-		});
-
-		*/
-
 		var latLngs=link.getLatLngs();
 		var startCoord=new self.arc.Coord( latLngs[ 0 ].lng, latLngs[ 0 ].lat );
 		var stopCoord=new self.arc.Coord( latLngs[ 1 ].lng, latLngs[ 1 ].lat );

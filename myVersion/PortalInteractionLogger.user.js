@@ -2,7 +2,7 @@
 // @id             iitc-plugin-portal-interaction-logger
 // @name           Portal Interaction Logger
 // @category       Diablo
-// @version        1.0.1
+// @version        1.1.0
 // @namespace      https://raw.githack.com/diacoviello/IITCCommunity-plugins
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/PortalInteractionLogger.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/PortalInteractionLogger.user.js
@@ -69,7 +69,7 @@ function wrapper( plugin_info ) {
 			duration: duration!=null ? Math.round( duration ) : 'N/A'
 		};
 		log.push( entry );
-		console.log( '[RES LOG]', entry );
+		console.log( '[SPOOFER LOG]', entry );
 	}
 
 	function logAction( agent, type, lat, lng, name ) {
@@ -133,26 +133,95 @@ function wrapper( plugin_info ) {
 		} );
 	}
 
-	function exportCSV() {
+	// Unique agents that currently have logged actions, sorted alphabetically.
+	function getLoggedAgents() {
+		const seen={};
+		log.forEach( e => { seen[ e.agent ]=true; } );
+		return Object.keys( seen ).sort( ( a, b ) => a.localeCompare( b ) );
+	}
+
+	// Make a string safe to use in a filename across OSes.
+	function sanitizeForFilename( s ) {
+		return String( s ).replace( /[^a-z0-9_\-]+/gi, '_' ).replace( /^_+|_+$/g, '' );
+	}
+
+	function exportCSVForAgent( agent ) {
+		const entries=log.filter( e => e.agent===agent );
+		if ( entries.length===0 ) {
+			alert( 'No logged actions for ' + agent );
+			return;
+		}
+
+		// "First action" = earliest recorded timestamp for this agent. Entries can be
+		// pushed out of order because driving data is fetched asynchronously, so find
+		// the minimum rather than trusting array position.
+		const firstTime=entries.reduce( ( min, e ) => ( e.time<min ? e.time : min ), entries[ 0 ].time );
+
 		let csv='Time,Agent,Action,Portal Name,Portal Link,Latitude,Longitude,Distance (km),Time Between (s)\n';
-		csv+=log.map( e =>
+		csv+=entries.map( e =>
 			`${e.time},"${e.agent}","${e.type}","${e.portalName}","${e.portalLink}",${e.lat},${e.lng},${e.distance},${e.duration}`
 		).join( '\n' );
+
+		const filename=`${sanitizeForFilename( agent )}-${sanitizeForFilename( firstTime )}.csv`;
 
 		const blob=new Blob( [ csv ], { type: 'text/csv;charset=utf-8;' } );
 		const url=URL.createObjectURL( blob );
 		const a=document.createElement( 'a' );
 		a.href=url;
-		a.download='res_portal_log.csv';
+		a.download=filename;
 		a.click();
 		URL.revokeObjectURL( url );
+	}
+
+	function promptAgentAndExport() {
+		const agents=getLoggedAgents();
+		if ( agents.length===0 ) {
+			alert( 'No agent actions have been logged yet.' );
+			return;
+		}
+
+		const container=document.createElement( 'div' );
+		const label=document.createElement( 'label' );
+		label.textContent='Export log for agent: ';
+		const select=document.createElement( 'select' );
+		select.style.marginLeft='4px';
+		agents.forEach( a => {
+			const count=log.filter( e => e.agent===a ).length;
+			const opt=document.createElement( 'option' );
+			opt.value=a;
+			opt.textContent=`${a} (${count})`;
+			select.appendChild( opt );
+		} );
+		label.appendChild( select );
+		container.appendChild( label );
+
+		if ( typeof window.dialog==='function' ) {
+			window.dialog( {
+				title: 'Export Agent Log',
+				html: container,
+				buttons: {
+					'Export CSV': function() {
+						exportCSVForAgent( select.value );
+						$( this ).dialog( 'close' );
+					}
+				}
+			} );
+		} else {
+			// Fallback for environments without the IITC dialog helper.
+			const listing=agents.map( ( a, i ) => `${i+1}. ${a}` ).join( '\n' );
+			const choice=prompt( 'Select agent to export (enter number):\n'+listing );
+			if ( choice===null ) return;
+			const idx=parseInt( choice, 10 )-1;
+			if ( idx>=0&&idx<agents.length ) exportCSVForAgent( agents[ idx ] );
+			else alert( 'Invalid selection.' );
+		}
 	}
 
 	function setupControls() {
 		const link=document.createElement( 'a' );
 		link.textContent='RES Log CSV';
 		link.style.cursor='pointer';
-		link.addEventListener( 'click', exportCSV );
+		link.addEventListener( 'click', promptAgentAndExport );
 		$( '#toolbox' ).append( link );
 	}
 

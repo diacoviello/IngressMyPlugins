@@ -3,7 +3,7 @@
 // @name           Portal Interaction Logger
 // @category       Diablo
 // @version        1.1.0
-// @namespace      https://raw.githack.com/diacoviello/IITCCommunity-plugins
+// @namespace      https://raw.githack.com/diacoviello/IngressMyPlugins/
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/PortalInteractionLogger.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/PortalInteractionLogger.user.js
 // @description    Log agent actions within a radius and export driving distance/times via OSRM; checks for potential spoofing by comparing driving distance to straight-line distance. Logs captures, deployments, links, and fields for Resistance agents. Exportable as CSV.

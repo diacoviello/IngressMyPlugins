@@ -1123,13 +1123,13 @@ version 1.0.0.20220407.231800
         self.renderRoutesList( container );
     };
 
-    self.updateRouteForgroundColor=function()
-    {
-        // prepared this function, just in case there is a color picker implemented to change the routeforegroundcolor
-        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${ self.id }-selectedwaypoint \{.*?\}`, 's' ), `
-.${ self.id }-selectedwaypoint {
-   background-color: ${ self.settings.routeforegroundcolor }!important;
+    self.updateRouteBackgroundColor=function() {
+        // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor
+        self.stylesheet.innerHTML=self.stylesheet.innerHTML.replace( new RegExp( `\n\.${self.id}-selectedwaypoint \{.*?\}`, 's' ), `
+.${self.id}-selectedwaypoint {
+   background-color: ${self.settings.routebackgroundcolor}!important;
 }`);
+    };
 
     self.updateRouteBackgroundColor=function() {
         // prepared this function, just in case there is a color picker implemented to change the routebackgroundcolor

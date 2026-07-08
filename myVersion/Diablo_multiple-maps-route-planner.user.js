@@ -21,10 +21,13 @@ function wrapper( plugin_info ) {
     var self=window.plugin.mapsrouteplanner;
     self.id='multiplemapsrouteplanner';
     self.title='Multi Maps Route Planner';
-    self.version='4.1.0.20260618';
+    self.version='4.2.0.20260707';
     self.author='DiabloEnMusica';
     self.changelog=`
 Changelog:
+
+version 4.2.0.20260707
+- added route line color, weight and opacity settings to the main menu
 
 version 4.1.0.20260618
 - replaced the up/down arrows in the waypoints editor with drag-and-drop reordering (works with mouse and touch)
@@ -98,6 +101,8 @@ version 1.0.0.20220407.231800
         origin: 'mylocation',
         routebackgroundcolor: '#7c118d',
         routeforegroundcolor: '#b86ec7',
+        routeforegroundweight: 5,
+        routeforegroundopacity: 1,
         showchars: true,
         travelmode: '',
         showgooglemapsbutton: true,
@@ -267,8 +272,8 @@ version 1.0.0.20220407.231800
 
         let foregroundline=window.L.geodesicPolyline( latlngs, {
             color: foregroundcolor,
-            opacity: 1,
-            weight: 5,
+            opacity: self.settings.routeforegroundopacity,
+            weight: self.settings.routeforegroundweight,
             background: false,
             interactive: false,
             dashArray: undefined
@@ -807,6 +812,9 @@ version 1.0.0.20220407.231800
         <label><input type="radio" name="origin-radio" value="mylocation">Use your location as origin (default)</label><br>
         <label><input type="radio" name="origin-radio" value="firstportal">Use first portal as origin (maps preview modus)</label><br>
         <label><input type="checkbox" name="showchars-checkbox">Show alphabetical characters on waypoints</label><br>
+        <label>Route line color: <input type="color" name="routeforegroundcolor-input"></label><br>
+        <label>Route line weight: <input type="range" name="routeforegroundweight-input" min="1" max="12" step="1"> <span name="routeforegroundweight-value"></span>px</label><br>
+        <label>Route line opacity: <input type="range" name="routeforegroundopacity-input" min="0.1" max="1" step="0.05"> <span name="routeforegroundopacity-value"></span>%</label><br>
         <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${self.title} version ${self.version} by ${self.author}</div>
         `;
 
@@ -897,6 +905,33 @@ version 1.0.0.20220407.231800
         container.querySelector( `input[name=showchars-checkbox]` ).checked=self.settings.showchars;
         container.querySelector( `input[name=showchars-checkbox]` ).addEventListener( 'change', function( e ) {
             self.settings.showchars=this.checked;
+            self.storesettings();
+            self.drawRoute();
+        }, false );
+
+        let routeforegroundweightvalue=container.querySelector( `span[name=routeforegroundweight-value]` );
+        let routeforegroundopacityvalue=container.querySelector( `span[name=routeforegroundopacity-value]` );
+        routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
+        routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
+
+        container.querySelector( `input[name=routeforegroundcolor-input]` ).value=self.settings.routeforegroundcolor;
+        container.querySelector( `input[name=routeforegroundcolor-input]` ).addEventListener( 'input', function( e ) {
+            self.settings.routeforegroundcolor=this.value;
+            self.storesettings();
+            self.updateRouteForgroundColor();
+            self.drawRoute();
+        }, false );
+        container.querySelector( `input[name=routeforegroundweight-input]` ).value=self.settings.routeforegroundweight;
+        container.querySelector( `input[name=routeforegroundweight-input]` ).addEventListener( 'input', function( e ) {
+            self.settings.routeforegroundweight=parseFloat( this.value );
+            routeforegroundweightvalue.innerText=self.settings.routeforegroundweight;
+            self.storesettings();
+            self.drawRoute();
+        }, false );
+        container.querySelector( `input[name=routeforegroundopacity-input]` ).value=self.settings.routeforegroundopacity;
+        container.querySelector( `input[name=routeforegroundopacity-input]` ).addEventListener( 'input', function( e ) {
+            self.settings.routeforegroundopacity=parseFloat( this.value );
+            routeforegroundopacityvalue.innerText=Math.round( self.settings.routeforegroundopacity*100 );
             self.storesettings();
             self.drawRoute();
         }, false );

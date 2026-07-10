@@ -34,11 +34,12 @@
 			const modals=$( '.ui-dialog.ui-dialog-modal:visible' );
 			const base=modals.length? modals:$( '.ui-dialog:visible' );
 
-			const sorted = base
+			const sorted=base
+				.toArray()
 				.sort( ( a, b ) =>
-					parseInt( $( a ).css( 'z-index' ) )-parseInt( $( b ).css( 'z-index' ) )
-				)
-				.toArray();
+					( parseInt( $( a ).css( 'z-index' ), 10 )||0 )-
+					( parseInt( $( b ).css( 'z-index' ), 10 )||0 )
+				);
 
 			console.log('getVisibleDialogs ->', sorted.length, 'dialogs', sorted.map( d => ({
 				title: $( d ).find( '.ui-dialog-title' ).text(),

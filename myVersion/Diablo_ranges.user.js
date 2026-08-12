@@ -1,6 +1,6 @@
 // ==UserScript==
 // @author         DiabloEnMusica
-// @name           XMP Ranges - Player
+// @name           XMP Ranges - SelectedPortal
 // @category       Diablo
 // @version        0.3.1.20210103.154230
 // @description    Add one or more player markers and his ranges (hack/deploy range and xmp ranges) on the map.

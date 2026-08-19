@@ -2,7 +2,7 @@
 // @author         DiabloEnMusica
 // @name           Multi-Maps Route Planner
 // @category       Diablo
-// @version        3.0.0.20240307.220600
+// @version        3.0.1.20260819.1200
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_multiple-maps-route-planner.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_multiple-maps-route-planner.user.js
 // @description    [DiabloEnMusica-4.0.0.20250709] Plan a route with multiple portals and open Google Maps (max 9 waypoints) or Apple Maps (iOS 16+ supports waypoints) to start your navigation.
@@ -22,10 +22,33 @@ function wrapper ( plugin_info )
     var self=window.plugin.mapsrouteplanner;
     self.id='multiplemapsrouteplanner';
     self.title='Multi Maps Route Planner';
-    self.version='4.2.0.20260707';
+    self.version='4.2.1.20260819';
     self.author='DiabloEnMusica';
+
+    // window.dialog() silently ignores an 'accesskey' option (see core/code/dialog.js).
+    // This wrapper strips it, calls window.dialog() normally, then binds the key to that
+    // dialog's own titlebar close button so it actually reaches the DOM.
+    self.dialog=function( options ) {
+        var accesskey=options.accesskey;
+        delete options.accesskey;
+        var dlg=window.dialog( options );
+        if ( accesskey ) {
+            var closebutton=dlg.parent().find( '.ui-dialog-titlebar-close' );
+            if ( closebutton.length ) {
+                closebutton.attr( 'accesskey', accesskey )
+                    .attr( 'title', 'Close ['+accesskey+']' )
+                    .attr( 'aria-label', 'Close dialog (accesskey '+accesskey+')' );
+            }
+        }
+        return dlg;
+    };
     self.changelog=`
 Changelog:
+
+version 4.2.1.20260819
+- fixed the About dialog accesskey: window.dialog() ignores an accesskey option, so it never reached the DOM
+- moved that key from 'k' to 'u' ('k' is already the persistent menu button)
+- fixed the toggle-waypoint button: title and aria-label both reported the wrong key (said 'A', actual key is ']')
 
 version 4.2.0.20260707
 - added route line color, weight and opacity settings to the main menu
@@ -670,13 +693,13 @@ version 1.0.0.20220407.231800
         <p>Share this plugin with this link: <a href="https://softspot.nl/ingress/#iitc-plugin-maps-route-planner.user.js" target="_blank">Softspot IITC plugins</a> to get the latest version.</p>
         <div style="margin-top: 14px; font-style: italic; font-size: smaller;">${ self.title } version ${ self.version } by ${ self.author }</div>
         `;
-        window.dialog( {
+        self.dialog( {
             html: container,
             id: self.pluginname+'-dialog',
             dialogClass: 'ui-dialog-'+self.pluginname,
             title: self.title+' - About',
             width: 'auto',
-            accesskey: 'k'
+            accesskey: 'u'
         } ).dialog( 'option', 'buttons', {
             '< Main menu': function() { self.menu(); },
             'Changelog': function() { alert( self.changelog ); },
@@ -1217,6 +1240,10 @@ version 1.0.0.20220407.231800
                 }
             }
             document.querySelector( `.${ self.id }-total` ).innerText=Object.keys( self.waypoints ).length;
+
+            let waypointcount=Object.keys( self.waypoints ).length;
+            document.querySelector( `.${ self.id }-clearbutton` )?.classList.toggle( `${ self.id }-hidden`, waypointcount<1 );
+            document.querySelector( `.${ self.id }-reversebutton` )?.classList.toggle( `${ self.id }-hidden`, waypointcount<2 );
         }
     }
 
@@ -1495,8 +1522,8 @@ a.${ self.id }-selectedportalrow {
                 let togglebutton=container.appendChild( document.createElement( 'a' ) );
                 togglebutton.className=self.id+"-togglewaypoint";
                 togglebutton.setAttribute( 'accesskey', ']' );
-                togglebutton.title=( togglebutton.title||'' )+' (accesskey: A)';
-                togglebutton.setAttribute( 'aria-label', 'Toggle waypoint (accesskey [\']\']' );
+                togglebutton.title=( togglebutton.title||'' )+' [\']\']';
+                togglebutton.setAttribute( 'aria-label', 'Toggle waypoint (accesskey \']\')' );
                 let togglebuttonicon=togglebutton.appendChild( document.createElement( 'img' ) );
                 // + icon
                 togglebuttonicon.src=iconplus;
@@ -1537,6 +1564,43 @@ a.${ self.id }-selectedportalrow {
                 addClickFunctionToObject( totalbutton, function()
                 {
                     self.waypointsmenu();
+                } );
+
+                let clearbutton=container.appendChild( document.createElement( 'a' ) );
+                clearbutton.className=self.id+"-clearbutton "+self.id+"-hidden";
+                clearbutton.title='Clear all waypoints';
+                clearbutton.setAttribute( 'aria-label', 'Clear all waypoints' );
+                clearbutton.innerText='✕';
+                addClickFunctionToObject( clearbutton, function()
+                {
+                    if ( Object.keys( self.waypoints ).length==0 ) return;
+                    if ( !confirm( 'Are you sure you want to clear all ('+Object.keys( self.waypoints ).length+') waypoints?' ) ) return;
+                    self.waypoints={};
+                    self.storeWaypoints();
+                    self.updateMenu();
+                    self.updateControls();
+                    self.drawRoute();
+                } );
+
+                let reversebutton=container.appendChild( document.createElement( 'a' ) );
+                reversebutton.className=self.id+"-reversebutton "+self.id+"-hidden";
+                reversebutton.title='Reverse route';
+                reversebutton.setAttribute( 'aria-label', 'Reverse route' );
+                reversebutton.innerText='⇄';
+                addClickFunctionToObject( reversebutton, function()
+                {
+                    if ( Object.keys( self.waypoints ).length<2 ) return;
+                    let waypointkeys=Object.keys( self.waypoints ).reverse();
+                    let source={ ...self.waypoints };
+                    self.waypoints={};
+                    for ( let guid of waypointkeys )
+                    {
+                        self.waypoints[ guid ]=source[ guid ];
+                    }
+                    self.storeWaypoints();
+                    self.updateMenu();
+                    self.updateControls();
+                    self.drawRoute();
                 } );
 
                 let menubutton=container.appendChild( document.createElement( 'a' ) );

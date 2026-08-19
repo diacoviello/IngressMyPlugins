@@ -2,7 +2,7 @@
 // @author         Zaso + Diablo
 // @name           Destroy Links Sim+bookmarks+tally
 // @category       Diablo
-// @version        0.0.8.20200216.174029
+// @version        0.0.9.20260819.120000
 // @description    Simulate the destruction of portal links: hide its links and fields.
 // @id             destroyed-links-simulator@Zaso-Diablo
 // @namespace      https://github.com/diacoviello/IngressMyPlugins
@@ -730,11 +730,11 @@ function wrapper( plugin_info ) {
 
 		var actionHTML='';
 		actionHTML+='<div class="destroy_toggle">';
-		actionHTML+='<a class="destroyBkmrks" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals">Destroy Bookmarks</a>';
-		actionHTML+='<a class="desOne '+hid_1+'" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields">'+label+'</a> ';
-		actionHTML+='<a class="regOne '+hid_2+'" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields ">Regenerate</a>';
-		actionHTML+='<a class="regAll" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields">Reset All</a>';
-		actionHTML+='<a class="convDr" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw">Drawnize All</a>';
+		actionHTML+='<a class="destroyBkmrks" accesskey="6" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals [6]">Destroy Bookmarks</a>';
+		actionHTML+='<a class="desOne '+hid_1+'" accesskey="h" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields [h]">'+label+'</a> ';
+		actionHTML+='<a class="regOne '+hid_2+'" accesskey="h" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields [h]">Regenerate</a>';
+		actionHTML+='<a class="regAll" accesskey="j" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields [j]">Reset All</a>';
+		actionHTML+='<a class="convDr" accesskey="u" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw [u]">Drawnize All</a>';
 		actionHTML+='<div style="clear:both;"></div>';
 		actionHTML+='</div>';
 		actionHTML+='<div class="dlsTally">Links Destroyed: <span class="dls-link-tally">0</span></div>';

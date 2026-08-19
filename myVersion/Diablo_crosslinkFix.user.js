@@ -2,7 +2,7 @@
 // @author         DiabloEnMusica
 // @name           QuickDrawLinx-final
 // @category       Diablo
-// @version        2.0.0.20260602.1000
+// @version        2.0.2.20260819.1600
 // @updateURL      https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js
 // @downloadURL    https://raw.githubusercontent.com/diacoviello/IngressMyPlugins/main/myVersion/Diablo_crosslinkFix.user.js
 // @description    [diabloenmusica-2.0.0.20260602.1000] Quickly draw and move links from portal to portal on the map. Show crosslinks, for links on the map, as well as for drawn links. Store/Restore your projects. Added great circle support. Added fields layer. Export list of used portals with link count. Integrated Spectrum Colorpicker 1.8.1
@@ -777,11 +777,11 @@ version 1.0.0.20251228.002300
 			if ( true ) {
 				// starbutton
 				let titledescription='';
-				if ( !self.isSmartphone ) titledescription=' title="Click to start making multiple links to this portal [x]"';
+				if ( !self.isSmartphone ) titledescription=' title="Click to start making multiple links to this portal [n]"';
 				let onclickaction=self.namespace+'clearall(); '+self.namespace+'multistartlinks(); return false;'
 				let styleactivebutton=( self.markerLayer!=undefined&&self.markerLayer.options.iconstyle=='star'? ' style="background-position-y: bottom;"':'' );
 				if ( !self.settings.hidebuttons ) {
-					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="x"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
+					$( '#updatestatus' ).prepend( '<a class="quickdrawbutton screenbuttonstar" href="#" onclick="'+onclickaction+'"'+titledescription+' accesskey="n"><span class="screenbutton screenstaricon"'+styleactivebutton+' /></a>' );
 				}
 				$( '#portaldetails > .title' ).prepend( '<a class="quickdrawbutton" href="#" onclick="'+onclickaction+'"'+titledescription+'><span class="titlebutton titlestaricon"'+styleactivebutton+' /></a>' );
 			}
@@ -1628,7 +1628,7 @@ version 1.0.0.20251228.002300
 		} );
 
 		var html='<div class="quickdrawlinksdialog">'+
-			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r">&lt Main menu</a>'+
+			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r" title="Back to main menu [r]">&lt Main menu</a>'+
 			'</div><div>'+
 			'Selected portal (<a href="#" onclick="'+self.namespace+'overviewConnected(); return false;">refresh</a>):<br />\n'+
 			'<a href="#" onclick="'+self.namespace+'focusportal(window.selectedPortal,'+position.lat+','+position.lng+'); return false;" title="Go to portal">'+portal.options.data.title+'</a>'+self.getkeycount( window.selectedPortal )+'<br />\n'+
@@ -1713,6 +1713,27 @@ version 1.0.0.20251228.002300
 
 	self.closedialog=function() {
 		$( ".ui-dialog-content" ).dialog( "close" );
+	};
+
+	// window.dialog() silently ignores an 'accesskey' option (see core/code/dialog.js —
+	// it only reads text/html/title/modal/id/*Callback/width/height/dialogClass/classes).
+	// This wrapper strips the option off, calls window.dialog() normally, then binds the
+	// key to that dialog's own titlebar close button so it actually does something.
+	// All dialogs in this plugin share one id, so only one is ever open at a time and
+	// a single key cannot collide with itself.
+	self.dialog=function( options ) {
+		var accesskey=options.accesskey;
+		delete options.accesskey;
+		var dlg=window.dialog( options );
+		if ( accesskey ) {
+			var closebutton=dlg.parent().find( '.ui-dialog-titlebar-close' );
+			if ( closebutton.length ) {
+				closebutton.attr( 'accesskey', accesskey )
+					.attr( 'title', 'Close ['+accesskey+']' )
+					.attr( 'aria-label', 'Close dialog (accesskey '+accesskey+')' );
+			}
+		}
+		return dlg;
 	};
 
 	self.removeselectedlink=function() {
@@ -2301,7 +2322,7 @@ version 1.0.0.20251228.002300
 			self.selectedlink=line;
 		}
 		var html='<div>'+
-			'<a href="#" class="quickdrawlinksdialog" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+			'<a href="#" class="quickdrawlinksdialog" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r" title="Back to main menu [r]">&lt Main menu</a>'+
 			'<div style="width: 100%; display: table;">'+
 			'    <div style="display: table-row">'+
 			'        <div style="width: 100px; display: table-cell; padding-left: 40px;"><input type="text" id="quickdrawlinks_linkcolor"></input> </div>'+
@@ -2336,13 +2357,13 @@ version 1.0.0.20251228.002300
 			'</div>'+
 			'<div style="text-align:center;"><input type="button" value="&lt; &lt;" onclick="'+self.namespace+'selectpreviouslinkmenu(); return false;" title="Select previous link"> '+( self.linkindex( line )+1 )+'/'+self.linkcount()+' <input type="button" value="&gt; &gt;" onclick="'+self.namespace+'selectnextlinkmenu(); return false;" title="Select next link"></div>';
 		if ( window.useAndroidPanes() ) window.show( 'map' );
-		window.dialog( {
+		self.dialog( {
 			html: html,
 			id: self.pluginname+'-dialog',
 			dialogClass: 'ui-dialog-quickdrawlinks',
 			width: 350,
 			title: 'Edit Link ('+self.linklength()+')',
-			accesskey: '0'
+			accesskey: 'y'
 		} );
 
 		// need to initialise the 'spectrum' color picker
@@ -2900,7 +2921,7 @@ version 1.0.0.20251228.002300
 
 	self.storemenu=function() {
 		var html='<div class="quickdrawlinksdialog" style="text-align: center;">'+
-			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r" title="Back to main menu [r]">&lt Main menu</a>'+
 			'<a href="#" onclick="'+self.namespace+'store(); return false;">Store as new project</a>'+
 			'<a href="#" onclick="'+self.namespace+'store($(\'#quickdrawlinks_selectlayer option:selected\').val()); return false;">Overwrite selected project</a>'+
 			self.projectselectlist()+
@@ -2911,7 +2932,7 @@ version 1.0.0.20251228.002300
 			'</div>';
 
 		if ( window.useAndroidPanes() ) window.show( 'map' );
-		window.dialog( {
+		self.dialog( {
 			html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
 			id: self.pluginname+'-dialog',
 			dialogClass: 'ui-dialog-quickdrawlinks',
@@ -2922,7 +2943,7 @@ version 1.0.0.20251228.002300
 
 	self.backupmenu=function() {
 		var html='<p><span class="quickdrawlinksdialog">'+
-			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;">&lt Main menu</a>'+
+			'<a href="#" onclick="if (window.useAndroidPanes()) window.show(\''+self.panename+'\'); else '+self.namespace+'menu(); return false;" accesskey="r" title="Back to main menu [r]">&lt Main menu</a>'+
 			'<a href="#" onclick="'+self.namespace+'createURL(); return false;">Export URL</a>'+
 			'<a href="#" onclick="'+self.namespace+'copydata(); return false;">Export data (copy)</a>'+
 			'<a href="#" onclick="'+self.namespace+'pastedata(); return false;">Import data (paste)</a>'+
@@ -2969,7 +2990,7 @@ version 1.0.0.20251228.002300
 			self.closedialog();
 			$( '<div id="quickdrawlinksdialog" class="mobile">' ).append( html ).appendTo( document.body );
 		} else {
-			window.dialog( {
+			self.dialog( {
 				html: $( '<div id="quickdrawlinksdialog">' ).append( html ),
 				id: self.pluginname+'-dialog',
 				dialogClass: 'ui-dialog-quickdrawlinks',

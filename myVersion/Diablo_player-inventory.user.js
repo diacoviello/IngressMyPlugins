@@ -1549,7 +1549,7 @@ function setupDisplay() {
       }));
     } else {
       window.IITC.toolbox.addButton({
-        label: 'Inventory',
+        label: 'Inventory_d',
         title: 'Show inventory',
         action: () => displayInventory(playerInventory.inventory)
       });

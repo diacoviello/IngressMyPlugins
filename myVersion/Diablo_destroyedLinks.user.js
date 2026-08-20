@@ -2,7 +2,7 @@
 // @author         Zaso + Diablo
 // @name           Destroy Links Sim+bookmarks+tally
 // @category       Diablo
-// @version        0.0.9.20260819.120000
+// @version        0.0.10.20260819.170000
 // @description    Simulate the destruction of portal links: hide its links and fields.
 // @id             destroyed-links-simulator@Zaso-Diablo
 // @namespace      https://github.com/diacoviello/IngressMyPlugins
@@ -13,7 +13,8 @@
 // ==/UserScript==
 
 
-function wrapper( plugin_info ) {
+function wrapper ( plugin_info )
+{
 	// ensure plugin framework is there, even if iitc is not yet loaded
 	if ( typeof window.plugin!=='function' ) window.plugin=function() { };
 
@@ -52,20 +53,23 @@ function wrapper( plugin_info ) {
 	// Running tally of destroyed links
 	window.plugin.destroyedLinks.linkTally=0;
 
-	window.plugin.destroyedLinks.addToLinkTally=function( n ) {
+	window.plugin.destroyedLinks.addToLinkTally=function( n )
+	{
 		n=Number( n )||0;
 		window.plugin.destroyedLinks.linkTally+=n;
 		return window.plugin.destroyedLinks.linkTally;
 	}
 
-	window.plugin.destroyedLinks.subtractFromLinkTally=function( n ) {
+	window.plugin.destroyedLinks.subtractFromLinkTally=function( n )
+	{
 		n=Number( n )||0;
 		window.plugin.destroyedLinks.linkTally-=n;
 		if ( window.plugin.destroyedLinks.linkTally<0 ) window.plugin.destroyedLinks.linkTally=0;
 		return window.plugin.destroyedLinks.linkTally;
 	}
 
-	window.plugin.destroyedLinks.util.getPortalLinkCount=function( guid ) {
+	window.plugin.destroyedLinks.util.getPortalLinkCount=function( guid )
+	{
 		if ( guid===undefined ) guid=window.selectedPortal;
 		var linkGuids=window.plugin.destroyedLinks.util.getPortalLinks( guid );
 		return ( linkGuids&&linkGuids.length )||0;
@@ -77,12 +81,14 @@ function wrapper( plugin_info ) {
 	window.plugin.destroyedLinks.storage.NAME='plugin-destroylinksimulator';
 
 	window.plugin.destroyedLinks.storage.save=function() { window.localStorage[ window.plugin.destroyedLinks.storage.NAME ]=JSON.stringify( window.plugin.destroyedLinks.obj ); }
-	window.plugin.destroyedLinks.storage.load=function() {
+	window.plugin.destroyedLinks.storage.load=function()
+	{
 		window.plugin.destroyedLinks.obj=JSON.parse( window.localStorage[ window.plugin.destroyedLinks.storage.NAME ] );
 		window.plugin.destroyedLinks.listDestroyed=window.plugin.destroyedLinks.obj[ 'listGuids' ];
 	}
 
-	window.plugin.destroyedLinks.storage.reset=function() {
+	window.plugin.destroyedLinks.storage.reset=function()
+	{
 		window.plugin.destroyedLinks.obj={ listGuids: [] };
 		// window.plugin.destroyedLinks.storage.save();
 		// window.plugin.destroyedLinks.ui.getHTMLdialogMain();
@@ -92,8 +98,10 @@ function wrapper( plugin_info ) {
 		// window.plugin.destroyedLinks.portalsInfo = {};
 	}
 	window.plugin.destroyedLinks.storage.delete=function() { delete window.localStorage[ window.plugin.destroyedLinks.storage.NAME ]; }
-	window.plugin.destroyedLinks.storage.check=function() {
-		if ( !window.localStorage[ window.plugin.destroyedLinks.storage.NAME ] ) {
+	window.plugin.destroyedLinks.storage.check=function()
+	{
+		if ( !window.localStorage[ window.plugin.destroyedLinks.storage.NAME ] )
+		{
 			window.plugin.destroyedLinks.storage.reset();
 		}
 		window.plugin.destroyedLinks.storage.load();
@@ -102,32 +110,39 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// UTIL functions
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.util.getPortalLinks=function( guid ) {
+	window.plugin.destroyedLinks.util.getPortalLinks=function( guid )
+	{
 		if ( guid===undefined ) guid=window.selectedPortal;
-		try {
+		try
+		{
 			var lg=window.getPortalLinks? window.getPortalLinks( guid ):null;
 			if ( !lg ) return [];
 			var inArr=lg.in||[];
 			var outArr=lg.out||[];
 			return inArr.concat( outArr );
-		} catch ( e ) {
+		} catch ( e )
+		{
 			console.warn( 'Destroyed Links Simulator: getPortalLinks error', e );
 			return [];
 		}
 	}
-	window.plugin.destroyedLinks.util.getPortalFields=function( guid ) {
+	window.plugin.destroyedLinks.util.getPortalFields=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 
 		var fieldGuids=getPortalFields( guid );
 		return fieldGuids;
 	}
 
-	window.plugin.destroyedLinks.util.generateID=function() {
+	window.plugin.destroyedLinks.util.generateID=function()
+	{
 		return 'uuid-'+( ( new Date ).getTime().toString( 16 )+Math.floor( 1E7*Math.random() ).toString( 16 ) );
 	}
 
-	window.plugin.destroyedLinks.util.getMarkerUrl=function( type ) {
-		switch ( type ) {
+	window.plugin.destroyedLinks.util.getMarkerUrl=function( type )
+	{
+		switch ( type )
+		{
 			case 'red':
 				var markUrl='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAoCAMAAACo9wirAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAADbUExURQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIoRDgMAAAoAAH8CAlYAAEQAACcAAJIbF4QHBiIAAGcAAKEuKVwAAFEAALFKO6pAM5omILxZSAgAACsAADIAAFgAAG4AALlLQ3oAAGUAANASDNIiC9EcCthJENMpCd5oIeFyM+J6P9tbBNlIH9UzE9xYGs1pU8VkTtxVVtUsJeBrR8hZV8xhOdN8WNpPLeGEU+GLX9g4OtxpWdg9Htp6UdZVO91bPd1iEd9vJ9EZGt5lNtlDONZDBc91Xt10e+zkDyQAAAAkdFJOUwAaFSgQLwwCByDmNz/heHFL6uNan/CGmvb07PxsgJForPvQvInMR+kAAAKfSURBVDjLbZTZlqIwEEBBFjHsoKK4j9OtwLCoCKKItr3Y//9FUyG4dtdLTqx7biplEYqCqNcFga3RDYbjRJHjmAZdYwWhXqeqgDzPQlpTxn8gxooGCMtfiSrPjVAn3UKkHTTi7gnsh7zSSgvPPZ1cr0hbCibglErA1hpcu1N4zts/iDfHKzptrgF1lAo4AOe7mUvymHCzLiZ4rMCCBjOyIe9cDM7JzWyFaZSKUiAaqXdyk8RzII/Xk5caIlFgAad0s5Mb6dOe5zheZEwX3inrQqFsCYBATl0nQcOB3Ntuz2g4nCaOm8qgwABfYzQ9c8JEt/p9eRGhQX+IEsfJdI2p8XVK4GlO6Xhh6BS2ZZqGrJoDFLlh6HUUjuYFCpfQXLjhLHRTuy1BqCjy8HZh4SIuwOxrFnpb2xRFST5nIWzdRfMO+CiBM9Iw0Nti4OMJmPlxhFRJ0yTT6MERD4DVi/EPaGCqyGibfWMC+7hX1cDTjNKNfT8xhv0BOm/htgN54vtxV2HwLco+oGLjH1rWEEVxXOiWhRJ/UyDSh7KT4+job6KWvDj6/jHXEWyP0bjqJC5CbcX+fnM4bPwgICs+4fJfQBGSnG8gtQ+C+Zysm9yQcAl4IIRyno6Qu0VwnOCJEchEsTSUme/nL9eY73OkcTRLgDqemGbvENyA4LCWRYaMHEXKNPV89fJaxcsq101SIlVNLSOO15834DMCAV0JKoVq56vXv2W8rpYt9SagqptOQUEALJDuBGTyoVnLFQFAoJR3vH29pFnr3TvOv+/Wj4JnxU/Bo+IXwVVhY8VqaZMr3ANEITZBAYKm+Cy4KEx9udstqyY+ApdHYLJcTq4f/g8F3ZCM729Dwo/Ls6BUAKF0ugp5nijqN6JGj0bwBN7n/wMkT2wKmO3vXQAAAABJRU5ErkJggg==';
 				break;
@@ -141,16 +156,20 @@ function wrapper( plugin_info ) {
 		return markUrl;
 	}
 
-	window.plugin.destroyedLinks.util.isGuidInArr=function( guid ) {
+	window.plugin.destroyedLinks.util.isGuidInArr=function( guid )
+	{
 		return window.plugin.destroyedLinks.listDestroyed.indexOf( guid );
 	}
 
-	window.plugin.destroyedLinks.util.countToDestroy=function() {
+	window.plugin.destroyedLinks.util.countToDestroy=function()
+	{
 		return window.plugin.destroyedLinks.listDestroyed.length;
 	}
 
-	window.plugin.destroyedLinks.util.checkFriendPlugins=function() {
-		if ( window.plugin.drawTools===undefined ) {
+	window.plugin.destroyedLinks.util.checkFriendPlugins=function()
+	{
+		if ( window.plugin.drawTools===undefined )
+		{
 			alert( '"Destroyed Links Simulator" requires "draw-tools" to convert his markers in drawn markers.' );
 			return;
 		}
@@ -159,147 +178,183 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// LAYER functions
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.layer.showLink=function( lguid ) {
-		if ( window.links&&window.links[ lguid ] ) {
-			if ( !window.map.hasLayer( window.links[ lguid ] ) ) {
+	window.plugin.destroyedLinks.layer.showLink=function( lguid )
+	{
+		if ( window.links&&window.links[ lguid ] )
+		{
+			if ( !window.map.hasLayer( window.links[ lguid ] ) )
+			{
 				window.map.addLayer( window.links[ lguid ] );
 			}
 		}
 	}
-	window.plugin.destroyedLinks.layer.hideLink=function( lguid ) {
-		if ( window.links&&window.links[ lguid ] ) {
-			if ( window.map.hasLayer( window.links[ lguid ] ) ) {
+	window.plugin.destroyedLinks.layer.hideLink=function( lguid )
+	{
+		if ( window.links&&window.links[ lguid ] )
+		{
+			if ( window.map.hasLayer( window.links[ lguid ] ) )
+			{
 				window.map.removeLayer( window.links[ lguid ] );
 			}
 		}
 	}
 
-	window.plugin.destroyedLinks.layer.showField=function( fguid ) {
-		if ( window.fields&&window.fields[ fguid ] ) {
-			if ( !window.map.hasLayer( window.fields[ fguid ] ) ) {
+	window.plugin.destroyedLinks.layer.showField=function( fguid )
+	{
+		if ( window.fields&&window.fields[ fguid ] )
+		{
+			if ( !window.map.hasLayer( window.fields[ fguid ] ) )
+			{
 				window.map.addLayer( window.fields[ fguid ] );
 			}
 		}
 	}
-	window.plugin.destroyedLinks.layer.hideField=function( fguid ) {
-		if ( window.fields&&window.fields[ fguid ] ) {
-			if ( window.map.hasLayer( window.fields[ fguid ] ) ) {
+	window.plugin.destroyedLinks.layer.hideField=function( fguid )
+	{
+		if ( window.fields&&window.fields[ fguid ] )
+		{
+			if ( window.map.hasLayer( window.fields[ fguid ] ) )
+			{
 				window.map.removeLayer( window.fields[ fguid ] );
 			}
 		}
 	}
 
 	//*PORTAL: LINKS
-	window.plugin.destroyedLinks.layer.showPortalLinks=function( guid ) {
+	window.plugin.destroyedLinks.layer.showPortalLinks=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var linkGuids=window.plugin.destroyedLinks.util.getPortalLinks( guid );
 
 		// LINKS
-		for ( var i in linkGuids ) {
+		for ( var i in linkGuids )
+		{
 			var lguid=linkGuids[ i ];
 
 			window.plugin.destroyedLinks.layer.showLink( lguid );
 		}
 	}
-	window.plugin.destroyedLinks.layer.hidePortalLinks=function( guid ) {
+	window.plugin.destroyedLinks.layer.hidePortalLinks=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var linkGuids=window.plugin.destroyedLinks.util.getPortalLinks( guid );
 
 		// LINKS
-		for ( var i in linkGuids ) {
+		for ( var i in linkGuids )
+		{
 			var lguid=linkGuids[ i ];
 
 			window.plugin.destroyedLinks.layer.hideLink( lguid );
 		}
 	}
 	//*PORTAL: FIELDS
-	window.plugin.destroyedLinks.layer.showPortalFields=function( guid ) {
+	window.plugin.destroyedLinks.layer.showPortalFields=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var fieldGuids=window.plugin.destroyedLinks.util.getPortalFields( guid );
 
 		// FIELDS
-		for ( var i in fieldGuids ) {
+		for ( var i in fieldGuids )
+		{
 			var fguid=fieldGuids[ i ]
 
 			window.plugin.destroyedLinks.layer.showField( fguid );
 		}
 	}
-	window.plugin.destroyedLinks.layer.hidePortalFields=function( guid ) {
+	window.plugin.destroyedLinks.layer.hidePortalFields=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var fieldGuids=window.plugin.destroyedLinks.util.getPortalFields( guid );
 
 		// FIELDS
-		for ( var i in fieldGuids ) {
+		for ( var i in fieldGuids )
+		{
 			var fguid=fieldGuids[ i ]
 
 			window.plugin.destroyedLinks.layer.hideField( fguid );
 		}
 	}
 	//*PORTAL: LINKS and FIELDS
-	window.plugin.destroyedLinks.layer.showLayer=function( guid ) {
+	window.plugin.destroyedLinks.layer.showLayer=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		window.plugin.destroyedLinks.layer.showPortalLinks( guid );
 		window.plugin.destroyedLinks.layer.showPortalFields( guid );
 	}
-	window.plugin.destroyedLinks.layer.hideLayer=function( guid ) {
+	window.plugin.destroyedLinks.layer.hideLayer=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		window.plugin.destroyedLinks.layer.hidePortalLinks( guid );
 		window.plugin.destroyedLinks.layer.hidePortalFields( guid );
 	}
 
 	//*ALL PORTALS: LINKS
-	window.plugin.destroyedLinks.layer.showAllLinks=function() {
+	window.plugin.destroyedLinks.layer.showAllLinks=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.showPortalLinks( guid );
 		}
 	}
-	window.plugin.destroyedLinks.layer.hideAllLinks=function() {
+	window.plugin.destroyedLinks.layer.hideAllLinks=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.hidePortalLinks( guid );
 		}
 	}
 	//*ALL PORTALS: FIELDS
-	window.plugin.destroyedLinks.layer.showAllFields=function() {
+	window.plugin.destroyedLinks.layer.showAllFields=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.showPortalFields( guid );
 		}
 	}
-	window.plugin.destroyedLinks.layer.hideAllFields=function() {
+	window.plugin.destroyedLinks.layer.hideAllFields=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.hidePortalFields( guid );
 		}
 	}
 	//*ALL PORTALS: LINKS and FIELDS
-	window.plugin.destroyedLinks.layer.showAllLayers=function() {
+	window.plugin.destroyedLinks.layer.showAllLayers=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.showLayer( guid );
 		}
 		window.Render.prototype.bringPortalsToFront();
 	}
-	window.plugin.destroyedLinks.layer.hideAllLayers=function() {
+	window.plugin.destroyedLinks.layer.hideAllLayers=function()
+	{
 		var list=window.plugin.destroyedLinks.listDestroyed;
-		for ( var index in list ) {
+		for ( var index in list )
+		{
 			var guid=list[ index ];
 			window.plugin.destroyedLinks.layer.hideLayer( guid );
 		}
 	}
 
-	window.plugin.destroyedLinks.data.addToList=function( guid ) {
+	window.plugin.destroyedLinks.data.addToList=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var ind=window.plugin.destroyedLinks.util.isGuidInArr( guid );
 		if ( ind<0 ) { window.plugin.destroyedLinks.listDestroyed.push( guid ); }
 	}
-	window.plugin.destroyedLinks.data.removeFromList=function( guid ) {
+	window.plugin.destroyedLinks.data.removeFromList=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		var ind=window.plugin.destroyedLinks.util.isGuidInArr( guid );
 		if ( ind>=0 ) { window.plugin.destroyedLinks.listDestroyed.splice( ind, 1 ); }
@@ -308,46 +363,61 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// CROSS-LINK support
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.cross.removeCrossLink=function( lguid ) {
-		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] ) {
+	window.plugin.destroyedLinks.cross.removeCrossLink=function( lguid )
+	{
+		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] )
+		{
 			var crossLinks=window.plugin.crossLinks;
 			var crossLinkLayer=crossLinks.linkLayerGuids? crossLinks.linkLayerGuids[ lguid ]:null;
-			if ( crossLinkLayer&&crossLinks.linkLayer&&crossLinks.linkLayer.hasLayer&&crossLinks.linkLayer.hasLayer( crossLinkLayer ) ) {
+			if ( crossLinkLayer&&crossLinks.linkLayer&&crossLinks.linkLayer.hasLayer&&crossLinks.linkLayer.hasLayer( crossLinkLayer ) )
+			{
 				crossLinks.linkLayer.removeLayer( crossLinkLayer );
 			}
 		}
 	}
-	window.plugin.destroyedLinks.cross.removeCrossPortal=function( guid ) {
-		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] ) {
+	window.plugin.destroyedLinks.cross.removeCrossPortal=function( guid )
+	{
+		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] )
+		{
 			var linkGuids=window.plugin.destroyedLinks.util.getPortalLinks( guid );
-			for ( i in linkGuids ) {
+			for ( i in linkGuids )
+			{
 				var lguid=linkGuids[ i ];
 				window.plugin.destroyedLinks.cross.removeCrossLink( lguid );
 			}
 		}
 	}
-	window.plugin.destroyedLinks.cross.removeCrossAll=function() {
-		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] ) {
+	window.plugin.destroyedLinks.cross.removeCrossAll=function()
+	{
+		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] )
+		{
 			var list=window.plugin.destroyedLinks.listDestroyed;
-			for ( i in list ) {
+			for ( i in list )
+			{
 				var guid=list[ i ];
 				window.plugin.destroyedLinks.cross.removeCrossPortal( guid );
 			}
 		}
 	}
 
-	window.plugin.destroyedLinks.cross.restoreCrossAll=function() {
-		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] ) {
+	window.plugin.destroyedLinks.cross.restoreCrossAll=function()
+	{
+		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] )
+		{
 			window.plugin.crossLinks.checkAllLinks();
 		}
 	}
 
-	window.plugin.destroyedLinks.cross.hookDrawTools=function( e ) {
-		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] ) {
-			if ( e.event=='layerCreated' ) {
+	window.plugin.destroyedLinks.cross.hookDrawTools=function( e )
+	{
+		if ( window.plugin.crossLinks!==undefined&&window.overlayStatus[ 'Cross Links' ] )
+		{
+			if ( e.event=='layerCreated' )
+			{
 				// we can just test the new layer in this case
 				window.plugin.crossLinks.testAllLinksAgainstLayer( e.layer );
-			} else {
+			} else
+			{
 				// all other event types - assume anything could have been modified and re-check all links
 				// window.plugin.crossLinks.checkAllLinks();
 				window.plugin.destroyedLinks.cross.removeCrossAll();
@@ -359,17 +429,20 @@ function wrapper( plugin_info ) {
 	// BOOKMARKS GENERATOR
 	// PORTALS INFO (utils for exports as bookmarks)
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.bkmrk.removeFromObj=function( guid ) {
+	window.plugin.destroyedLinks.bkmrk.removeFromObj=function( guid )
+	{
 		if ( guid===undefined ) guid=window.selectedPortal;
 		if ( guid===undefined ) return false;
 		delete window.plugin.destroyedLinks.portalsInfo[ guid ];
 	}
-	window.plugin.destroyedLinks.bkmrk.generateBookmarkedPortal=function( guid ) {
+	window.plugin.destroyedLinks.bkmrk.generateBookmarkedPortal=function( guid )
+	{
 		if ( guid===undefined ) guid=window.selectedPortal;
 		if ( guid===undefined ) return false;
 
 		var portalLayer=window.portals[ guid ];
-		if ( portalLayer ) {
+		if ( portalLayer )
+		{
 			var p=portalLayer.options;
 
 			var bkmrk={
@@ -401,7 +474,8 @@ function wrapper( plugin_info ) {
 
 		return false;
 	}
-	window.plugin.destroyedLinks.bkmrk.generateBkmrksJSON=function() {
+	window.plugin.destroyedLinks.bkmrk.generateBkmrksJSON=function()
+	{
 		var list=window.plugin.destroyedLinks.portalsInfo;
 
 		var objB={};
@@ -415,7 +489,8 @@ function wrapper( plugin_info ) {
 			bkmrk: {}
 		};
 
-		for ( guid in list ) {
+		for ( guid in list )
+		{
 			var b=list[ guid ];
 			var idBkmrk=window.plugin.destroyedLinks.util.generateID();
 
@@ -432,7 +507,8 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// ACTIONS
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.action.destroyPortal=function( guid ) {
+	window.plugin.destroyedLinks.action.destroyPortal=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 
 		// already marks as todestroy
@@ -444,14 +520,16 @@ function wrapper( plugin_info ) {
 		window.plugin.destroyedLinks.data.addToList( guid );
 
 		// update running link tally with number of links for this portal
-		try {
+		try
+		{
 			var addedLinks=window.plugin.destroyedLinks.util.getPortalLinkCount( guid );
 			var newTotal=window.plugin.destroyedLinks.addToLinkTally( addedLinks );
 			console.log( 'Destroyed Links Simulator: added', addedLinks, 'links; linkTally =', newTotal );
 			window.plugin.destroyedLinks.ui.updateLinkTallyDisplay();
 		} catch ( e ) { console.warn( 'Destroyed Links Simulator: could not update linkTally', e ); }
 
-		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] )
+		{
 			window.plugin.destroyedLinks.layer.hideLayer( guid );
 		}
 
@@ -467,23 +545,27 @@ function wrapper( plugin_info ) {
 		//cross-link support
 		window.plugin.destroyedLinks.cross.removeCrossPortal( guid );
 	}
-	window.plugin.destroyedLinks.action.regeneratePortal=function( guid ) {
+	window.plugin.destroyedLinks.action.regeneratePortal=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 		if ( window.plugin.destroyedLinks.util.isGuidInArr( guid )===-1 ) return false;
 
 		// subtract this portal's links from the running tally
-		try {
+		try
+		{
 			var removedLinks=window.plugin.destroyedLinks.util.getPortalLinkCount( guid );
 			var newTotal=window.plugin.destroyedLinks.subtractFromLinkTally( removedLinks );
 			console.log( 'Destroyed Links Simulator: removed', removedLinks, 'links; linkTally =', newTotal );
 			window.plugin.destroyedLinks.ui.updateLinkTallyDisplay();
 		} catch ( e ) { console.warn( 'Destroyed Links Simulator: could not update linkTally', e ); }
 
-		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] )
+		{
 			window.plugin.destroyedLinks.layer.showAllLayers();
 			window.plugin.destroyedLinks.data.removeFromList( guid );
 			window.plugin.destroyedLinks.layer.hideAllLayers();
-		} else {
+		} else
+		{
 			window.plugin.destroyedLinks.data.removeFromList( guid );
 		}
 
@@ -499,15 +581,18 @@ function wrapper( plugin_info ) {
 		window.plugin.destroyedLinks.cross.restoreCrossAll();
 		window.plugin.destroyedLinks.cross.removeCrossAll();
 	}
-	window.plugin.destroyedLinks.action.regenerateAllPortals=function() {
-		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+	window.plugin.destroyedLinks.action.regenerateAllPortals=function()
+	{
+		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] )
+		{
 			window.plugin.destroyedLinks.layer.showAllLayers();
 			window.plugin.destroyedLinks.listDestroyed=[];
 			window.plugin.destroyedLinks.portalsInfo={};
 			window.plugin.destroyedLinks.linkTally=0;
 			window.plugin.destroyedLinks.ui.updateLinkTallyDisplay();
 			window.plugin.destroyedLinks.layer.hideAllLayers();
-		} else {
+		} else
+		{
 			window.plugin.destroyedLinks.listDestroyed=[];
 			window.plugin.destroyedLinks.portalsInfo={};
 			window.plugin.destroyedLinks.linkTally=0;
@@ -524,19 +609,25 @@ function wrapper( plugin_info ) {
 		//cross-link support
 		window.plugin.destroyedLinks.cross.restoreCrossAll();
 	}
-	window.plugin.destroyedLinks.action.destroyAllBookmarks=function() {
+	window.plugin.destroyedLinks.action.destroyAllBookmarks=function()
+	{
 		var bookmarksPlugin=window.plugin.bookmarks;
-		if ( !bookmarksPlugin||!bookmarksPlugin.bkmrksObj||!bookmarksPlugin.bkmrksObj.portals ) {
+		if ( !bookmarksPlugin||!bookmarksPlugin.bkmrksObj||!bookmarksPlugin.bkmrksObj.portals )
+		{
 			alert( 'Bookmarks plugin not found or no portals bookmarked.' );
 			return;
 		}
 		var folders=bookmarksPlugin.bkmrksObj.portals;
-		for ( var folderId in folders ) {
+		for ( var folderId in folders )
+		{
 			var folder=folders[ folderId ];
-			if ( folder&&folder.bkmrk ) {
-				for ( var bkmrkId in folder.bkmrk ) {
+			if ( folder&&folder.bkmrk )
+			{
+				for ( var bkmrkId in folder.bkmrk )
+				{
 					var bkmrk=folder.bkmrk[ bkmrkId ];
-					if ( bkmrk&&bkmrk.guid ) {
+					if ( bkmrk&&bkmrk.guid )
+					{
 						window.plugin.destroyedLinks.action.destroyPortal( bkmrk.guid );
 					}
 				}
@@ -544,9 +635,12 @@ function wrapper( plugin_info ) {
 		}
 	}
 
-	window.plugin.destroyedLinks.action.convertInDraw=function() {
-		if ( window.plugin.drawToolsPlus!==undefined ) {
-			for ( guid in window.plugin.destroyedLinks.markerLayers ) {
+	window.plugin.destroyedLinks.action.convertInDraw=function()
+	{
+		if ( window.plugin.drawToolsPlus!==undefined )
+		{
+			for ( guid in window.plugin.destroyedLinks.markerLayers )
+			{
 				var mark=window.plugin.destroyedLinks.markerLayers[ guid ];
 
 				var markClasses=mark.options.icon.options.className;
@@ -554,7 +648,8 @@ function wrapper( plugin_info ) {
 				var latLng=mark.getLatLng();
 
 				var color='';
-				switch ( markColor ) {
+				switch ( markColor )
+				{
 					case 'red':
 						color='#D81313';
 						break;
@@ -573,12 +668,14 @@ function wrapper( plugin_info ) {
 				window.plugin.drawTools.drawnItems.addLayer( layer );
 
 				window.plugin.drawTools.save();
-				if ( layer instanceof L.Marker ) {
+				if ( layer instanceof L.Marker )
+				{
 					window.registerMarkerForOMS( layer );
 				}
 				runHooks( 'pluginDrawTools', { event: 'layerCreated', layer: layer } );
 			}
-		} else {
+		} else
+		{
 			dialog( {
 				title: 'Destroyed Links Simulator',
 				html: '<div class="dlsMsg">"<i>Draw Tools Plus</i>" plugin is required. You can find it <a href="https://tiny.cc/ZasoItems" target="_BLANK">here</a></div>',
@@ -588,15 +685,19 @@ function wrapper( plugin_info ) {
 		}
 	}
 
-	window.plugin.destroyedLinks.restoreLayersListener=function() {
-		if ( window.plugin.destroyedLinks.listDestroyed.length<1 ) {
+	window.plugin.destroyedLinks.restoreLayersListener=function()
+	{
+		if ( window.plugin.destroyedLinks.listDestroyed.length<1 )
+		{
 			return false;
 		}
 
 		window.plugin.destroyedLinks.layer.showAllLayers();
 
-		if ( window.overlayStatus[ 'Links' ]&&window.links ) {
-			for ( var lguid in window.links ) {
+		if ( window.overlayStatus[ 'Links' ]&&window.links )
+		{
+			for ( var lguid in window.links )
+			{
 				var lay=window.links[ lguid ];
 				if ( !lay||!lay.options||!lay.options.data ) continue;
 				var team=lay.options.data.team;
@@ -605,16 +706,20 @@ function wrapper( plugin_info ) {
 					( team==='E'&&!window.overlayStatus[ 'Enlightened' ] )
 					||
 					( team==='R'&&!window.overlayStatus[ 'Resistance' ] )
-				) {
+				)
+				{
 					window.plugin.destroyedLinks.layer.hideLink( lguid );
 				}
 			}
-		} else {
+		} else
+		{
 			window.plugin.destroyedLinks.layer.hideAllLinks();
 		}
 
-		if ( window.overlayStatus[ 'Fields' ]&&window.fields ) {
-			for ( var fguid in window.fields ) {
+		if ( window.overlayStatus[ 'Fields' ]&&window.fields )
+		{
+			for ( var fguid in window.fields )
+			{
 				var lay=window.fields[ fguid ];
 				if ( !lay||!lay.options||!lay.options.data ) continue;
 				var team=lay.options.data.team;
@@ -623,17 +728,21 @@ function wrapper( plugin_info ) {
 					( team==='E'&&!window.overlayStatus[ 'Enlightened' ] )
 					||
 					( team==='R'&&!window.overlayStatus[ 'Resistance' ] )
-				) {
+				)
+				{
 					window.plugin.destroyedLinks.layer.hideField( fguid );
 				}
 			}
-		} else {
+		} else
+		{
 			window.plugin.destroyedLinks.layer.hideAllFields();
 		}
 	}
 
-	window.plugin.destroyedLinks.mapRefresh=function() {
-		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+	window.plugin.destroyedLinks.mapRefresh=function()
+	{
+		if ( window.overlayStatus[ 'Destroyed Links Simulator' ] )
+		{
 			window.plugin.destroyedLinks.restoreLayersListener();
 			window.plugin.destroyedLinks.layer.hideAllLayers();
 			// cross-links suport
@@ -644,17 +753,21 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// MARKERS - Layer Group
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.ui.addMarker=function( guid ) {
+	window.plugin.destroyedLinks.ui.addMarker=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 
 		var factionPlayer=window.PLAYER.team[ 0 ];
 		var factionPortal=window.portals[ guid ].options.data.team;
-		if ( factionPlayer==='E'&&factionPortal==='E' ) {
+		if ( factionPlayer==='E'&&factionPortal==='E' )
+		{
 			var typeMarker='blue';
 		}
-		else if ( factionPlayer==='R'&&factionPortal==='R' ) {
+		else if ( factionPlayer==='R'&&factionPortal==='R' )
+		{
 			var typeMarker='green';
-		} else {
+		} else
+		{
 			var typeMarker='red';
 		}
 
@@ -672,7 +785,8 @@ function wrapper( plugin_info ) {
 		};
 		var mark=L.marker( ll, opt );
 
-		mark.on( 'dblclick', function( e ) {
+		mark.on( 'dblclick', function( e )
+		{
 			window.plugin.destroyedLinks.action.regeneratePortal( guid );
 		} );
 
@@ -684,15 +798,18 @@ function wrapper( plugin_info ) {
 		window.plugin.destroyedLinks.markerLayers[ guid ]=mark;
 		mark.addTo( window.plugin.destroyedLinks.layerGroup );
 	}
-	window.plugin.destroyedLinks.ui.removeMarker=function( guid ) {
+	window.plugin.destroyedLinks.ui.removeMarker=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 
 		var pLayer=window.plugin.destroyedLinks.markerLayers[ guid ];
 		window.plugin.destroyedLinks.layerGroup.removeLayer( pLayer );
 		delete window.plugin.destroyedLinks.markerLayers[ guid ];
 	}
-	window.plugin.destroyedLinks.ui.removeAllMarkers=function() {
-		for ( guid in window.plugin.destroyedLinks.markerLayers ) {
+	window.plugin.destroyedLinks.ui.removeAllMarkers=function()
+	{
+		for ( guid in window.plugin.destroyedLinks.markerLayers )
+		{
 			window.plugin.destroyedLinks.ui.removeMarker( guid );
 		}
 	}
@@ -700,8 +817,10 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// UI: Sidebar & Toolbox & Dialog
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.ui.addToSidebar=function() {
-		if ( typeof ( Storage )==="undefined" ) {
+	window.plugin.destroyedLinks.ui.addToSidebar=function()
+	{
+		if ( typeof ( Storage )==="undefined" )
+		{
 			alert( 'Your brwoser not support the local storage' );
 			return false;
 		}
@@ -709,7 +828,8 @@ function wrapper( plugin_info ) {
 		var hid_2='hidden';
 		var guid=window.selectedPortal;
 		var is=window.plugin.destroyedLinks.util.isGuidInArr( guid );
-		if ( is>=0 ) {
+		if ( is>=0 )
+		{
 			hid_1='hidden';
 			hid_2='';
 		}
@@ -719,22 +839,25 @@ function wrapper( plugin_info ) {
 		var factionPlayer=window.PLAYER.team[ 0 ];
 		var factionPortal=window.portals[ guid ].options.data.team;
 
-		if ( factionPlayer==='E'&&factionPortal==='E' ) {
+		if ( factionPlayer==='E'&&factionPortal==='E' )
+		{
 			label='Ada';
 		}
-		else if ( factionPlayer==='R'&&factionPortal==='R' ) {
+		else if ( factionPlayer==='R'&&factionPortal==='R' )
+		{
 			label='Jarvis';
-		} else if ( factionPortal==='N' ) {
+		} else if ( factionPortal==='N' )
+		{
 			label='Is Neutral';
 		}
 
 		var actionHTML='';
 		actionHTML+='<div class="destroy_toggle">';
-		actionHTML+='<a class="destroyBkmrks" accesskey="6" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals [6]">Destroy Bookmarks</a>';
-		actionHTML+='<a class="desOne '+hid_1+'" accesskey="h" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields [h]">'+label+'</a> ';
-		actionHTML+='<a class="regOne '+hid_2+'" accesskey="h" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields [h]">Regenerate</a>';
-		actionHTML+='<a class="regAll" accesskey="j" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields [j]">Reset All</a>';
-		actionHTML+='<a class="convDr" accesskey="u" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw [u]">Drawnize All</a>';
+		actionHTML+='<a href="#" class="destroyBkmrks" accesskey="h" onclick="window.plugin.destroyedLinks.action.destroyAllBookmarks();return false;" title="Destroy all bookmarked portals [h]">Destroy Bookmarks</a>';
+		actionHTML+='<a href="#" class="desOne '+hid_1+'" accesskey="j" onclick="window.plugin.destroyedLinks.action.destroyPortal();return false;" title="Hide portal links and fields [j]">'+label+'</a> ';
+		actionHTML+='<a href="#" class="regOne '+hid_2+'" accesskey="u" onclick="window.plugin.destroyedLinks.action.regeneratePortal();return false;" title="Restore portal links and fields [u]">Regenerate</a>';
+		actionHTML+='<a href="#" class="regAll" accesskey="6" onclick="window.plugin.destroyedLinks.action.regenerateAllPortals();return false;" title="Restore all links and fields [6]">Reset All</a>';
+		actionHTML+='<a href="#" class="convDr" accesskey="7" onclick="window.plugin.destroyedLinks.action.convertInDraw();return false;" title="Convert all markers in Draw [7]">Drawnize All</a>';
 		actionHTML+='<div style="clear:both;"></div>';
 		actionHTML+='</div>';
 		actionHTML+='<div class="dlsTally">Links Destroyed: <span class="dls-link-tally">0</span></div>';
@@ -742,26 +865,31 @@ function wrapper( plugin_info ) {
 		window.plugin.destroyedLinks.ui.updateCountToDestroy();
 		window.plugin.destroyedLinks.ui.updateLinkTallyDisplay();
 
-		if ( !window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+		if ( !window.overlayStatus[ 'Destroyed Links Simulator' ] )
+		{
 			$( '.destroy_toggle' ).addClass( 'hidden' );
-		} else {
+		} else
+		{
 			$( '.destroy_toggle' ).removeClass( 'hidden' );
 		}
 	}
 
-	window.plugin.destroyedLinks.ui.updateCountToDestroy=function() {
+	window.plugin.destroyedLinks.ui.updateCountToDestroy=function()
+	{
 		var countToDestroy=window.plugin.destroyedLinks.util.countToDestroy();
 		var count_html=( countToDestroy>0 )? ' ('+countToDestroy+')':'';
 
 		$( '.regAll' ).html( 'Reset All'+count_html );
 	}
 
-	window.plugin.destroyedLinks.ui.updateLinkTallyDisplay=function() {
+	window.plugin.destroyedLinks.ui.updateLinkTallyDisplay=function()
+	{
 		var n=window.plugin.destroyedLinks.linkTally||0;
 		$( '.dls-link-tally' ).text( n );
 	}
 
-	window.plugin.destroyedLinks.ui.toggleButton=function( guid ) {
+	window.plugin.destroyedLinks.ui.toggleButton=function( guid )
+	{
 		if ( guid===undefined ) { var guid=window.selectedPortal; }
 
 		var is=window.plugin.destroyedLinks.util.isGuidInArr( guid );
@@ -770,18 +898,22 @@ function wrapper( plugin_info ) {
 		if ( guid!==window.selectedPortal ) return false;
 
 		$( '.destroy_toggle a.hidden' ).removeClass( 'hidden' );
-		if ( is<0 ) {
+		if ( is<0 )
+		{
 			$( '.destroy_toggle a.regOne' ).addClass( 'hidden' );
-		} else {
+		} else
+		{
 			$( '.destroy_toggle a.desOne' ).addClass( 'hidden' );
 		}
 	}
 
-	window.plugin.destroyedLinks.ui.appendToToolbox=function() {
+	window.plugin.destroyedLinks.ui.appendToToolbox=function()
+	{
 		$( '#toolbox' ).append( '<a onclick="window.plugin.destroyedLinks.ui.openDialogMain(); return false;">Destroy simulator</a>' );
 	}
 
-	window.plugin.destroyedLinks.ui.openDialogMain=function() {
+	window.plugin.destroyedLinks.ui.openDialogMain=function()
+	{
 		var html=window.plugin.destroyedLinks.ui.getHTMLdialogMain();
 
 		dialog( {
@@ -790,7 +922,8 @@ function wrapper( plugin_info ) {
 			dialogClass: 'ui-dialog-dls',
 			minWidth: 300,
 			buttons: {
-				'BKMRKS': function() {
+				'BKMRKS': function()
+				{
 					window.plugin.destroyedLinks.ui.openDialogBkmrks();
 				},
 				// 'UPDATE': function(){
@@ -800,21 +933,26 @@ function wrapper( plugin_info ) {
 		} );
 	}
 
-	window.plugin.destroyedLinks.ui.getHTMLdialogMain=function() {
+	window.plugin.destroyedLinks.ui.getHTMLdialogMain=function()
+	{
 		var list=window.plugin.destroyedLinks.portalsInfo;
 
 		var html='';
 		html+='Portal(s) to destroy: '+window.plugin.destroyedLinks.util.countToDestroy();
 		html+='<ol>';
-		for ( var guid in list ) {
+		for ( var guid in list )
+		{
 			var v=list[ guid ];
 			var ll=v.ll;
 			var title=v.title;
 
-			if ( guid!==null ) {
-				if ( title!=='untitled' ) {
+			if ( guid!==null )
+			{
+				if ( title!=='untitled' )
+				{
 					var label=title;
-				} else {
+				} else
+				{
 					var p=window.portals[ guid ];
 					var label='[Title not avaible]';
 				}
@@ -822,7 +960,8 @@ function wrapper( plugin_info ) {
 				html+='<a class="btn btn-delete" onclick="window.plugin.destroyedLinks.action.regeneratePortal(\''+guid+'\');return false;">X</a> ';
 				html+='<a onclick="window.zoomToAndShowPortal(\''+guid+'\', ['+ll.lat+','+ll.lng+']);return false;">'+label+'</a>';
 				html+='</li>';
-			} else {
+			} else
+			{
 				var label='['+ll.lat+','+ll.lng+']';
 				html+='<li><a onclick="map.setView(['+ll.lat+','+ll.lng+']);return false;">'+label+'</a></li>';
 			}
@@ -832,12 +971,14 @@ function wrapper( plugin_info ) {
 		return html;
 	}
 
-	window.plugin.destroyedLinks.ui.updateDialogMain=function() {
+	window.plugin.destroyedLinks.ui.updateDialogMain=function()
+	{
 		var html=window.plugin.destroyedLinks.ui.getHTMLdialogMain();
 		$( '.dlsList' ).html( html );
 	}
 
-	window.plugin.destroyedLinks.ui.openDialogBkmrks=function() {
+	window.plugin.destroyedLinks.ui.openDialogBkmrks=function()
+	{
 		var html=window.plugin.destroyedLinks.ui.getHTMLdialogBkmrks();
 
 		dialog( {
@@ -853,13 +994,15 @@ function wrapper( plugin_info ) {
 		} );
 	}
 
-	window.plugin.destroyedLinks.ui.getHTMLdialogBkmrks=function() {
+	window.plugin.destroyedLinks.ui.getHTMLdialogBkmrks=function()
+	{
 		var bJSON=window.plugin.destroyedLinks.bkmrk.generateBkmrksJSON();
 		return 'Portal(s) to destroy: '+window.plugin.destroyedLinks.util.countToDestroy()
 			+'<textarea onclick="event.target.select();" readonly>'+JSON.stringify( bJSON )+'</textarea>';
 	}
 
-	window.plugin.destroyedLinks.ui.updateDialogBkmrks=function() {
+	window.plugin.destroyedLinks.ui.updateDialogBkmrks=function()
+	{
 		var html=window.plugin.destroyedLinks.ui.getHTMLdialogBkmrks();
 		$( '.dlsBkmrks' ).html( html );
 	}
@@ -867,10 +1010,11 @@ function wrapper( plugin_info ) {
 	//-------------------------------------------------------------
 	// Append the stylesheet
 	//-------------------------------------------------------------
-	window.plugin.destroyedLinks.setupCSS=function() {
+	window.plugin.destroyedLinks.setupCSS=function()
+	{
 		$( '<style>' ).prop( 'type', 'text/css' ).html( ''
 			+'.destroy_toggle{ display:block !important; width:96%; margin:7px auto 5px; }'
-			+'.destroy_toggle a{ display:block; float:left; width:31.8%; border:1px solid #ffce00; text-align:center; background:rgba(0,0,0,.3); box-sizing:border-box; padding:2px 0; }'
+			+'.destroy_toggle a{ display:block; float:left; width:31.8%; border:1px solid #ffce00; text-align:center; background:rgba(0,0,0,.3); box-sizing:border-box; padding:2px 0; color:inherit; text-decoration:none; }'
 			+'.destroy_toggle a.hidden{ display:none; }'
 			+'.destroy_toggle a.regAll, .destroy_toggle a.convDr{ margin-left:2%; }'
 			+'.destroy_toggle a.destroyBkmrks{ width:100%; float:none; margin-left:0; margin-bottom:4px; border-color:#aaccff; }'
@@ -891,7 +1035,8 @@ function wrapper( plugin_info ) {
 
 	//*****************************
 
-	var setup=function() {
+	var setup=function()
+	{
 		// window.plugin.destroyedLinks.util.checkFriendPlugins();
 		// window.plugin.destroyedLinks.storage.check();
 		window.plugin.destroyedLinks.setupCSS();
@@ -902,42 +1047,54 @@ function wrapper( plugin_info ) {
 		window.addHook( 'portalDetailsUpdated', window.plugin.destroyedLinks.ui.addToSidebar );
 		window.addHook( 'mapDataRefreshEnd', window.plugin.destroyedLinks.mapRefresh );
 
-		window.map.on( 'overlayadd overlayremove', function( e ) {
-			if ( e.name==='Destroyed Links Simulator' ) {
-				if ( e.type==='overlayadd' ) {
+		window.map.on( 'overlayadd overlayremove', function( e )
+		{
+			if ( e.name==='Destroyed Links Simulator' )
+			{
+				if ( e.type==='overlayadd' )
+				{
 					$( '.destroy_toggle' ).removeClass( 'hidden' );
 					window.plugin.destroyedLinks.cross.removeCrossAll();
 				}
-				else if ( e.type==='overlayremove' ) {
+				else if ( e.type==='overlayremove' )
+				{
 					$( '.destroy_toggle' ).addClass( 'hidden' );
 					window.plugin.destroyedLinks.cross.restoreCrossAll();
 				}
 			}
 
-			if ( window.plugin.destroyedLinks.listDestroyed.length>0 ) {
+			if ( window.plugin.destroyedLinks.listDestroyed.length>0 )
+			{
 				// crosslinks support
-				if ( e.name==='Cross Links' ) {
+				if ( e.name==='Cross Links' )
+				{
 					window.plugin.destroyedLinks.cross.removeCrossAll();
-					if ( e.type==='overlayadd'&&!window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+					if ( e.type==='overlayadd'&&!window.overlayStatus[ 'Destroyed Links Simulator' ] )
+					{
 						window.plugin.destroyedLinks.cross.restoreCrossAll();
 					}
 				}
 
-				if ( e.name==='Destroyed Links Simulator' ) {
-					if ( e.type==='overlayadd' ) {
+				if ( e.name==='Destroyed Links Simulator' )
+				{
+					if ( e.type==='overlayadd' )
+					{
 						window.plugin.destroyedLinks.layer.hideAllLayers();
-					} else if ( e.type==='overlayremove' ) {
+					} else if ( e.type==='overlayremove' )
+					{
 						window.plugin.destroyedLinks.restoreLayersListener();
 					}
 				}
 
-				if ( window.overlayStatus[ 'Destroyed Links Simulator' ] ) {
+				if ( window.overlayStatus[ 'Destroyed Links Simulator' ] )
+				{
 					if (
 						e.name==='Links'
 						||e.name==='Fields'
 						||e.name==='Resistance'
 						||e.name==='Enlightened'
-					) {
+					)
+					{
 						window.plugin.destroyedLinks.layer.hideAllLayers();
 					}
 				}
@@ -947,7 +1104,8 @@ function wrapper( plugin_info ) {
 		window.plugin.destroyedLinks.ui.appendToToolbox();
 
 		// this plugin also needs to create the draw-tools hook, in case it is initialised before draw-tools
-		if ( window.plugin.drawToolsPlus!==undefined&&window.plugin.crossLinks!=undefined ) {
+		if ( window.plugin.drawToolsPlus!==undefined&&window.plugin.crossLinks!=undefined )
+		{
 			window.pluginCreateHook( 'pluginDrawTools' );
 			window.addHook( 'pluginDrawTools', window.plugin.destroyedLinks.cross.hookDrawTools );
 		}
@@ -968,4 +1126,3 @@ var info={};
 if ( typeof GM_info!=='undefined'&&GM_info&&GM_info.script ) info.script={ version: GM_info.script.version, name: GM_info.script.name, description: GM_info.script.description };
 script.appendChild( document.createTextNode( '('+wrapper+')('+JSON.stringify( info )+');' ) );
 ( document.body||document.head||document.documentElement ).appendChild( script );
-

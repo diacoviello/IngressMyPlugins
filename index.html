@@ -120,6 +120,20 @@
     }
     .copy-btn:hover { background: #00d4ff; color: #1a1a2e; }
     .copy-btn.copied { background: #00d4ff; color: #1a1a2e; }
+    .install-btn {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      background: #00d4ff;
+      color: #1a1a2e;
+      border: 1px solid #00d4ff;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .install-btn:hover { background: #0f3460; color: #00d4ff; }
 
     .selection-bar {
       position: fixed;
@@ -161,10 +175,13 @@
 <body>
 
 <h1>Diablo IITC Plugins</h1>
-<p class="subtitle">Copy any URL below and paste it into IITC Button as a custom plugin. Check multiple plugins to copy all their URLs at once.</p>
+<p class="subtitle">Click <strong>Install</strong> on any plugin to add it to IITC Button, or copy its URL. Check multiple plugins to copy all their URLs at once.</p>
 
 <div class="instructions">
-  <strong>How to add a plugin in IITC Button (one-time per device):</strong>
+  <strong>One-click install:</strong> with IITC Button installed in this browser, click <strong>Install</strong> on a card.
+  The plugin opens in a new tab, IITC Button intercepts it and asks you to confirm the install.
+  <br><br>
+  <strong>Manual alternative (if Install doesn't trigger, e.g. another userscript manager grabs it):</strong>
   <ol>
     <li>Click the IITC Button icon → <em>Settings</em> (gear icon)</li>
     <li>Go to the <strong>Plugins</strong> tab → <em>Add plugin by URL</em> (or <em>User plugins</em>)</li>
@@ -727,6 +744,24 @@ function copyUrl(btn) {
   });
 }
 
+// IITC Button only intercepts direct .user.js links, so turn github.com "blob" page URLs into raw URLs
+function toRawUrl(url) {
+  const m = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/);
+  return m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}` : url;
+}
+
+document.querySelectorAll('.url-row').forEach(row => {
+  const url = row.querySelector('.url-box').textContent.trim();
+  const install = document.createElement('a');
+  install.className = 'install-btn';
+  install.href = toRawUrl(url);
+  install.target = '_blank';
+  install.rel = 'noopener';
+  install.textContent = 'Install';
+  install.title = 'Add to IITC Button';
+  row.appendChild(install);
+});
+
 document.querySelectorAll('.card').forEach(card => {
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
@@ -738,7 +773,7 @@ document.querySelectorAll('.card').forEach(card => {
   card.insertBefore(checkbox, card.firstChild);
 
   card.addEventListener('click', (e) => {
-    if (e.target === checkbox || e.target.classList.contains('copy-btn') || e.target.classList.contains('url-box')) return;
+    if (e.target === checkbox || e.target.classList.contains('copy-btn') || e.target.classList.contains('install-btn') || e.target.classList.contains('url-box')) return;
     checkbox.checked = !checkbox.checked;
     checkbox.dispatchEvent(new Event('change'));
   });
